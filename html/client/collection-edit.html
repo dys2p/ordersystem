@@ -1,0 +1,22 @@
+{{define "client"}}
+
+<h1>Auftrag {{.ID}}</h1>
+<p><strong>Status:</strong> {{.State.Description}}</p>
+
+<noscript>
+	<div class="alert alert-warning" role="alert">
+		Dieses Seite erfordert leider JavaScript.
+	</div>
+</noscript>
+
+{{template "collection" .}}
+
+<form method="post" onsubmit="prepareSubmit(event)">
+	<input type="hidden" id="data" name="data">
+	<div class="mb-3 text-right">
+		<a class="btn btn-warning" href="{{.Link}}">Abbrechen und zurück</a>
+		<button class="btn btn-success" type="submit">Auftragsentwurf speichern</button>
+	</div>
+</form>
+
+{{end}}

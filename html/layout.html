@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+	<meta charset="utf-8">
+	{{block "head" .}}{{end}}
+	<link rel="stylesheet" href="/static/bootstrap.min.css" />
+	<script src="/static/ordersystem.js"></script>
+	<style>
+		input[type=radio]{
+			transform:scale(1.5);
+			margin: 0.5em;
+		}
+		td > p:last-child {
+			margin-bottom: 0 !important;
+		}
+	</style>
+</head>
+<body>
+	{{template "body" .}}
+	{{block "footer" .}}{{end}}
+</body>
+</html>
+
+{{define "captcha"}}
+<!-- wants .CaptchaID and .CaptchaErr -->
+<p class="text-center">
+	<img id="captcha-image" src="/captcha/{{.CaptchaID}}.png" alt="Captcha image">
+</p>
+<div class="form-group">
+	<label for="captcha-solution">Bitte tippe die Ziffern ab, um zu beweisen, dass du es ernst meinst:</label>
+	<input class="form-control {{if .CaptchaErr}}is-invalid{{end}}" id="captcha-solution" name="captcha-solution">
+	<div class="invalid-feedback">Bitte tippe das Captcha korrekt ab.</div>
+	<small class="form-text text-muted"><a href="#" onclick="reloadCaptcha(); return false;">Anderes Bild laden (erfordert JavaScript)</a></small>
+</div>
+<input type="hidden" name="captcha-id" value="{{.CaptchaID}}">
+{{end}}
+
+{{define "log"}}
+<table class="table">
+	<thead>
+		<th>Datum</th>
+		<th>Neuer Status</th>
+		<th>Vermerk</th>
+		<th>Bezahlter Betrag</th>
+	</thead>
+	{{range .Log}}
+		<tr>
+			<td>{{.Date.Format}}</td>
+			<td>{{.NewState.Name}}</td>
+			<td>{{.TextHTML}}</td>
+			<td>{{if .Paid}}{{FmtHuman .Paid}}{{end}}</td>
+		</tr>
+	{{end}}
+	{{if .Paid}}
+		<tr>
+			<td class="text-right" colspan="3">Summe</td>
+			<td>{{FmtHuman .Paid}}</td>
+		</tr>
+	{{end}}
+</table>
+{{end}}
+
+{{define "collection"}}
+
+	<div class="form-group">
+		<label for="client-name">Dein Name (freiwillig)</label>
+		<input type="text" class="form-control" id="client-name" {{if .ShowHints}}aria-describedby="client-name-help"{{end}} name="client-name" value="{{.ClientName}}" {{if .ReadOnly}}disabled{{end}}>
+		{{if .ShowHints}}
+			<small id="client-name-help" class="form-text text-muted">Für den Gewährleistungs- oder Garantiefall könnte es hilfreich sein, deinen Klarnamen anzugeben.</small>
+		{{end}}
+	</div>
+
+	<label for="client-contact">Kontaktmöglichkeit für Rückfragen (freiwillig){{if .Actor.IsStore}} &ndash; <strong>bei Kontaktaufnahme bitte keine Auftragsnummer nennen</strong>{{end}}</label>
+	<div class="form-row">
+		<div class="form-group col-md-6">
+			<select class="form-control" name="client-contact-protocol" {{if .ReadOnly}}disabled{{end}}>
+				{{range .ContactProtocols}}
+					<option value="{{.ID}}" {{if eq $.ClientContactProtocol .ID}}selected{{end}}>{{.Name}}</option>
+				{{end}}
+			</select>
+		</div>
+		<div class="form-group col-md-6">
+			<input type="text" class="form-control" id="client-contact" name="client-contact" value="{{.ClientContact}}" {{if .ReadOnly}}disabled{{end}}>
+		</div>
+	</div>
+
+	{{if .ShowHints}}
+		<p>Falls ein Altersnachweis nötig ist, kann er persönlich im Ladenlokal erbracht werden. Anderweitig nachweispflichtige Waren können nicht bestellt werden.</p>
+	{{end}}
+
+	<p id="add-task-paragraph">
+		{{if not .ReadOnly}}
+			<button type="button" class="btn btn-success" id="add-task-button" onclick="var taskNumber = newTask(); addArticle(taskNumber);">Weiteren Auftrag hinzufügen</button>
+		{{end}}
+	</p>
+
+	<h2>Abholung oder Weiterversand</h2>
+
+	{{if .ShowHints}}
+		<p>Du kannst die Ware im Ladenlokal (Bernhard-Göring-Straße 162, 04277 Leipzig, beachte die Öffnungszeiten) abholen. Wir können sie auch per Post oder Paketdienst an dich weiterleiten.</p>
+	{{end}}
+
+	{{if and (.ReadOnly) (ne .DeliveryMethod "store")}}
+		<!-- hide -->
+	{{else}}
+		<div class="border border-secondary bg-light my-3 p-3 rounded">
+			<input type="radio" name="delivery-method" onchange="updateView()" id="delivery-method-store" value="store" {{if or (eq .DeliveryMethod "store") (eq .DeliveryMethod "")}}checked{{end}} {{if .ReadOnly}}disabled{{end}}>
+			<label for="delivery-method-store">
+				Ich hole die Ware <strong>unter Nennung der Auftragsnummer</strong> im Ladenlokal ab.
+			</label>
+		</div>
+	{{end}}
+
+	{{if and (.ReadOnly) (ne .DeliveryMethod "locker")}}
+		<!-- hide -->
+	{{else}}
+		<div class="border border-secondary bg-light my-3 p-3 rounded">
+			<input type="radio" name="delivery-method" onchange="updateView()" id="delivery-method-locker" value="locker" {{if eq .DeliveryMethod "locker"}}checked{{end}} {{if .ReadOnly}}disabled{{end}}>
+			<label for="delivery-method-locker">
+				Ich hole die Ware <strong>aus einem Schließfach</strong> im Ladenlokal ab. Ein geöffnetes Vorhängeschloss bringe ich vorbei.
+			</label>
+		</div>
+	{{end}}
+
+	{{if and (.ReadOnly) (ne .DeliveryMethod "custom")}}
+		<!-- hide -->
+	{{else}}
+		<div class="border border-secondary bg-light my-3 p-3 rounded">
+			<input type="radio" name="delivery-method" onchange="updateView()" id="delivery-method-custom" value="custom" {{if eq .DeliveryMethod "custom"}}checked{{end}} {{if .ReadOnly}}disabled{{end}}>
+			<label for="delivery-method-custom">
+				Bitte schickt mir die Ware. Eine bezahlte und beschriftete Paketmarke bringe ich vorbei.
+			</label>
+		</div>
+	{{end}}
+
+	{{if and (.ReadOnly) (ne .DeliveryMethod "shipping")}}
+		<!-- hide -->
+	{{else}}
+		<div class="border border-secondary bg-light my-3 p-3 rounded">
+
+			<p>
+				<input type="radio" name="delivery-method" onchange="updateView()" id="delivery-method-shipping" value="shipping" {{if eq .DeliveryMethod "shipping"}}checked{{end}} {{if .ReadOnly}}disabled{{end}}>
+				<label for="delivery-method-shipping">
+					Bitte schickt mir die Ware an folgende Adresse.
+				</label>
+			</p>
+
+			<div class="form-group">
+				<select class="form-control" name="shipping-service" onchange="updateView()" {{if .ReadOnly}}disabled{{end}}>
+					{{range .ShippingServices}}
+						<option value="{{.ID}}" {{if eq $.ShippingServiceID .ID}}selected{{end}} data-min-cost="{{.MinCost}}">{{.Name}}</option>
+					{{end}}
+				</select>
+			</div>
+
+			<div class="form-row">
+				<div class="form-group col-md-6">
+					<input type="text" class="form-control" name="shipping-first-name" placeholder="Vorname" value="{{.ShippingFirstName}}" {{if .ReadOnly}}disabled{{end}}>
+				</div>
+				<div class="form-group col-md-6">
+					<input type="text" class="form-control" name="shipping-last-name" placeholder="Nachname" value="{{.ShippingLastName}}" {{if .ReadOnly}}disabled{{end}}>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<input type="text" class="form-control" name="shipping-address-supplement" placeholder="Adresszusatz" value="{{.ShippingAddressSupplement}}" {{if .ReadOnly}}disabled{{end}}>
+			</div>
+
+			<div class="form-row">
+				<div class="form-group col-md-9">
+					<input type="text" class="form-control" name="shipping-street" placeholder="Straße" value="{{.ShippingStreet}}" {{if .ReadOnly}}disabled{{end}}>
+				</div>
+				<div class="form-group col-md-3">
+					<input type="text" class="form-control" name="shipping-street-number" placeholder="Hausnummer" value="{{.ShippingStreetNumber}}" {{if .ReadOnly}}disabled{{end}}>
+				</div>
+			</div>
+
+			<div class="form-row">
+				<div class="form-group col-md-3">
+					<input type="number" class="form-control" name="shipping-postcode" placeholder="Postleitzahl" value="{{.ShippingPostcode}}" {{if .ReadOnly}}disabled{{end}}>
+				</div>
+				<div class="form-group col-md-9">
+					<input type="text" class="form-control" name="shipping-town" placeholder="Stadt" value="{{.ShippingTown}}" {{if .ReadOnly}}disabled{{end}}>
+				</div>
+			</div>
+
+			{{if .ShowHints}}
+				<p class="mb-0">
+					Wie du die Adresse einer DHL-Packstation eingeben kannst, erfährst du auf <a href="https://dont.re/?https://parcelshopfinder.dhlparcel.com/html/note_direct_access_germany.html?setLng=de" target="_blank">dhlparcel.com</a>. Dazu brauchst du ein DHL-Kundenkonto mit Postnummer.
+				</p>
+			{{end}}
+
+			{{if .Actor.IsStore}}
+				<div class="form-group row">
+					<label class="col-sm-6 col-form-label">Kosten für Weiterversand</label>
+					<div class="col-sm-6">
+						<input class="form-control" name="reshipping-fee" onchange="updateView()" type="number" min="0.00" max="10000.00" step="0.01" value="{{FmtMachine .ReshippingFee}}" {{if .ReadOnly}}disabled{{end}}>
+					</div>
+				</div>
+			{{end}}
+		</div>
+	{{end}}
+
+	<h2>Zusammenfassung</h2>
+
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Bezeichnung</th>
+				<th>Bestellwert</th>
+				<th>+ Auftragsgebühr</th>
+				<th>= Summe</th>
+			</tr>
+		</thead>
+		<tbody id="summary-tbody">
+		</tbody>
+	</table>
+
+	<script>
+		{{range .Tasks}}
+			addTask({{.}}, {{$.ReadOnly}} || {{not (.Writeable $.Actor)}}, {{$.ShowHints}},
+				{{if $.Actor.IsStore}}
+					'<p>ID: {{.ID}}</p>' +
+					'<p>Status: {{.State.Description}}</p>' +
+					'<p>' +
+					'	{{if $.StoreCanTask "confirm-arrived" .}}' +
+					'		<a class="btn btn-success" href="/collection/{{$.ID}}/confirm-arrived/{{.ID}}">Ist angekommen</a>' +
+					'	{{end}}' +
+					'	{{if $.StoreCanTask "confirm-ordered" .}}' +
+					'		<a class="btn btn-success" href="/collection/{{$.ID}}/confirm-ordered/{{.ID}}">Als bestellt markieren</a>' +
+					'	{{end}}' +
+					'	{{if $.StoreCanTask "confirm-pickup" .}}' +
+					'		<a class="btn btn-success" href="/collection/{{$.ID}}/confirm-pickup/{{.ID}}">Als abgeholt markieren</a>' +
+					'	{{end}}' +
+					'	{{if $.StoreCanTask "confirm-reshipped" .}}' +
+					'		<a class="btn btn-success" href="/collection/{{$.ID}}/confirm-reshipped/{{.ID}}">Als weiterverschickt markieren</a>' +
+					'	{{end}}' +
+					'	{{if $.StoreCanTask "mark-failed" .}}' +
+					'		<a class="btn btn-warning" href="/collection/{{$.ID}}/mark-failed/{{.ID}}">Ist gescheitert</a>' +
+					'	{{end}}' +
+					'</p>'
+				{{else}}
+					'<p>Status: {{.State.Description}}</p>'
+				{{end}}
+			);
+		{{else}}
+			{{if not .ReadOnly}}
+				document.getElementById("add-task-button").click();
+			{{end}}
+		{{end}}
+
+		updateView();
+	</script>
+
+{{end}}
+
+{{define "task"}}
+	<div id="add-task-paragraph"></div>
+	<script>
+		addTask({{.}}, true, false, "");
+	</script>
+{{end}}

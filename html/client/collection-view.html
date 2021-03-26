@@ -1,0 +1,33 @@
+{{define "client"}}
+	<h1>Auftrag {{.ID}}</h1>
+	{{range .Notifications}}
+		<div class="alert alert-success mt-3" role="alert">{{.}}</div>
+	{{end}}
+	<p><strong>Status:</strong> {{.State.Description}}</p>
+	{{if .ClientCan "submit"}}
+		<div class="alert alert-warning">Vergiss nicht, deinen Bestellauftrag einzureichen, wenn du fertig bist.</div>
+	{{end}}
+	<p>
+		{{if .ClientCan "pay-btcpay"}}
+			<a class="btn btn-success" href="/collection/{{$.ID}}/pay-btcpay">Mit Bitcoin oder Monero bezahlen</a>
+		{{end}}
+		{{if .ClientCan "submit"}}
+			<a class="btn btn-success" href="/collection/{{$.ID}}/submit">Bestellauftrag einreichen</a>
+		{{end}}
+		{{if .ClientCan "edit"}}
+			<a class="btn btn-info" href="/collection/{{$.ID}}/edit">Bestellauftrag bearbeiten</a>
+		{{end}}
+		{{if .ClientCan "message"}}
+			<a class="btn btn-info" href="/collection/{{$.ID}}/message">Nachricht hinterlassen</a>
+		{{end}}
+		{{if .ClientCan "cancel"}}
+			<a class="btn btn-danger" href="/collection/{{$.ID}}/cancel">Bestellauftrag abbrechen</a>
+		{{end}}
+		{{if .ClientCan "delete"}}
+			<a class="btn btn-danger" href="/collection/{{$.ID}}/delete">Bestellauftrag löschen</a>
+		{{end}}
+	</p>
+	<h2>Verlauf</h2>
+	{{template "log" .}}
+	{{template "collection" .}}
+{{end}}

@@ -1,0 +1,17 @@
+{{define "client"}}
+	<h1>Willkommen</h1>
+	{{range .Notifications}}
+		<div class="alert alert-success mt-3" role="alert">{{.}}</div>
+	{{end}}
+	<div class="row">
+		<div class="col-sm border border-success bg-light m-3 p-4 rounded d-flex justify-content-center align-items-center">
+			<a class="stretched-link text-success" href="/create">Neuen Bestellauftrag beginnen</a>
+		</div>
+		<div class="col-sm border border-success bg-light m-3 p-4 rounded d-flex justify-content-center align-items-center">
+			<a class="stretched-link text-success" href="/collection">Auftrag ansehen oder bearbeiten</a>
+		</div>
+		<div class="col-sm border border-success bg-light m-3 p-4 rounded d-flex justify-content-center align-items-center">
+			<a class="stretched-link text-success" href="/state">Nur Auftragsstatus anzeigen</a>
+		</div>
+	</div>
+{{end}}

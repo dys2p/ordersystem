@@ -1,0 +1,18 @@
+{{define "store"}}
+	<h1>Weiterversand bestätigen</h1>
+	<form method="post">
+		<p>Wenn du fortfährst, werden diese Einzelaufträge als weiterverschickt markiert:</p>
+		<ul>
+		{{range .Tasks}}
+			{{if eq .State "ready"}}
+				<li>{{.ID}}</li>
+				<input type="hidden" name="task[]" value="{{.ID}}">
+			{{end}}
+		{{end}}
+		</ul>
+		<div class="text-right">
+			<a class="btn btn-secondary" href="{{.Link}}">Abbrechen und zurück</a>
+			<button class="btn btn-success" type="submit">Weiterversand bestätigen</button>
+		</div>
+	</form>
+{{end}}

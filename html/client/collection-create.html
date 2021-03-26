@@ -1,0 +1,30 @@
+{{define "client"}}
+<h1>Neuen Bestellauftrag beginnen</h1>
+<form method="post">
+	<p>Für deinen neuen Bestellauftrag haben wir dir eine Auftragsnummer und eine Passphrase ausgewürfelt:</p>
+	<div class="form-group row">
+		<label class="col-sm-3 col-form-label" for="collection-id">Auftragsnummer</label>
+		<div class="col-sm-9">
+			<input type="text" class="form-control {{if .CollIDErr}}is-invalid{{end}}" id="collection-id" name="collection-id" value="{{.CollID}}" readonly>
+			<div class="invalid-feedback">Hier sollte eine zehnstellige Buchstabenkombination stehen. Bitte lade die Seite neu.</div>
+		</div>
+	</div>
+	<div class="form-group row">
+		<label class="col-sm-3 col-form-label" for="collection-passphrase">Passphrase</label>
+		<div class="col-sm-9">
+			<input class="form-control {{if .CollPassErr}}is-invalid{{end}}" id="collection-passphrase" name="collection-passphrase" value="{{.CollPass}}">
+			<div class="invalid-feedback">Bitte gib eine Passphrase ein.</div>
+		</div>
+	</div>
+	<div class="form-group form-check">
+		<input type="checkbox" class="form-check-input {{if .CheckWrittenDownErr}}is-invalid{{end}}" id="check-written-down" name="check-written-down" {{if .CheckWrittenDown}}checked{{end}}>
+		<label class="form-check-label" for="check-written-down">Ja, ich habe mir die Auftragsnummer und die Passphrase aufgeschrieben, gemerkt oder gespeichert.</label>
+		<div class="invalid-feedback">Bitte bestätige, dass du dir die Auftragsnummer und die Passphrase aufgeschrieben, gemerkt oder gespeichert hast.</div>
+	</div>
+	{{template "captcha" .}}
+	<div class="mb-3 text-right">
+		<a href="/" class="btn btn-secondary">Abbrechen</a>
+		<button class="btn btn-success" type="submit">Neuen Bestellauftrag beginnen</button>
+	</div>
+</form>
+{{end}}

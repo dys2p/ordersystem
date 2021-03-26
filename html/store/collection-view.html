@@ -1,0 +1,43 @@
+{{define "store"}}
+	<h1>Auftrag {{.ID}}</h1>
+	{{range .Notifications}}
+		<div class="alert alert-success mt-3" role="alert">{{.}}</div>
+	{{end}}
+	<p><strong>Status:</strong> {{.State.Description}}</p>
+	<p><strong>Summe:</strong> {{FmtHuman .Sum}}</p>
+	<p>
+		{{if .StoreCan "accept"}}
+			<a class="btn btn-success" href="/collection/{{$.ID}}/accept">Bestellauftrag akzeptieren</a>
+		{{end}}
+		{{if .StoreCan "confirm-payment"}}
+			<a class="btn btn-success" href="/collection/{{$.ID}}/confirm-payment">Zahlung vermerken</a>
+		{{end}}
+		{{if .StoreCan "confirm-pickup"}}
+			<a class="btn btn-success" href="/collection/{{$.ID}}/confirm-pickup">Wurde abgeholt</a>
+		{{end}}
+		{{if .StoreCan "confirm-reshipped"}}
+			<a class="btn btn-success" href="/collection/{{$.ID}}/confirm-reshipped">Wurde weiterverschickt</a>
+		{{end}}
+		{{if .StoreCan "edit"}}
+			<a class="btn btn-warning" href="/collection/{{$.ID}}/edit">Bestellauftrag bearbeiten</a>
+		{{end}}
+		{{if .StoreCan "return"}}
+			<a class="btn btn-warning" href="/collection/{{$.ID}}/return">Zur Überarbeitung zurückgeben</a>
+		{{end}}
+		{{if .StoreCan "price-rised"}}
+			<a class="btn btn-warning" href="/collection/{{$.ID}}/price-rised">Preis ist gestiegen, Nachzahlung erforderlich</a>
+		{{end}}
+		{{if .StoreCan "reject"}}
+			<a class="btn btn-danger" href="/collection/{{$.ID}}/reject">Ablehnen</a>
+		{{end}}
+		{{if .StoreCan "delete"}}
+			<a class="btn btn-danger" href="/collection/{{$.ID}}/delete">Löschen</a>
+		{{end}}
+		{{if .StoreCan "mark-spam"}}
+			<a class="btn btn-danger" href="/collection/{{$.ID}}/mark-spam">Als Spam markieren</a>
+		{{end}}
+	</p>
+	<h2>Verlauf</h2>
+	{{template "log" .}}
+	{{template "collection" .}}
+{{end}}

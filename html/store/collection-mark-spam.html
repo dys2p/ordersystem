@@ -1,0 +1,14 @@
+{{define "store"}}
+	<h1>Auftrag als Spam markieren</h1>
+	<form method="post">
+		<div class="form-group form-check">
+			<input type="checkbox" class="form-check-input {{if .Err}}is-invalid{{end}}" id="check" name="confirm-mark-spam">
+			<label class="form-check-label" for="check">Ja, ich bin mir sicher.</label>
+			<div class="invalid-feedback">Bitte bestätige, dass du den Auftrag als Spam markieren möchtest.</div>
+		</div>
+		<div class="text-right">
+			<a class="btn btn-secondary" href="{{.Coll.Link}}">Abbrechen und zurück</a>
+			<button class="btn btn-danger" type="submit">Auftrag als Spam markieren</button>
+		</div>
+	</form>
+{{end}}

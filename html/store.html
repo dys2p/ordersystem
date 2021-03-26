@@ -1,0 +1,11 @@
+{{define "body"}}
+	<nav class="navbar navbar-dark bg-dark d-flex justify-content-between">
+		<a class="text-light" href="/">{{block "brand" .}}{{end}}</a>
+		<form class="mb-0" action="/logout" method="post">
+			<button class="btn btn-secondary btn-sm" type="submit" name="logout">Abmelden</a>
+		</form>
+	</nav>
+	<div class="container mt-3">
+		{{template "store" .}}
+	</div>
+{{end}}

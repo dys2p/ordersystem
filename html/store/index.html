@@ -1,0 +1,89 @@
+{{define "store"}}
+	{{range .Notifications}}
+		<div class="alert alert-success mt-3" role="alert">{{.}}</div>
+	{{end}}
+
+	<h1>Eingereicht</h1>
+	{{with .ReadColls "submitted"}}
+		<table class="table">
+			<thead>
+				<tr>
+					<th>Bestellnummer</th>
+					<th>Letztes Event</th>
+				</tr>
+				{{range .}}
+					<tr>
+						<td><a href="/collection/{{.CollID}}">{{.CollID}}</a></td>
+						<td>{{.MaxDate}}</td>
+					</tr>
+				{{end}}
+			</thead>
+		</table>
+	{{else}}
+		<p>Keine Bestellungen</p>
+	{{end}}
+
+	<h1>Angenommen</h1>
+	{{with .ReadColls "accepted"}}
+		<table class="table">
+			<thead>
+				<tr>
+					<th>Bestellnummer</th>
+					<th>Letztes Event</th>
+				</tr>
+				{{range .}}
+					<tr>
+						<td><a href="/collection/{{.CollID}}">{{.CollID}}</a></td>
+						<td>{{.MaxDate}}</td>
+					</tr>
+				{{end}}
+			</thead>
+		</table>
+	{{else}}
+		<p>Keine Bestellungen</p>
+	{{end}}
+
+	<h1>Unterbezahlt</h1>
+	{{with .ReadColls "underpaid"}}
+		<table class="table">
+			<thead>
+				<tr>
+					<th>Bestellnummer</th>
+					<th>Letztes Event</th>
+				</tr>
+				{{range .}}
+					<tr>
+						<td><a href="/collection/{{.CollID}}">{{.CollID}}</a></td>
+						<td>{{.MaxDate}}</td>
+					</tr>
+				{{end}}
+			</thead>
+		</table>
+	{{else}}
+		<p>Keine Bestellungen</p>
+	{{end}}
+
+	<h1>Bezahlt</h1>
+	{{with .ReadColls "paid"}}
+		<table class="table">
+			<thead>
+				<tr>
+					<th>Bestellnummer</th>
+					<th>Einzelaufträge</th>
+					<th>Davon noch nicht bestellt</th>
+					<th>Letztes Event</th>
+				</tr>
+				{{range .}}
+					<tr>
+						<td><a href="/collection/{{.CollID}}">{{.CollID}}</a></td>
+						<td>{{.NumTasks}}</td>
+						<td>{{if .NumFilteredTasks}}{{.NumFilteredTasks}}{{end}}</td>
+						<td>{{.MaxDate}}</td>
+					</tr>
+				{{end}}
+			</thead>
+		</table>
+	{{else}}
+		<p>Keine Bestellungen</p>
+	{{end}}
+{{end}}
