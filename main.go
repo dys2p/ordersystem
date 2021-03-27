@@ -103,7 +103,7 @@ func main() {
 			Transition{State(Accepted), Bot, "confirm-payment", State(Underpaid)},
 			Transition{State(Accepted), Bot, "delete", State(Deleted)},
 			Transition{State(Accepted), Client, "cancel", State(Cancelled)},
-			Transition{State(Accepted), Client, "pay-btcpay", State(Accepted)},      // becomes Paid if payment arrives
+			Transition{State(Accepted), Client, "pay", State(Accepted)},             // becomes Paid if payment arrives
 			Transition{State(Accepted), Store, "confirm-payment", State(Paid)},      // client pays enough
 			Transition{State(Accepted), Store, "confirm-payment", State(Underpaid)}, // client pays, but not enough
 			Transition{State(Accepted), Store, "delete", State(Deleted)},
@@ -133,7 +133,7 @@ func main() {
 			Transition{State(Underpaid), Bot, "confirm-payment", State(Paid)},
 			Transition{State(Underpaid), Bot, "confirm-payment", State(Underpaid)},
 			Transition{State(Underpaid), Client, "message", State(Underpaid)},
-			Transition{State(Underpaid), Client, "pay-btcpay", State(Underpaid)},     // becomes Paid if payment arrives
+			Transition{State(Underpaid), Client, "pay", State(Underpaid)},            // becomes Paid if payment arrives
 			Transition{State(Underpaid), Store, "confirm-payment", State(Paid)},      // client pays missing amount
 			Transition{State(Underpaid), Store, "confirm-payment", State(Underpaid)}, // client pays a part of the missing amount
 			Transition{State(Underpaid), Store, "edit", State(Paid)},                 // store modifies the collection, the sum drops, paid sum is now enough
@@ -511,7 +511,7 @@ type clientCollPayBTCPay struct {
 }
 
 func clientCollPayBTCPayGet(w http.ResponseWriter, r *http.Request, coll *Collection) error {
-	if !coll.ClientCan("pay-btcpay") {
+	if !coll.ClientCan("pay") {
 		return ErrNotFound
 	}
 	return html.ClientCollPayBTCPay.Execute(w, &clientCollPayBTCPay{
@@ -522,7 +522,7 @@ func clientCollPayBTCPayGet(w http.ResponseWriter, r *http.Request, coll *Collec
 
 func clientCollPayBTCPayPost(w http.ResponseWriter, r *http.Request, coll *Collection) error {
 
-	if !coll.ClientCan("pay-btcpay") {
+	if !coll.ClientCan("pay") {
 		return ErrNotFound
 	}
 	if !captcha.VerifyString(r.PostFormValue("captcha-id"), r.PostFormValue("captcha-solution")) {

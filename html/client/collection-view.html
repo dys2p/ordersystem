@@ -8,7 +8,7 @@
 		<div class="alert alert-warning">Vergiss nicht, deinen Bestellauftrag einzureichen, wenn du fertig bist.</div>
 	{{end}}
 	<p>
-		{{if .ClientCan "pay-btcpay"}}
+		{{if .ClientCan "pay"}}
 			<a class="btn btn-success" href="/collection/{{$.ID}}/pay-btcpay">Mit Bitcoin oder Monero bezahlen</a>
 		{{end}}
 		{{if .ClientCan "submit"}}
@@ -27,6 +27,9 @@
 			<a class="btn btn-danger" href="/collection/{{$.ID}}/delete">Bestellauftrag löschen</a>
 		{{end}}
 	</p>
+	{{if .ClientCan "pay"}}
+		{{block "payment-information" .}}{{end}}
+	{{end}}
 	<h2>Verlauf</h2>
 	{{template "log" .}}
 	{{template "collection" .}}
