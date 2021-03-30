@@ -1,6 +1,6 @@
 {{define "body"}}
 	<nav class="navbar navbar-light bg-light d-flex justify-content-between">
-		<a class="text-dark" href="/">{{block "brand" .}}{{end}}</a>
+		{{block "brand" .}}{{end}}
 		<form class="mb-0" action="/logout" method="post">
 			{{with .AuthorizedCollID}}
 				<a class="btn btn-secondary btn-sm" href="/collection/{{.}}">Angemeldet als {{.}}</a>
