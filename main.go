@@ -441,15 +441,15 @@ func clientCollViewGet(w http.ResponseWriter, r *http.Request, coll *Collection)
 }
 
 type clientCollCancel struct {
-	Coll *Collection
-	Err  bool
+	*Collection
+	Err bool
 }
 
 func clientCollCancelGet(w http.ResponseWriter, r *http.Request, coll *Collection) error {
 	if !coll.ClientCan("cancel") {
 		return ErrNotFound
 	}
-	return html.ClientCollCancel.Execute(w, &clientCollCancel{Coll: coll})
+	return html.ClientCollCancel.Execute(w, &clientCollCancel{Collection: coll})
 }
 
 func clientCollCancelPost(w http.ResponseWriter, r *http.Request, coll *Collection) error {
@@ -458,8 +458,8 @@ func clientCollCancelPost(w http.ResponseWriter, r *http.Request, coll *Collecti
 	}
 	if r.PostFormValue("confirm-cancel") == "" {
 		return html.ClientCollCancel.Execute(w, &clientCollCancel{
-			Coll: coll,
-			Err:  true,
+			Collection: coll,
+			Err:        true,
 		})
 	}
 	if err := db.UpdateCollState(Client, coll, Cancelled, 0, ""); err != nil {
