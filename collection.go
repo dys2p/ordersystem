@@ -226,7 +226,6 @@ func (data *ClientInput) ContactProtocols() []ContactProtocol {
 		ContactProtocol{"xmpp-otr", "Jabber mit OTR"},
 		ContactProtocol{"matrix", "Matrix"},
 		ContactProtocol{"signal", "Signal"},
-		ContactProtocol{"briar", `Briar (bitte beachte den Hinweis auf der Seite "Kontakt")`},
 	}
 	if data.ClientContactProtocol == "" {
 		return protocols
