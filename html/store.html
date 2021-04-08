@@ -1,9 +1,17 @@
 {{define "body"}}
-	<nav class="navbar navbar-dark bg-dark d-flex justify-content-between">
-		{{block "brand" .}}{{end}}
-		<form class="mb-0" action="/logout" method="post">
-			<button class="btn btn-secondary btn-sm" type="submit" name="logout">Abmelden</a>
-		</form>
+	<nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+		<div class="w-100">
+			{{block "brand" .}}
+				<!-- <a class="navbar-brand" href=""></a> or <span class="navbar-brand"></span> -->
+			{{end}}
+		</div>
+		<div class="navbar-nav">
+			<a class="btn btn-secondary btn-sm mx-1" href="/">Übersicht</a>
+			<form class="mb-0 mx-1" action="/logout" method="post">
+				<button class="btn btn-secondary btn-sm" type="submit" name="logout">Abmelden</a>
+			</form>
+		</div>
+		<div class="w-100"><!-- centers navbar-nav --></div>
 	</nav>
 	<div class="container mt-3">
 		{{template "store" .}}
