@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"embed"
 	"errors"
+	"flag"
 	"fmt"
 	"io/fs"
 	"log"
@@ -43,6 +44,11 @@ func main() {
 
 	log.SetFlags(0)
 
+	// os flags
+
+	var nofail = flag.Bool("nofail", false, "don't fail on btcpay server errors at startup (useful when developing)")
+	flag.Parse()
+
 	// SQL db
 
 	var sqlDB, err = sql.Open("sqlite3", "data/ordersystem.sqlite3?_busy_timeout=10000&_journal=WAL&_sync=NORMAL&cache=shared")
@@ -64,7 +70,9 @@ func main() {
 	bitpayClient, err = bitpay.LoadClient("data/bitpay.json")
 	if err != nil {
 		log.Printf("error creating bitpay API client: %v", err)
-		return
+		if !*nofail {
+			return
+		}
 	}
 
 	log.Printf("please make sure that your BTCPay store is paired to the public key (hex SIN): %s", bitpayClient.SINHex())
@@ -74,13 +82,17 @@ func main() {
 	btcpayAPI, err := btcpay.LoadAPI("data/btcpay-api.json")
 	if err != nil {
 		log.Printf("error loading btcpay API: %v", err)
-		return
+		if !*nofail {
+			return
+		}
 	}
 
 	btcpayStore, err = btcpay.LoadStore(btcpayAPI, "data/btcpay-store.json")
 	if err != nil {
 		log.Printf("error loading btcpay store: %v", err)
-		return
+		if !*nofail {
+			return
+		}
 	}
 
 	log.Println("don't forget to set up the webhook for your store: /rpc")
