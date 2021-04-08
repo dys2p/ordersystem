@@ -1,12 +1,16 @@
 {{define "body"}}
-	<nav class="navbar navbar-light bg-light d-flex justify-content-between">
-		{{block "brand" .}}{{end}}
-		<form class="mb-0" action="/logout" method="post">
-			{{with .AuthorizedCollID}}
-				<a class="btn btn-secondary btn-sm" href="/collection/{{.}}">Angemeldet als {{.}}</a>
-				<button class="btn btn-secondary btn-sm" type="submit" name="logout">Abmelden</a>
-			{{end}}
-		</form>
+	<nav class="navbar navbar-expand-sm navbar-light bg-light">
+		<div class="w-100">
+			{{block "brand" .}}{{end}}
+		</div>
+		<div class="w-100 text-right">
+			<form class="mb-0" action="/logout" method="post">
+				{{with .AuthorizedCollID}}
+					<a class="btn btn-secondary btn-sm" href="/collection/{{.}}">Angemeldet als {{.}}</a>
+					<button class="btn btn-secondary btn-sm" type="submit" name="logout">Abmelden</a>
+				{{end}}
+			</form>
+		</div>
 	</nav>
 	<div class="container mt-3">
 		{{template "client" .}}
