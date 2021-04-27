@@ -86,4 +86,25 @@
 	{{else}}
 		<p>Keine Bestellungen</p>
 	{{end}}
+
+	<h1>Abgeschlossen</h1>
+	{{with .ReadColls "finalized"}}
+		<table class="table">
+			<thead>
+				<tr>
+					<th>Bestellnummer</th>
+					<th>Letztes Event</th>
+				</tr>
+				{{range .}}
+					<tr>
+						<td><a href="/collection/{{.CollID}}">{{.CollID}}</a></td>
+						<td>{{.MaxDate}}</td>
+					</tr>
+				{{end}}
+			</thead>
+		</table>
+	{{else}}
+		<p>Keine Bestellungen</p>
+	{{end}}
+
 {{end}}
