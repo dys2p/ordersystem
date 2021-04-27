@@ -381,7 +381,7 @@ function updateView() {
 		if(tbody) {
 			tbody.insertAdjacentHTML("beforeend",
 				`<tr>
-					<td>Weiterversand</td>
+					<td colspan="3">Weiterversand</td>
 					<td>${reshippingFeeStr}</td>
 				</tr>`
 			);
