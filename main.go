@@ -36,7 +36,7 @@ var ErrNotFound = errors.New("not found")
 const MaxDiscountCents = 10
 
 var bitpayClient *bitpay.Client
-var btcpayStore *btcpay.Store
+var btcpayStore btcpay.Store
 var db *DB
 var users userdb.Authenticator
 
@@ -46,7 +46,7 @@ func main() {
 
 	// os flags
 
-	var nofail = flag.Bool("nofail", false, "don't fail on btcpay server errors at startup (useful when developing)")
+	var test = flag.Bool("test", false, "use btcpay dummy store and ignore bitpay API errors")
 	flag.Parse()
 
 	// SQL db
@@ -70,7 +70,7 @@ func main() {
 	bitpayClient, err = bitpay.LoadClient("data/bitpay.json")
 	if err != nil {
 		log.Printf("error creating bitpay API client: %v", err)
-		if !*nofail {
+		if !*test {
 			return
 		}
 	}
@@ -79,25 +79,26 @@ func main() {
 
 	// btcpay
 
-	btcpayAPI, err := btcpay.LoadAPI("data/btcpay-api.json")
-	if err != nil {
-		log.Printf("error loading btcpay API: %v", err)
-		if !*nofail {
+	if *test {
+		btcpayStore = btcpay.NewDummyStore()
+		log.Println("\033[33m" + "warning: using btcpay dummy store" + "\033[0m")
+	} else {
+		api, err := btcpay.LoadAPI("data/btcpay-api.json")
+		if err != nil {
+			log.Printf("error loading btcpay API: %v", err)
 			return
 		}
-	}
 
-	btcpayStore, err = btcpay.LoadStore(btcpayAPI, "data/btcpay-store.json")
-	if err != nil {
-		log.Printf("error loading btcpay store: %v", err)
-		if !*nofail {
+		btcpayStore, err = btcpay.LoadServerStore(api, "data/btcpay-store.json")
+		if err != nil {
+			log.Printf("error loading btcpay store: %v", err)
 			return
 		}
-	}
 
-	log.Println("don't forget to set up the webhook for your store: /rpc")
-	log.Println(`  "A new payment has been received"`)
-	log.Println(`  "An invoice has been settled"`)
+		log.Println("don't forget to set up the webhook for your store: /rpc")
+		log.Println(`  Event: "A new payment has been received"`)
+		log.Println(`  Event: "An invoice has been settled"`)
+	}
 
 	// session db
 
