@@ -1,14 +1,14 @@
 {{define "client"}}
-	<h1>Auftragsentwurf löschen</h1>
+	<h1>{{.Translate "coll-delete"}}</h1>
 	<form method="post">
 		<div class="form-group form-check">
 			<input type="checkbox" class="form-check-input {{if .Err}}is-invalid{{end}}" id="confirm-delete" name="confirm-delete">
-			<label class="form-check-label" for="confirm-delete">Ja, ich bin mir sicher.</label>
-			<div class="invalid-feedback">Bitte bestätige, dass den Auftragsentwurf löschen möchtest.</div>
+			<label class="form-check-label" for="confirm-delete">{{.Translate "confirm-yes"}}</label>
+			<div class="invalid-feedback">{{.Translate ""}}</div>
 		</div>
 		<div class="text-right">
-			<a class="btn btn-secondary" href="{{.Link}}">Abbrechen und zurück</a>
-			<button class="btn btn-danger" type="submit">Auftragsentwurf löschen</button>
+			<a class="btn btn-secondary" href="{{.Link}}">{{.Translate "go-back"}}</a>
+			<button class="btn btn-danger" type="submit">{{.Translate "coll-delete"}}</button>
 		</div>
 	</form>
 {{end}}

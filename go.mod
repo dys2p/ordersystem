@@ -14,4 +14,5 @@ require (
 	github.com/sethvargo/go-diceware v0.2.0
 	gitlab.com/golang-commonmark/markdown v0.0.0-20191127184510-91b5b3c99c19
 	golang.org/x/crypto v0.0.0-20210220033148-5ea612d1eb83
+	golang.org/x/text v0.3.6
 )

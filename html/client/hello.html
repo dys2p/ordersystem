@@ -1,17 +1,17 @@
 {{define "client"}}
-	<h1>Willkommen</h1>
+	<h1>{{.Translate "welcome"}}</h1>
 	{{range .Notifications}}
 		<div class="alert alert-success mt-3" role="alert">{{.}}</div>
 	{{end}}
 	<div class="row">
 		<div class="col-sm border border-success bg-light m-3 p-4 rounded d-flex justify-content-center align-items-center">
-			<a class="stretched-link text-success" href="/create">Neuen Bestellauftrag beginnen</a>
+			<a class="stretched-link text-success" href="/create">{{.Translate "coll-new"}}</a>
 		</div>
 		<div class="col-sm border border-success bg-light m-3 p-4 rounded d-flex justify-content-center align-items-center">
-			<a class="stretched-link text-success" href="/collection">Auftrag ansehen oder bearbeiten</a>
+			<a class="stretched-link text-success" href="/collection">{{.Translate "coll-view-edit"}}</a>
 		</div>
 		<div class="col-sm border border-success bg-light m-3 p-4 rounded d-flex justify-content-center align-items-center">
-			<a class="stretched-link text-success" href="/state">Nur Auftragsstatus anzeigen</a>
+			<a class="stretched-link text-success" href="/state">{{.Translate "coll-display-state"}}</a>
 		</div>
 	</div>
 {{end}}

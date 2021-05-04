@@ -1,30 +1,30 @@
 {{define "client"}}
-<h1>Neuen Bestellauftrag beginnen</h1>
+<h1>{{.Translate "coll-new"}}</h1>
 <form method="post">
-	<p>Für deinen neuen Bestellauftrag haben wir dir eine Auftragsnummer und eine Passphrase ausgewürfelt:</p>
+	<p>{{.Translate "coll-new-intro"</p>
 	<div class="form-group row">
-		<label class="col-sm-3 col-form-label" for="collection-id">Auftragsnummer</label>
+		<label class="col-sm-3 col-form-label" for="collection-id">{{.Translate "coll-id"}}</label>
 		<div class="col-sm-9">
 			<input type="text" class="form-control {{if .CollIDErr}}is-invalid{{end}}" id="collection-id" name="collection-id" value="{{.CollID}}" readonly>
-			<div class="invalid-feedback">Hier sollte eine zehnstellige Buchstabenkombination stehen. Bitte lade die Seite neu.</div>
+			<div class="invalid-feedback">{{.Translate "coll-id-invalid"}}</div>
 		</div>
 	</div>
 	<div class="form-group row">
-		<label class="col-sm-3 col-form-label" for="collection-passphrase">Passphrase</label>
+		<label class="col-sm-3 col-form-label" for="collection-passphrase">{{.Translate "coll-pass"}}</label>
 		<div class="col-sm-9">
 			<input class="form-control {{if .CollPassErr}}is-invalid{{end}}" id="collection-passphrase" name="collection-passphrase" value="{{.CollPass}}">
-			<div class="invalid-feedback">Bitte gib eine Passphrase ein.</div>
+			<div class="invalid-feedback">{{.Translate "coll-pass-invalid"}}</div>
 		</div>
 	</div>
 	<div class="form-group form-check">
 		<input type="checkbox" class="form-check-input {{if .CheckWrittenDownErr}}is-invalid{{end}}" id="check-written-down" name="check-written-down" {{if .CheckWrittenDown}}checked{{end}}>
-		<label class="form-check-label" for="check-written-down">Ja, ich habe mir die Auftragsnummer und die Passphrase aufgeschrieben, gemerkt oder gespeichert.</label>
-		<div class="invalid-feedback">Bitte bestätige, dass du dir die Auftragsnummer und die Passphrase aufgeschrieben, gemerkt oder gespeichert hast.</div>
+		<label class="form-check-label" for="check-written-down">{{.Translate "coll-new-check"}}</label>
+		<div class="invalid-feedback">{{.Translage "coll-new-check-invalid"}}</div>
 	</div>
 	{{template "captcha" .}}
 	<div class="mb-3 text-right">
-		<a href="/" class="btn btn-secondary">Abbrechen</a>
-		<button class="btn btn-success" type="submit">Neuen Bestellauftrag beginnen</button>
+		<a href="/" class="btn btn-secondary">{{.Translate "cancel"}}</a>
+		<button class="btn btn-success" type="submit">{{.Translate "coll-new"}}</button>
 	</div>
 </form>
 {{end}}
