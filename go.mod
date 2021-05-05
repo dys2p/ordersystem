@@ -7,7 +7,7 @@ require (
 	github.com/alexedwards/scs/v2 v2.4.0
 	github.com/dchest/captcha v0.0.0-20200903113550-03f5f0333e1f
 	github.com/dys2p/bitpay v0.1.3
-	github.com/dys2p/btcpay v0.2.0
+	github.com/dys2p/btcpay v0.3.1
 	github.com/dys2p/digitalgoods v0.0.0-20210327110606-811e9934f931
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/mattn/go-sqlite3 v1.14.6

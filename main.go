@@ -46,7 +46,7 @@ func main() {
 
 	// os flags
 
-	var test = flag.Bool("test", false, "use btcpay dummy store and ignore bitpay API errors")
+	var test = flag.Bool("test", false, "use btcpay dummy store")
 	flag.Parse()
 
 	// SQL db
@@ -83,13 +83,7 @@ func main() {
 		btcpayStore = btcpay.NewDummyStore()
 		log.Println("\033[33m" + "warning: using btcpay dummy store" + "\033[0m")
 	} else {
-		api, err := btcpay.LoadAPI("data/btcpay-api.json")
-		if err != nil {
-			log.Printf("error loading btcpay API: %v", err)
-			return
-		}
-
-		btcpayStore, err = btcpay.LoadServerStore(api, "data/btcpay-store.json")
+		btcpayStore, err = btcpay.Load("data/btcpay.json")
 		if err != nil {
 			log.Printf("error loading btcpay store: %v", err)
 			return
