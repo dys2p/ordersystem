@@ -63,14 +63,19 @@
 {{define "collection"}}
 
 	<div class="form-group">
-		<label for="client-name">Dein Name (freiwillig)</label>
+		<label for="client-name">
+			Der Name, unter dem wir dich vertreten. Diesen Namen werden wir bei dem tatsächlichen Versandhändler bzw. Anbieter angeben.
+		</label>
 		<input type="text" class="form-control" id="client-name" {{if .ShowHints}}aria-describedby="client-name-help"{{end}} name="client-name" value="{{.ClientName}}" {{if .ReadOnly}}disabled{{end}}>
 		{{if .ShowHints}}
-			<small id="client-name-help" class="form-text text-muted">Für den Gewährleistungs- oder Garantiefall könnte es hilfreich sein, deinen Klarnamen anzugeben.</small>
+			<small id="client-name-help" class="form-text text-muted">Bedenke dass eine falsche Angabe im Gewährleistungs- oder Garantiefall unter Umständen zu Problemen führen kann.</small>
 		{{end}}
 	</div>
 
-	<label for="client-contact">Kontaktmöglichkeit für Rückfragen (freiwillig){{if .Actor.IsStore}} &ndash; <strong>bei Kontaktaufnahme bitte keine Auftragsnummer nennen</strong>{{end}}</label>
+	<label for="client-contact">
+		Kontaktmöglichkeit für Rückfragen (freiwillig, wird nicht weitergegeben und 14 Tage nach Abschluss des Auftrags gelöscht)
+		{{if .Actor.IsStore}} &ndash; <strong>bei Kontaktaufnahme bitte keine Auftragsnummer nennen</strong>{{end}}
+	</label>
 	<div class="form-row">
 		<div class="form-group col-md-6">
 			<select class="form-control" name="client-contact-protocol" {{if .ReadOnly}}disabled{{end}}>
