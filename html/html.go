@@ -61,6 +61,7 @@ var (
 	StoreCollDelete           = parse("store", "store/collection-delete")
 	StoreCollEdit             = parse("store", "store/collection-edit")
 	StoreCollMarkSpam         = parse("store", "store/collection-mark-spam")
+	StoreCollMessage          = parse("store", "store/collection-message")
 	StoreCollPriceRised       = parse("store", "store/collection-price-rised")
 	StoreCollReturn           = parse("store", "store/collection-return")
 	StoreCollReject           = parse("store", "store/collection-reject")

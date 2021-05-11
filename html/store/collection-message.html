@@ -1,0 +1,13 @@
+{{define "store"}}
+	<h1>Nachricht hinterlassen</h1>
+	<form method="post">
+		<div class="form-group">
+			<textarea class="form-control" name="message" rows="3"></textarea>
+			<small class="form-text text-muted">Du kannst Markdown (CommonMark) eingeben.</small>
+		</div>
+		<div class="text-right">
+			<a class="btn btn-secondary" href="{{.Link}}">Abbrechen und zurück</a>
+			<button class="btn btn-success" type="submit">Nachricht hinterlassen</button>
+		</div>
+	</form>
+{{end}}

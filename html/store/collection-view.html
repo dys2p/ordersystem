@@ -18,6 +18,9 @@
 		{{if .StoreCan "confirm-reshipped"}}
 			<a class="btn btn-success" href="/collection/{{$.ID}}/confirm-reshipped">Wurde weiterverschickt</a>
 		{{end}}
+		{{if .StoreCan "message"}}
+			<a class="btn btn-warning" href="/collection/{{$.ID}}/message">Nachricht hinterlassen</a>
+		{{end}}
 		{{if .StoreCan "edit"}}
 			<a class="btn btn-warning" href="/collection/{{$.ID}}/edit">Bestellauftrag bearbeiten</a>
 		{{end}}

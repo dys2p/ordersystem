@@ -245,6 +245,8 @@ func main() {
 	storeRouter.HandlerFunc(http.MethodPost, "/collection/:collid/edit", auth(storeWithCollection(storeCollEditPost)))
 	storeRouter.HandlerFunc(http.MethodGet, "/collection/:collid/mark-spam", auth(storeWithCollection(storeCollMarkSpamGet)))
 	storeRouter.HandlerFunc(http.MethodPost, "/collection/:collid/mark-spam", auth(storeWithCollection(storeCollMarkSpamPost)))
+	storeRouter.HandlerFunc(http.MethodGet, "/collection/:collid/message", auth(storeWithCollection(storeCollMessageGet)))
+	storeRouter.HandlerFunc(http.MethodPost, "/collection/:collid/message", auth(storeWithCollection(storeCollMessagePost)))
 	storeRouter.HandlerFunc(http.MethodGet, "/collection/:collid/price-rised", auth(storeWithCollection(storeCollPriceRisedGet)))
 	storeRouter.HandlerFunc(http.MethodPost, "/collection/:collid/price-rised", auth(storeWithCollection(storeCollPriceRisedPost)))
 	storeRouter.HandlerFunc(http.MethodGet, "/collection/:collid/return", auth(storeWithCollection(storeCollReturnGet)))
@@ -1209,6 +1211,23 @@ func storeCollEditPost(w http.ResponseWriter, r *http.Request, coll *Collection)
 	return nil
 }
 
+func storeCollMessageGet(w http.ResponseWriter, r *http.Request, coll *Collection) error {
+	if !coll.StoreCan("message") {
+		return ErrNotFound
+	}
+	return html.StoreCollMessage.Execute(w, coll)
+}
+
+func storeCollMessagePost(w http.ResponseWriter, r *http.Request, coll *Collection) error {
+	if !coll.StoreCan("message") {
+		return ErrNotFound
+	}
+	if err := db.CreateEvent(Store, coll, 0, r.PostFormValue("message")); err != nil {
+		return err
+	}
+	http.Redirect(w, r, coll.Link(), http.StatusSeeOther)
+	return nil
+}
 func storeCollPriceRisedGet(w http.ResponseWriter, r *http.Request, coll *Collection) error {
 	if !coll.StoreCan("price-rised") {
 		return ErrNotFound
