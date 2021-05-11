@@ -129,6 +129,7 @@ func main() {
 			Transition{State(Paid), Store, "confirm-pickup", State(Paid)},
 			Transition{State(Paid), Store, "confirm-reshipped", State(Paid)},
 			Transition{State(Paid), Store, "edit", State(Paid)}, // price or availability changed after payment
+			Transition{State(Paid), Store, "message", State(Paid)},
 			Transition{State(Paid), Store, "price-rised", State(Underpaid)},
 			Transition{State(Spam), Bot, "delete", State(Deleted)},
 			Transition{State(Submitted), Client, "cancel", State(Cancelled)},
