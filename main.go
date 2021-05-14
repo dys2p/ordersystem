@@ -320,7 +320,7 @@ func (data *clientCreate) Valid() bool {
 }
 
 func clientCreateGet(w http.ResponseWriter, r *http.Request) error {
-	var collPass, err = diceware.Generate(4)
+	var collPass, err = diceware.GenerateWithWordList(5, WordListGermanSmall)
 	if err != nil {
 		return err
 	}
