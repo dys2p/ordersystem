@@ -198,7 +198,7 @@
 
 			{{if .Actor.IsStore}}
 				<div class="form-group row">
-					<label class="col-sm-6 col-form-label">Kosten für Weiterversand</label>
+					<label class="col-sm-6 col-form-label">Kosten für Weiterversand (bei null wird der Mindestwert genommen)</label>
 					<div class="col-sm-6">
 						<input class="form-control" name="reshipping-fee" onchange="updateView()" type="number" min="0.00" max="10000.00" step="0.01" value="{{FmtMachine .ReshippingFee}}" {{if .ReadOnly}}disabled{{end}}>
 					</div>

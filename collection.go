@@ -143,7 +143,26 @@ func (coll *Collection) Sum() int {
 		sum += task.Sum()
 		sum += task.Fee()
 	}
-	sum += coll.ReshippingFee
+
+	// same logic as in ordersystem.js updateView()
+	if coll.DeliveryMethod == "shipping" {
+
+		// 1. default value
+		var reshippingFee int
+		for _, s := range coll.ShippingServices() {
+			if s.ID == coll.ShippingServiceID {
+				reshippingFee = s.MinCost
+			}
+		}
+
+		// 2. data value
+		if coll.ReshippingFee != 0 {
+			reshippingFee = coll.ReshippingFee
+		}
+
+		sum += reshippingFee
+	}
+
 	return sum
 }
 

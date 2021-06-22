@@ -363,17 +363,9 @@ function updateView() {
 		// 1. default value
 		var reshippingFee = parseInt(document.querySelector('select[name="shipping-service"] option:checked').dataset.minCost);
 
-		// 2. data value
+		// 2. data value (contains entered value)
 		if(data["reshipping-fee"]) {
 			reshippingFee = data["reshipping-fee"];
-		}
-
-		// 3. entered value, if it is greater
-		if(byName("reshipping-fee")) {
-			var cents = currency(byName("reshipping-fee").value);
-			if(reshippingFee < cents) {
-				reshippingFee = cents;
-			}
 		}
 
 		var reshippingFeeStr = centsToStr(reshippingFee);
