@@ -11,13 +11,15 @@
 					<th>Bestellnummer</th>
 					<th>Letztes Event</th>
 				</tr>
+			</thead>
+			<tbody>
 				{{range .}}
 					<tr>
 						<td><a href="/collection/{{.CollID}}">{{.CollID}}</a></td>
 						<td>{{.MaxDate}}</td>
 					</tr>
 				{{end}}
-			</thead>
+			</tbody>
 		</table>
 	{{else}}
 		<p>Keine Bestellungen</p>
@@ -31,13 +33,15 @@
 					<th>Bestellnummer</th>
 					<th>Letztes Event</th>
 				</tr>
+			</thead>
+			<tbody>
 				{{range .}}
 					<tr>
 						<td><a href="/collection/{{.CollID}}">{{.CollID}}</a></td>
 						<td>{{.MaxDate}}</td>
 					</tr>
 				{{end}}
-			</thead>
+			</tbody>
 		</table>
 	{{else}}
 		<p>Keine Bestellungen</p>
@@ -51,13 +55,15 @@
 					<th>Bestellnummer</th>
 					<th>Letztes Event</th>
 				</tr>
+			</thead>
+			<tbody>
 				{{range .}}
 					<tr>
 						<td><a href="/collection/{{.CollID}}">{{.CollID}}</a></td>
 						<td>{{.MaxDate}}</td>
 					</tr>
 				{{end}}
-			</thead>
+			</tbody>
 		</table>
 	{{else}}
 		<p>Keine Bestellungen</p>
@@ -73,6 +79,8 @@
 					<th>Davon noch nicht bestellt</th>
 					<th>Letztes Event</th>
 				</tr>
+			</thead>
+			<tbody>
 				{{range .}}
 					<tr>
 						<td><a href="/collection/{{.CollID}}">{{.CollID}}</a></td>
@@ -81,7 +89,7 @@
 						<td>{{.MaxDate}}</td>
 					</tr>
 				{{end}}
-			</thead>
+			</tbody>
 		</table>
 	{{else}}
 		<p>Keine Bestellungen</p>
@@ -95,13 +103,15 @@
 					<th>Bestellnummer</th>
 					<th>Letztes Event</th>
 				</tr>
+			</thead>
+			<tbody>
 				{{range .}}
 					<tr>
 						<td><a href="/collection/{{.CollID}}">{{.CollID}}</a></td>
 						<td>{{.MaxDate}}</td>
 					</tr>
 				{{end}}
-			</thead>
+			</tbody>
 		</table>
 	{{else}}
 		<p>Keine Bestellungen</p>
