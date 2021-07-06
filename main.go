@@ -147,6 +147,7 @@ func main() {
 			Transition{State(Underpaid), Store, "confirm-payment", State(Underpaid)}, // client pays a part of the missing amount
 			Transition{State(Underpaid), Store, "edit", State(Paid)},                 // store modifies the collection, the sum drops, paid sum is now enough
 			Transition{State(Underpaid), Store, "edit", State(Underpaid)},            // store modifies the collection, but it is still underpaid
+			Transition{State(Underpaid), Store, "message", State(Underpaid)},
 		},
 		&FSM{
 			Transition{State(NotOrderedYet), Store, "confirm-ordered", State(Ordered)},
