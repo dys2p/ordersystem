@@ -1,23 +1,23 @@
 {{define "client"}}
-	<h1>Einloggen</h1>
+	<h1>{{.Translate "coll-login"}}</h1>
 	<form method="post">
 		<div class="form-group row">
-			<label class="col-sm-3 col-form-label" for="collection-id">Auftragsnummer</label>
+			<label class="col-sm-3 col-form-label" for="collection-id">{{.Translate "coll-id"}}</label>
 			<div class="col-sm-9">
 				<input type="text" class="form-control {{if .CollIDErr}}is-invalid{{end}}" id="collection-id" name="collection-id" value="{{.CollID}}">
-				<div class="invalid-feedback">Bitte gib deine zehnstellige Auftragsnummer ein.</div>
+				<div class="invalid-feedback">{{.Translate "coll-login-invalid-id"}}</div>
 			</div>
 		</div>
 		<div class="form-group row">
-			<label class="col-sm-3 col-form-label" for="collection-passphrase">Passphrase</label>
+			<label class="col-sm-3 col-form-label" for="collection-passphrase">{{.Translate "coll-pass"}}</label>
 			<div class="col-sm-9">
 				<input type="password" class="form-control {{if .CollPassErr}}is-invalid{{end}}" id="collection-passphrase" name="collection-passphrase" value="">
-				<div class="invalid-feedback">Bitte gib die korrekte Passphrase ein.</div>
+				<div class="invalid-feedback">{{.Translate "coll-login-invalid-pass"}}</div>
 			</div>
 		</div>
 		<div class="mb-3 text-right">
-			<a href="/" class="btn btn-secondary">Abbrechen</a>
-			<button type="submit" class="btn btn-success">Einloggen</button>
+			<a href="/" class="btn btn-secondary">{{.Translate "cancel}}</a>
+			<button type="submit" class="btn btn-success">{{.Translate "coll-login"}}</button>
 		</div>
 	</form>
 {{end}}
