@@ -5,32 +5,32 @@
 	{{end}}
 	<p><strong>Status:</strong> {{.State.Description}}</p>
 	{{if .ClientCan "submit"}}
-		<div class="alert alert-warning">Vergiss nicht, deinen Bestellauftrag einzureichen, wenn du fertig bist.</div>
+		<div class="alert alert-warning">{{.Translate "coll-view-reminder"}}</div>
 	{{end}}
 	<p>
 		{{if .ClientCan "pay"}}
-			<a class="btn btn-success" href="/collection/{{$.ID}}/pay-btcpay">Mit Bitcoin oder Monero bezahlen</a>
+			<a class="btn btn-success" href="/collection/{{$.ID}}/pay-btcpay">{{.Translate "coll-view-coins"}}</a>
 		{{end}}
 		{{if .ClientCan "submit"}}
-			<a class="btn btn-success" href="/collection/{{$.ID}}/submit">Bestellauftrag einreichen</a>
+			<a class="btn btn-success" href="/collection/{{$.ID}}/submit">{{.Translate "coll-view-submit"}}</a>
 		{{end}}
 		{{if .ClientCan "edit"}}
-			<a class="btn btn-info" href="/collection/{{$.ID}}/edit">Bestellauftrag bearbeiten</a>
+			<a class="btn btn-info" href="/collection/{{$.ID}}/edit">{{.Translate "coll-view-edit"}}</a>
 		{{end}}
 		{{if .ClientCan "message"}}
-			<a class="btn btn-info" href="/collection/{{$.ID}}/message">Nachricht hinterlassen</a>
+			<a class="btn btn-info" href="/collection/{{$.ID}}/message">{{.Translate "coll-msg"}}</a>
 		{{end}}
 		{{if .ClientCan "cancel"}}
-			<a class="btn btn-danger" href="/collection/{{$.ID}}/cancel">Bestellauftrag abbrechen</a>
+			<a class="btn btn-danger" href="/collection/{{$.ID}}/cancel">{{.Translate "coll-view-cancel"}}</a>
 		{{end}}
 		{{if .ClientCan "delete"}}
-			<a class="btn btn-danger" href="/collection/{{$.ID}}/delete">Bestellauftrag löschen</a>
+			<a class="btn btn-danger" href="/collection/{{$.ID}}/delete">{{.Translate "coll-view-delete"}}</a>
 		{{end}}
 	</p>
 	{{if .ClientCan "pay"}}
 		{{block "payment-information" .}}{{end}}
 	{{end}}
-	<h2>Verlauf</h2>
+	<h2>{{.Translate "coll-view-course"}}</h2>
 	{{template "log" .}}
 	{{template "collection" .}}
 {{end}}
