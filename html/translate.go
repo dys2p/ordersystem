@@ -243,6 +243,10 @@ var translations = map[string][]TagStr{
 	},
 
 // hello.html
+	"welcome": []TagStr{
+		TagStr{language.AmericanEnglish, "Welcome!"},
+		TagStr{language.German, "Willkommen!"},
+	},
 	"coll-display-state": []TagStr{
 		TagStr{language.AmericanEnglish, "Display order state only"},
 		TagStr{language.German, "Nur Auftragsstatus anzeigen"},
