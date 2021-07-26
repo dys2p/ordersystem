@@ -19,7 +19,7 @@
 	<div class="form-group form-check">
 		<input type="checkbox" class="form-check-input {{if .CheckWrittenDownErr}}is-invalid{{end}}" id="check-written-down" name="check-written-down" {{if .CheckWrittenDown}}checked{{end}}>
 		<label class="form-check-label" for="check-written-down">{{.Translate "coll-new-check"}}</label>
-		<div class="invalid-feedback">{{.Translage "coll-new-check-invalid"}}</div>
+		<div class="invalid-feedback">{{.Translate "coll-new-invalid"}}</div>
 	</div>
 	{{template "captcha" .}}
 	<div class="mb-3 text-right">
