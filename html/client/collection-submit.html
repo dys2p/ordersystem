@@ -1,26 +1,26 @@
 {{define "client"}}
-	<h1>Auftrag einreichen</h1>
+	<h1>{{.Translate "coll-submit"}}</h1>
 	<div class="alert alert-warning">
-		Bitte bestätige deinen Auftrag, indem du unten auf "Verbindlichen Bestellauftrag erteilen" klickst.
+		{{.Translate "coll-submit-confirm"}}
 	</div>
 	{{template "collection" .}}
-	<p>Sobald wir deine Bestellung akzeptiert haben, kannst du sie <strong>nur per Vorkasse</strong> auf folgende Weise bezahlen:</p>
+	<p>{{.Translate "coll-submit-payment"}}</p>
 	<ul>
-		<li>bar (vor Ort oder z.&nbsp;B. bis 100 Euro mit Deutsche Post "Einschreiben Wert")</li>
-		<li>per Überweisung</li>
-		<li>mit Bitcoin und Monero</li>
+		<li>{{.Translate "coll-submit-cash"}}</li>
+		<li>{{.Translate "coll-submit-bank"}}</li>
+		<li>{{.Translate "coll-submit-coins"}}</li>
 	</ul>
-	<p>Beachte bitte die jeweiligen Höchstgrenzen gemäß Geldwäschegesetz.</p>
-	<p>Bitte beachte unsere AGB und unsere Widerrufsbelehrung.</p>
+	<p>{{.Translate "coll-submit-gwg"}}</p>
+	<p>{{.Translate "coll-submit-tos"}}</p>
 	<form method="post">
 		<div class="form-group">
-			<label for="submit-message">Raum für Anmerkungen</label>
+			<label for="submit-message">{{.Translate "coll-submit-note"}}</label>
 			<textarea class="form-control" id="submit-message" name="submit-message" rows="3"></textarea>
-			<small class="form-text text-muted">Du kannst Markdown (CommonMark) eingeben.</small>
+			<small class="form-text text-muted">{{.Translate "coll-md"}}</small>
 		</div>
 		<div class="mb-3 text-right">
-			<a class="btn btn-secondary" href="{{.Link}}">Abbrechen und zurück</a>
-			<button class="btn btn-success" type="submit">Verbindlichen Bestellauftrag erteilen</button>
+			<a class="btn btn-secondary" href="{{.Link}}">{{.Translate "go-back"}}</a>
+			<button class="btn btn-success" type="submit">{{.Translate "coll-submit-button"}}</button>
 		</div>
 	</form>
 {{end}}
