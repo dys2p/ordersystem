@@ -1,11 +1,11 @@
 {{define "client"}}
 
-<h1>Auftrag {{.ID}}</h1>
-<p><strong>Status:</strong> {{.State.Description}}</p>
+<h1>{{.Translate "coll-edit-order"}} {{.ID}}</h1>
+<p><strong>{{.Translate "coll-edit-status"}}</strong> {{.State.Description}}</p>
 
 <noscript>
 	<div class="alert alert-warning" role="alert">
-		Dieses Seite erfordert leider JavaScript.
+		{{.Translate "coll-edit-js"}}
 	</div>
 </noscript>
 
@@ -14,8 +14,8 @@
 <form method="post" onsubmit="prepareSubmit(event)">
 	<input type="hidden" id="data" name="data">
 	<div class="mb-3 text-right">
-		<a class="btn btn-warning" href="{{.Link}}">Abbrechen und zurück</a>
-		<button class="btn btn-success" type="submit">Auftragsentwurf speichern</button>
+		<a class="btn btn-warning" href="{{.Link}}">{{.Translate "go-back"}}</a>
+		<button class="btn btn-success" type="submit">{{.Translate "coll-edit-button"}</button>
 	</div>
 </form>
 
