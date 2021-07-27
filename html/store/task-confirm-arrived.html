@@ -1,9 +1,9 @@
 {{define "store"}}
-	<h1>Einzelauftrag als eingetroffen markieren</h1>
+	<h1>{{.Translate "store-arrived"}}</h1>
 	<form method="post">
 		<div class="text-right">
-			<a class="btn btn-secondary" href="{{.CollLink}}">Abbrechen und zurück</a>
-			<button class="btn btn-success" type="submit">Ware ist eingetroffen</button>
+			<a class="btn btn-secondary" href="{{.CollLink}}">{{.Translate "go-back"}}</a>
+			<button class="btn btn-success" type="submit">{{.Translate "store-arrived-button"}}</button>
 		</div>
 	</form>
 	{{template "task" .}}
