@@ -1,19 +1,19 @@
 {{define "store"}}
-	<h1>Zahlung bestätigen</h1>
+	<h1>{{.Translate "store-payment"}}</h1>
 	<form method="post">
 		<div class="form-group">
-			<label for="paid-amount">Eingenommener (positiver) oder ausgegebener (negativer) Betrag</label>
+			<label for="paid-amount">{{.Translate "store-paid-amount"}}</label>
 			<input class="form-control {{if .Err}}is-invalid{{end}}" id="paid-amount" name="paid-amount" type="number" size="8" min="-10000.00" max="10000.00" step="0.01">
-			<div class="invalid-feedback">Bitte gib einen Wert ein.</div>
+			<div class="invalid-feedback">{{.Translate "store-value"}}</div>
 		</div>
 		<div class="form-group">
-			<label for="confirm-payment-message">Nachricht. Bitte gib hier die Zahlungsmethode an, z. B. bar oder Überweisung.</label>
+			<label for="confirm-payment-message">{{.Translate "store-payment-message"}}</label>
 			<textarea class="form-control" id="confirm-payment-message" name="confirm-payment-message" rows="3"></textarea>
-			<small class="form-text text-muted">Du kannst Markdown (CommonMark) eingeben.</small>
+			<small class="form-text text-muted">{{.Translate "coll-md"}}</small>
 		</div>
 		<div class="text-right">
-			<a class="btn btn-secondary" href="{{.Coll.Link}}">Abbrechen und zurück</a>
-			<button class="btn btn-success" type="submit">Zahlung bestätigen</button>
+			<a class="btn btn-secondary" href="{{.Coll.Link}}">{{.Translate "go-back"}}</a>
+			<button class="btn btn-success" type="submit">{{.Translate "store-payment"}}</button>
 		</div>
 	</form>
 {{end}}
