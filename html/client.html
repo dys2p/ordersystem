@@ -6,8 +6,8 @@
 		<div class="w-100 text-right">
 			<form class="mb-0" action="/logout" method="post">
 				{{with .AuthorizedCollID}}
-					<a class="btn btn-secondary btn-sm" href="/collection/{{.}}">Angemeldet als {{.}}</a>
-					<button class="btn btn-secondary btn-sm" type="submit" name="logout">Abmelden</a>
+					<a class="btn btn-secondary btn-sm" href="/collection/{{.}}">{{.Translate "client-login"}} {{.}}</a>
+					<button class="btn btn-secondary btn-sm" type="submit" name="logout">{{.Translate "logout"}}</a>
 				{{end}}
 			</form>
 		</div>
