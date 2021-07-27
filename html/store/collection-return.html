@@ -1,14 +1,14 @@
 {{define "store"}}
-	<h1>Auftrag zur Überarbeitung zurückgeben</h1>
+	<h1>{{.Translate "store-return"}}</h1>
 	<form method="post">
 		<div class="form-group">
 			<label for="return-message">Nachricht</label>
-			<textarea class="form-control" id="return-message" name="return-message" rows="3">Dein Auftrag erfordert Überarbeitung.</textarea>
-			<small class="form-text text-muted">Du kannst Markdown (CommonMark) eingeben.</small>
+			<textarea class="form-control" id="return-message" name="return-message" rows="3">{{.Translate "store-return-text"}}</textarea>
+			<small class="form-text text-muted">{{.Translate "coll-md"}}</small>
 		</div>
 		<div class="text-right">
-			<a class="btn btn-secondary" href="{{.Link}}">Abbrechen und zurück</a>
-			<button class="btn btn-warning" type="submit">Auftrag zur Überarbeitung zurückgeben</button>
+			<a class="btn btn-secondary" href="{{.Link}}">{{.Translate "go-back"}}</a>
+			<button class="btn btn-warning" type="submit">{{.Translate "store-return"}}</button>
 		</div>
 	</form>
 {{end}}
