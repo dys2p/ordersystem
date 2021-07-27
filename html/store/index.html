@@ -3,13 +3,13 @@
 		<div class="alert alert-success mt-3" role="alert">{{.}}</div>
 	{{end}}
 
-	<h1>Eingereicht</h1>
+	<h1>{{.Translate "store-submitted"}}</h1>
 	{{with .ReadColls "submitted"}}
 		<table class="table">
 			<thead>
 				<tr>
-					<th>Bestellnummer</th>
-					<th>Letztes Event</th>
+					<th>{{.Translate "coll-id"}}</th>
+					<th>{{.Translate "store-event"}}</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -22,16 +22,16 @@
 			</tbody>
 		</table>
 	{{else}}
-		<p>Keine Bestellungen</p>
+		<p>{{.Translate "store-noorder"}}</p>
 	{{end}}
 
-	<h1>Angenommen</h1>
+	<h1>{{.Translate "store-accepted"}}</h1>
 	{{with .ReadColls "accepted"}}
 		<table class="table">
 			<thead>
 				<tr>
-					<th>Bestellnummer</th>
-					<th>Letztes Event</th>
+					<th>{{.Translate "coll-id"}}</th>
+					<th>{{.Translate "store-event"}}</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -44,16 +44,16 @@
 			</tbody>
 		</table>
 	{{else}}
-		<p>Keine Bestellungen</p>
+		<p>{{.Translate "store-noorder"}}</p>
 	{{end}}
 
-	<h1>Unterbezahlt</h1>
+	<h1>{{.Translate "store-underpaid"}}</h1>
 	{{with .ReadColls "underpaid"}}
 		<table class="table">
 			<thead>
 				<tr>
-					<th>Bestellnummer</th>
-					<th>Letztes Event</th>
+					<th>{{.Translate "coll-id"}}</th>
+					<th>{{.Translate "store-event"}}</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -66,18 +66,18 @@
 			</tbody>
 		</table>
 	{{else}}
-		<p>Keine Bestellungen</p>
+		<p>{{.Translate "store-noorder"}}</p>
 	{{end}}
 
-	<h1>Bezahlt</h1>
+	<h1>{{.Translate "store-paid"}}</h1>
 	{{with .ReadColls "paid"}}
 		<table class="table">
 			<thead>
 				<tr>
-					<th>Bestellnummer</th>
-					<th>Einzelaufträge</th>
-					<th>Davon noch nicht bestellt</th>
-					<th>Letztes Event</th>
+					<th>{{.Translate "coll-id"}}</th>
+					<th>{{.Translate "store-iorders"}}</th>
+					<th>{{.Translate "store-open-order"}}</th>
+					<th>{{.Translate "store-event"}}</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -92,16 +92,16 @@
 			</tbody>
 		</table>
 	{{else}}
-		<p>Keine Bestellungen</p>
+		<p>{{.Translate "store-noorder"}}</p>
 	{{end}}
 
-	<h1>Abgeschlossen</h1>
+	<h1>{{.Translate "store-complet"}}</h1>
 	{{with .ReadColls "finalized"}}
 		<table class="table">
 			<thead>
 				<tr>
-					<th>Bestellnummer</th>
-					<th>Letztes Event</th>
+					<th>{{.Translate "coll-id"}}</th>
+					<th>{{.Translate "store-event"}}</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -114,7 +114,7 @@
 			</tbody>
 		</table>
 	{{else}}
-		<p>Keine Bestellungen</p>
+		<p>{{.Translate "store-noorder"}}</p>
 	{{end}}
 
 {{end}}
