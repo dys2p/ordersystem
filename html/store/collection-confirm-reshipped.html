@@ -1,7 +1,7 @@
 {{define "store"}}
-	<h1>Weiterversand bestätigen</h1>
+	<h1>{{.Translate "store-reshipment"}}</h1>
 	<form method="post">
-		<p>Wenn du fortfährst, werden diese Einzelaufträge als weiterverschickt markiert:</p>
+		<p>{{.Translate "store-reshipment-text"}}</p>
 		<ul>
 		{{range .Tasks}}
 			{{if eq .State "ready"}}
@@ -11,8 +11,8 @@
 		{{end}}
 		</ul>
 		<div class="text-right">
-			<a class="btn btn-secondary" href="{{.Link}}">Abbrechen und zurück</a>
-			<button class="btn btn-success" type="submit">Weiterversand bestätigen</button>
+			<a class="btn btn-secondary" href="{{.Link}}">{{.Translate "go-back"}}</a>
+			<button class="btn btn-success" type="submit">{{.Translate "store-reshipment"}}</button>
 		</div>
 	</form>
 {{end}}
