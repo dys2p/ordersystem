@@ -257,6 +257,169 @@ var translations = map[string][]TagStr{
 		TagStr{language.AmericanEnglish, "Log in to view or edit the order:"},
 		TagStr{language.German, "Logge dich ein, um den Auftrag anzusehen oder zu bearbeiten:"},
 	},
+	
+// client.html
+	"client-login": []TagStr{
+		TagStr{language.AmericanEnglish, "Logged in as"},
+		TagStr{language.German, "Angemeldet als"},
+	},
+	"logout": []TagStr{
+		TagStr{language.AmericanEnglish, "Logout"},
+		TagStr{language.German, "Abmelden"},
+	},
+
+// store.html
+	"store-overview": []TagStr{
+		TagStr{language.AmericanEnglish, "Overview"},
+		TagStr{language.German, "Übersicht"},
+	},
+
+
+// layout.html
+	"layout-numbers": []TagStr{
+		TagStr{language.AmericanEnglish, "Please type the numbers to prove you mean it:"},
+		TagStr{language.German, "Bitte tippe die Ziffern ab, um zu beweisen, dass du es ernst meinst:"},
+	},
+	"layout-date": []TagStr{
+		TagStr{language.AmericanEnglish, "Date"},
+		TagStr{language.German, "Datum"},
+	},
+	"layout-note": []TagStr{
+		TagStr{language.AmericanEnglish, "Note"},
+		TagStr{language.German, "Vermerk"},
+	},
+	"layout-paid": []TagStr{
+		TagStr{language.AmericanEnglish, "amount paid"},
+		TagStr{language.German, "Bezahlter Betrag"},
+	},
+	"layout-amount": []TagStr{
+		TagStr{language.AmericanEnglish, "amount"},
+		TagStr{language.German, "Summe"},
+	},
+	"layout-client-name": []TagStr{
+		TagStr{language.AmericanEnglish, "The name under which we represent you. This is the name we will give to the actual merchant or provider. Keep in mind that involved banks and payment services may also find out the name.amount"},
+		TagStr{language.German, "Der Name, unter dem wir dich vertreten. Diesen Namen werden wir bei dem tatsächlichen Versandhändler bzw. Anbieter angeben. Bedenke dass möglicherweise auch beteiligte Banken und Bezahldienste den Namen erfahren."},
+	},
+	"layout-client-name-help": []TagStr{
+		TagStr{language.AmericanEnglish, "Keep in mind that a false statement may lead to problems in the case of warranty or guarantee claims."},
+		TagStr{language.German, "Bedenke dass eine falsche Angabe im Gewährleistungs- oder Garantiefall unter Umständen zu Problemen führen kann."},
+	},
+	"layout-client-contact": []TagStr{
+		TagStr{language.AmericanEnglish, "Contact option for queries (optional, will not be passed on and deleted 14 days after completion of the order)amount"},
+		TagStr{language.German, "Kontaktmöglichkeit für Rückfragen (freiwillig, wird nicht weitergegeben und 14 Tage nach Abschluss des Auftrags gelöscht)"},
+	},
+	"layout-client-contact-help": []TagStr{
+		TagStr{language.AmericanEnglish, "please do not mention order number when contacting us"},
+		TagStr{language.German, "bei Kontaktaufnahme bitte keine Auftragsnummer nennen"},
+	},
+	"layout-client-age": []TagStr{
+		TagStr{language.AmericanEnglish, "If proof of age is required, it can be provided in person at the store. Goods requiring other proof cannot be ordered."},
+		TagStr{language.German, "Falls ein Altersnachweis nötig ist, kann er persönlich im Ladenlokal erbracht werden. Anderweitig nachweispflichtige Waren können nicht bestellt werden."},
+	},
+	"layout-add": []TagStr{
+		TagStr{language.AmericanEnglish, "Add another order"},
+		TagStr{language.German, "Weiteren Auftrag hinzufügen"},
+	},
+	"layout-delivery": []TagStr{
+		TagStr{language.AmericanEnglish, "Pick up or forwarding"},
+		TagStr{language.German, "Abholung oder Weiterversand"},
+	},
+	"layout-delivery-text": []TagStr{
+		TagStr{language.AmericanEnglish, "You can pick up the goods in our store (Bernhard-Goering-Strasse 162, 04277 Leipzig, note the opening hours). We can also forward them to you by mail or parcel service."},
+		TagStr{language.German, "Du kannst die Ware im Ladenlokal (Bernhard-Göring-Straße 162, 04277 Leipzig, beachte die Öffnungszeiten) abholen. Wir können sie auch per Post oder Paketdienst an dich weiterleiten."},
+	},	
+	"layout-pickup": []TagStr{
+		TagStr{language.AmericanEnglish, "I pick up the goods <strong>under mention of the order ID</strong> in the store."},
+		TagStr{language.German, "Ich hole die Ware <strong>unter Nennung der Auftragsnummer</strong> im Ladenlokal ab."},
+	},	
+	"layout-locker": []TagStr{
+		TagStr{language.AmericanEnglish, "I pick up the goods <strong>from a locker</strong> in the store. I bring over an opened padlock."},
+		TagStr{language.German, "Ich hole die Ware <strong>aus einem Schließfach</strong> im Ladenlokal ab. Ein geöffnetes Vorhängeschloss bringe ich vorbei."},
+	},	
+	"layout-stamp": []TagStr{
+		TagStr{language.AmericanEnglish, "Please send me the goods. I will bring a paid and labeled parcel stamp."},
+		TagStr{language.German, "Bitte schickt mir die Ware. Eine bezahlte und beschriftete Paketmarke bringe ich vorbei."},
+	},
+	"layout-shipping": []TagStr{
+		TagStr{language.AmericanEnglish, "Please send me the goods to the following address."},
+		TagStr{language.German, "Bitte schickt mir die Ware an folgende Adresse."},
+	},
+	"layout-name1": []TagStr{
+		TagStr{language.AmericanEnglish, "First name"},
+		TagStr{language.German, "Vorname"},
+	},
+	"layout-name2": []TagStr{
+		TagStr{language.AmericanEnglish, "Last name"},
+		TagStr{language.German, "Nachname"},
+	},
+	"layout-address-supplement": []TagStr{
+		TagStr{language.AmericanEnglish, "address supplement"},
+		TagStr{language.German, "Adresszusatz"},
+	},
+	"layout-street": []TagStr{
+		TagStr{language.AmericanEnglish, "street"},
+		TagStr{language.German, "Straße"},
+	},
+	"layout-street-number": []TagStr{
+		TagStr{language.AmericanEnglish, "street number"},
+		TagStr{language.German, "Hausnummer"},
+	},
+	"layout-postcode": []TagStr{
+		TagStr{language.AmericanEnglish, "postcode"},
+		TagStr{language.German, "Postleitzahl"},
+	},
+	"layout-town": []TagStr{
+		TagStr{language.AmericanEnglish, "town"},
+		TagStr{language.German, "Stadt"},
+	},
+	"layout-parcel": []TagStr{
+		TagStr{language.AmericanEnglish, "You can find out how to enter the address of a DHL Packstation at <a href="https://dont.re/?https://parcelshopfinder.dhlparcel.com/html/note_direct_access_germany.html?setLng=en" target="_blank">dhlparcel.com</a>. You will need a DHL customer account with a postal number."},
+		TagStr{language.German, "Wie du die Adresse einer DHL-Packstation eingeben kannst, erfährst du auf <a href="https://dont.re/?https://parcelshopfinder.dhlparcel.com/html/note_direct_access_germany.html?setLng=de" target="_blank">dhlparcel.com</a>. Dazu brauchst du ein DHL-Kundenkonto mit Postnummer."},
+	},
+	"layout-reshipment": []TagStr{
+		TagStr{language.AmericanEnglish, "Cost of reshipment (if zero, the minimum value is taken)."},
+		TagStr{language.German, "Kosten für Weiterversand (bei null wird der Mindestwert genommen)."},
+	},
+	"layout-summary": []TagStr{
+		TagStr{language.AmericanEnglish, "summary"},
+		TagStr{language.German, "Zusammenfassung"},
+	},
+	"layout-name": []TagStr{
+		TagStr{language.AmericanEnglish, "Name"},
+		TagStr{language.German, "Bezeichnung"},
+	},
+	"layout-value": []TagStr{
+		TagStr{language.AmericanEnglish, "Order value"},
+		TagStr{language.German, "Bestellwert"},
+	},
+	"layout-charge": []TagStr{
+		TagStr{language.AmericanEnglish, "Order charge"},
+		TagStr{language.German, "Auftragsgebühr"},
+	},
+	"layout-sum": []TagStr{
+		TagStr{language.AmericanEnglish, "= sum"},
+		TagStr{language.German, "= Summe"},
+	},
+	"layout-status-arrived": []TagStr{
+		TagStr{language.AmericanEnglish, "Has arrived"},
+		TagStr{language.German, "Ist angekommen"},
+	},
+	"layout-status-ordered": []TagStr{
+		TagStr{language.AmericanEnglish, "Mark as ordered"},
+		TagStr{language.German, "Als bestellt markieren"},
+	},
+	"layout-status-pickup": []TagStr{
+		TagStr{language.AmericanEnglish, "Mark as picked up"},
+		TagStr{language.German, "Als abgeholt markieren"},
+	},
+	"layout-status-reshipped": []TagStr{
+		TagStr{language.AmericanEnglish, "Mark as reshipped"},
+		TagStr{language.German, "Als weiterverschickt markieren"},
+	},
+	"layout-status-failed": []TagStr{
+		TagStr{language.AmericanEnglish, "Is failed"},
+		TagStr{language.German, "Ist gescheitert"},
+	},
 }
 
 // Language is any string. It will be matched by golang.org/x/text/language.Make and golang.org/x/text/language.NewMatcher.
