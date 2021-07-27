@@ -1,14 +1,14 @@
 {{define "store"}}
-	<h1>Einzelauftrag als gescheitert markieren</h1>
+	<h1>{{.Translate "store-mark-failed"}}</h1>
 	<form method="post">
 		<div class="form-group">
-			<label for="mark-failed-message">Nachricht</label>
-			<textarea class="form-control" id="mark-failed-message" name="mark-failed-message" rows="3">Die Einzelbestellung bei "{{.Merchant}}" ist leider gescheitert.</textarea>
-			<small class="form-text text-muted">Du kannst Markdown (CommonMark) eingeben.</small>
+			<label for="mark-failed-message">{{.Translate "store-msg"}}</label>
+			<textarea class="form-control" id="mark-failed-message" name="mark-failed-message" rows="3">{{.Translate "store-failed"}}</textarea>
+			<small class="form-text text-muted">{{.Translate "coll-md"}}</small>
 		</div>
 		<div class="text-right">
-			<a class="btn btn-secondary" href="{{.CollLink}}">Abbrechen und zurück</a>
-			<button class="btn btn-warning" type="submit">Einzelauftrag als gescheitert markieren</button>
+			<a class="btn btn-secondary" href="{{.CollLink}}">{{.Translate "go-back"}}</a>
+			<button class="btn btn-warning" type="submit">{{.Translate "store-mark-failed"}}</button>
 		</div>
 	</form>
 	{{template "task" .}}
