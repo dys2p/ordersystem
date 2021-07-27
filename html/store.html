@@ -4,9 +4,9 @@
 			{{block "brand" .}}{{end}}
 		</div>
 		<div class="navbar-nav">
-			<a class="btn btn-secondary btn-sm mx-1" href="/">Übersicht</a>
+			<a class="btn btn-secondary btn-sm mx-1" href="/">{{.Translate "store-overview"}}</a>
 			<form class="mb-0 mx-1" action="/logout" method="post">
-				<button class="btn btn-secondary btn-sm" type="submit" name="logout">Abmelden</a>
+				<button class="btn btn-secondary btn-sm" type="submit" name="logout">{{.Translate "logout"}}</a>
 			</form>
 		</div>
 		<div class="w-100"><!-- centers navbar-nav --></div>
