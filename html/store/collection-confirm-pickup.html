@@ -1,7 +1,7 @@
 {{define "store"}}
-	<h1>Abholung bestätigen</h1>
+	<h1>{{.Translate "store-pickup"}}</h1>
 	<form method="post">
-		<p>Wenn du fortfährst, werden diese Einzelaufträge als abgeholt markiert:</p>
+		<p>{{.Translate "store-pickup-text"}}</p>
 		<ul>
 		{{range .Tasks}}
 			{{if eq .State "ready"}}
@@ -11,8 +11,8 @@
 		{{end}}
 		</ul>
 		<div class="text-right">
-			<a class="btn btn-secondary" href="{{.Link}}">Abbrechen und zurück</a>
-			<button class="btn btn-success" type="submit">Abholung bestätigen</button>
+			<a class="btn btn-secondary" href="{{.Link}}">{{.Translate "go-back"}}</a>
+			<button class="btn btn-success" type="submit">{{.Translate "store-pickup"}}</button>
 		</div>
 	</form>
 {{end}}
