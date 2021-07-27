@@ -1,15 +1,15 @@
 {{define "store"}}
 <form method="post">
 	<div class="mb-3">
-		<label class="form-label">Username</label>
+		<label class="form-label">{{.Translate "login-user"}}</label>
 		<input class="form-control" name="username">
 	</div>
 	<div class="mb-3">
-		<label class="form-label">Password</label>
+		<label class="form-label">{{.Translate "login-pass"}}</label>
 		<input type="password" class="form-control" name="password">
 	</div>
 	<div class="mb-3 text-right">
-		<button type="submit" class="btn btn-success">Login</button>
+		<button type="submit" class="btn btn-success">{{.Translate "coll-login"}}</button>
 	</div>
 </form>
 {{end}}
