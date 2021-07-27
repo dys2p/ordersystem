@@ -420,6 +420,246 @@ var translations = map[string][]TagStr{
 		TagStr{language.AmericanEnglish, "Is failed"},
 		TagStr{language.German, "Ist gescheitert"},
 	},
+	
+
+// store/collection-accept.html
+	"store-accept": []TagStr{
+		TagStr{language.AmericanEnglish, "Accept order"},
+		TagStr{language.German, "Auftrag akzeptieren"},
+	},	
+	"store-msg": []TagStr{
+		TagStr{language.AmericanEnglish, "Message"},
+		TagStr{language.German, "Nachricht"},
+	},	
+	"store-accept-text": []TagStr{
+		TagStr{language.AmericanEnglish, "The order has been accepted."},
+		TagStr{language.German, "Der Auftrag wurde akzeptiert."},
+
+// store/collection-confirm-payment.html
+	"store-payment": []TagStr{
+		TagStr{language.AmericanEnglish, "Confirm payment"},
+		TagStr{language.German, "Zahlung bestätigen"},
+	},	
+	"store-paid-amount": []TagStr{
+		TagStr{language.AmericanEnglish, "Amount received (positive) or spent (negative)"},
+		TagStr{language.German, "Eingenommener (positiver) oder ausgegebener (negativer) Betrag"},
+	},
+	"store-value": []TagStr{
+		TagStr{language.AmericanEnglish, "Please enter a value."},
+		TagStr{language.German, "Bitte gib einen Wert ein."},
+	},
+	"store-payment-message": []TagStr{
+		TagStr{language.AmericanEnglish, "Message. Please specify the payment method here, e.g. cash or bank transfer."},
+		TagStr{language.German, "Nachricht. Bitte gib hier die Zahlungsmethode an, z. B. bar oder Überweisung."},
+	},
+
+// store/collection-confirm-pickup.html
+	"store-pickup": []TagStr{
+		TagStr{language.AmericanEnglish, "Confirm pick up"},
+		TagStr{language.German, "Abholung bestätigen"},
+	},	
+	"store-pickup-text": []TagStr{
+		TagStr{language.AmericanEnglish, "If you continue, these individual orders will be marked as picked up:"},
+		TagStr{language.German, "Wenn du fortfährst, werden diese Einzelaufträge als abgeholt markiert:"},
+	},
+
+// store/collection-confirm-reshipped.html
+	"store-reshipment": []TagStr{
+		TagStr{language.AmericanEnglish, "Confirm reshipment"},
+		TagStr{language.German, "Weiterversand bestätigen"},
+	},	
+	"store-reshipment-text": []TagStr{
+		TagStr{language.AmericanEnglish, "If you continue, these individual orders will be marked as reshipped:"},
+		TagStr{language.German, "Wenn du fortfährst, werden diese Einzelaufträge als weiterverschickt markiert:"},
+	},
+
+// store/collection-delete.html
+	"store-delete-title": []TagStr{
+		TagStr{language.AmericanEnglish, "Delete already accepted order"},
+		TagStr{language.German, "Bereits akzeptierten Auftrag löschen"},
+	},
+	"store-delete-confirm": []TagStr{
+		TagStr{language.AmericanEnglish, "Please confirm that you want to delete the already accepted order."},
+		TagStr{language.German, "Bitte bestätige, dass den bereits akzeptierten Auftrag löschen möchtest."},
+	},
+	"store-delete": []TagStr{
+		TagStr{language.AmericanEnglish, "Delete order"},
+		TagStr{language.German, "Auftrag löschen"},
+	},
+
+// store/collection-edit.html
+	"store-edit": []TagStr{
+		TagStr{language.AmericanEnglish, "Edit order"},
+		TagStr{language.German, "Auftrag bearbeiten"},
+	},	
+	"store-save": []TagStr{
+		TagStr{language.AmericanEnglish, "Save"},
+		TagStr{language.German, "Speichern"},
+	},
+
+// store/collection-mark-spam.html
+	"store-spam": []TagStr{
+		TagStr{language.AmericanEnglish, "Mark order as spam"},
+		TagStr{language.German, "Auftrag als Spam markieren"},
+	},
+	"store-spam-text": []TagStr{
+		TagStr{language.AmericanEnglish, "Please confirm that you want to mark the order as spam."},
+		TagStr{language.German, "Bitte bestätige, dass du den Auftrag als Spam markieren möchtest."},
+	},
+
+// store/collection-price-rised.html
+	"store-rised": []TagStr{
+		TagStr{language.AmericanEnglish, "Price has risen"},
+		TagStr{language.German, "Preis ist gestiegen"},
+	},	
+	"store-rised-text": []TagStr{
+		TagStr{language.AmericanEnglish, "The price of your order has risen."},
+		TagStr{language.German, "Der Preis deines Auftrags hat sich erhöht."},
+	},	
+
+// store/collection-reject.html
+	"store-reject": []TagStr{
+		TagStr{language.AmericanEnglish, "Reject order"},
+		TagStr{language.German, "Auftrag ablehnen"},
+	},
+	"store-reject-confirm": []TagStr{
+		TagStr{language.AmericanEnglish, "Please confirm that you wish to reject the order."},
+		TagStr{language.German, "Bitte bestätige, dass du den Auftrag ablehnen möchtest."},
+	},
+	"store-reject-msg": []TagStr{
+		TagStr{language.AmericanEnglish, "Unfortunately, your order had to be rejected."},
+		TagStr{language.German, "Dein Auftrag musste leider abgelehnt werden."},
+	},	
+
+// store/collection-return.html
+	"store-return": []TagStr{
+		TagStr{language.AmericanEnglish, "Return order for revision"},
+		TagStr{language.German, "Auftrag zur Überarbeitung zurückgeben"},
+	},
+	"store-return-text": []TagStr{
+		TagStr{language.AmericanEnglish, "Your order requires revision."},
+		TagStr{language.German, "Dein Auftrag erfordert Überarbeitung."},
+	},
+
+// store/collection-view.html
+	"store-view-amount": []TagStr{
+		TagStr{language.AmericanEnglish, "Amount:"},
+		TagStr{language.German, "Summe:"},
+	},
+	"store-view-payment": []TagStr{
+		TagStr{language.AmericanEnglish, "Note payment"},
+		TagStr{language.German, "Zahlung vermerken"},
+	},
+	"store-view-pickup": []TagStr{
+		TagStr{language.AmericanEnglish, "Has been picked up"},
+		TagStr{language.German, "Wurde abgeholt"},
+	},
+	"store-view-reshipped": []TagStr{
+		TagStr{language.AmericanEnglish, "Has been reshipped"},
+		TagStr{language.German, "Wurde weiterverschickt"},
+	},
+	"store-view-rised": []TagStr{
+		TagStr{language.AmericanEnglish, "Price has risen, additional payment required"},
+		TagStr{language.German, "Preis ist gestiegen, Nachzahlung erforderlich"},
+	},
+	"store-view-delete": []TagStr{
+		TagStr{language.AmericanEnglish, "Delete"},
+		TagStr{language.German, "Löschen"},
+	},
+
+// store/index.html
+	"store-submitted": []TagStr{
+		TagStr{language.AmericanEnglish, "Submitted"},
+		TagStr{language.German, "Eingereicht"},
+	},
+	"store-event": []TagStr{
+		TagStr{language.AmericanEnglish, "Last event"},
+		TagStr{language.German, "Letztes Event"},
+	},
+	"store-noorder": []TagStr{
+		TagStr{language.AmericanEnglish, "No orders"},
+		TagStr{language.German, "Keine Bestellungen"},
+	},
+	"store-accepted": []TagStr{
+		TagStr{language.AmericanEnglish, "Accepted"},
+		TagStr{language.German, "Angenommen"},
+	},
+	"store-underpaid": []TagStr{
+		TagStr{language.AmericanEnglish, "Underpaid"},
+		TagStr{language.German, "Unterbezahlt"},
+	},
+	"store-paid": []TagStr{
+		TagStr{language.AmericanEnglish, "Paid"},
+		TagStr{language.German, "Bezahlt"},
+	},
+	"store-iorders": []TagStr{
+		TagStr{language.AmericanEnglish, "Individual orders"},
+		TagStr{language.German, "Einzelaufträge"},
+	},	
+	"store-open-order": []TagStr{
+		TagStr{language.AmericanEnglish, "Thereof not yet ordered"},
+		TagStr{language.German, "Davon noch nicht bestellt"},
+	},
+	"store-complet": []TagStr{
+		TagStr{language.AmericanEnglish, "Completed"},
+		TagStr{language.German, "Abgeschlossen"},
+	},
+
+// store/login.html
+	"login-user": []TagStr{
+		TagStr{language.AmericanEnglish, "Username"},
+		TagStr{language.German, "Nutzername"},
+	},
+	"login-pass": []TagStr{
+		TagStr{language.AmericanEnglish, "Password"},
+		TagStr{language.German, "Passwort"},
+	},
+
+// store/task-confirm-arrived.html
+	"store-arrived": []TagStr{
+		TagStr{language.AmericanEnglish, "Mark individual order as arrived"},
+		TagStr{language.German, "Einzelauftrag als eingetroffen markieren"},
+	},
+	"store-arrived-button": []TagStr{
+		TagStr{language.AmericanEnglish, "Goods have arrived"},
+		TagStr{language.German, "Ware ist eingetroffen"},
+	},
+		
+// store/task-confirm-ordered.html
+	"store-ordered": []TagStr{
+		TagStr{language.AmericanEnglish, "Mark individual order as executed"},
+		TagStr{language.German, "Einzelauftrag als ausgeführt markieren"},
+	},
+
+// store/task-confirm-pickup.html
+	"store-mark-pickup": []TagStr{
+		TagStr{language.AmericanEnglish, "Mark individual order as picked up"},
+		TagStr{language.German, "Einzelauftrag als abgeholt markieren"},
+	},
+	"store-confirm-pickup": []TagStr{
+		TagStr{language.AmericanEnglish, "Individual order was picked up"},
+		TagStr{language.German, "Einzelauftrag wurde abgeholt"},
+	},
+	
+// store/task-confirm-reshipped.html
+	"store-mark-reshipped": []TagStr{
+		TagStr{language.AmericanEnglish, "Mark individual order as reshipped"},
+		TagStr{language.German, "Einzelauftrag als weiterverschickt markieren"},
+	},
+	"store-confirm-reshipped": []TagStr{
+		TagStr{language.AmericanEnglish, "Individual order was reshipped"},
+		TagStr{language.German, "Einzelauftrag wurde weiterverschickt"},
+	},
+
+// store/task-mark-failed.html
+	"store-mark-failed": []TagStr{
+		TagStr{language.AmericanEnglish, "Mark individual order as failed"},
+		TagStr{language.German, "Einzelauftrag als gescheitert markieren"},
+	},
+	"store-failed": []TagStr{
+		TagStr{language.AmericanEnglish, "Unfortunately, the individual order at "{{.Merchant}}" failed."},
+		TagStr{language.German, "Die Einzelbestellung bei "{{.Merchant}}" ist leider gescheitert."},
+	},
 }
 
 // Language is any string. It will be matched by golang.org/x/text/language.Make and golang.org/x/text/language.NewMatcher.
