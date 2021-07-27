@@ -1,11 +1,11 @@
 {{define "store"}}
-	<h1>Auftrag bearbeiten</h1>
+	<h1>{{.Translate "store-edit"}}</h1>
 	{{template "collection" .}}
 	<form method="post" onsubmit="prepareSubmit(event)">
 		<input type="hidden" id="data" name="data">
 		<div class="mb-3 text-right">
-			<a class="btn btn-warning" href="{{.Link}}">Abbrechen und zurück</a>
-			<button class="btn btn-success" type="submit">Speichern</button>
+			<a class="btn btn-warning" href="{{.Link}}">{{.Translate "go-back"}}</a>
+			<button class="btn btn-success" type="submit">{{.Translate "store-save"}}</button>
 		</div>
 	</form>
 {{end}}
