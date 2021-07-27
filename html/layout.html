@@ -28,10 +28,10 @@
 	<img id="captcha-image" src="/captcha/{{.CaptchaID}}.png" alt="Captcha image">
 </p>
 <div class="form-group">
-	<label for="captcha-solution">Bitte tippe die Ziffern ab, um zu beweisen, dass du es ernst meinst:</label>
+	<label for="captcha-solution">{{.Translate "layout-numbers"}}</label>
 	<input class="form-control {{if .CaptchaErr}}is-invalid{{end}}" id="captcha-solution" name="captcha-solution">
-	<div class="invalid-feedback">Bitte tippe das Captcha korrekt ab.</div>
-	<small class="form-text text-muted"><a href="#" onclick="reloadCaptcha(); return false;">Anderes Bild laden (erfordert JavaScript)</a></small>
+	<div class="invalid-feedback">{{.Translate "state-get-captcha"}}</div>
+	<small class="form-text text-muted"><a href="#" onclick="reloadCaptcha(); return false;">{{.Translate "state-get-reload"}}</a></small>
 </div>
 <input type="hidden" name="captcha-id" value="{{.CaptchaID}}">
 {{end}}
@@ -39,10 +39,10 @@
 {{define "log"}}
 <table class="table">
 	<thead>
-		<th>Datum</th>
-		<th>Status</th>
-		<th>Vermerk</th>
-		<th>Bezahlter Betrag</th>
+		<th>{{.Translate "layout-date"}}</th>
+		<th>{{.Translate "coll-edit-status"}}</th>
+		<th>{{.Translate "layout-note"}}</th>
+		<th>{{.Translate "layout-paid"}}</th>
 	</thead>
 	{{range .Log}}
 		<tr>
@@ -54,7 +54,7 @@
 	{{end}}
 	{{if .Paid}}
 		<tr>
-			<td class="text-right" colspan="3">Summe</td>
+			<td class="text-right" colspan="3">{{.Translate "layout-amount"}}</td>
 			<td>{{FmtHuman .Paid}}</td>
 		</tr>
 	{{end}}
@@ -65,17 +65,16 @@
 
 	<div class="form-group">
 		<label for="client-name">
-			Der Name, unter dem wir dich vertreten. Diesen Namen werden wir bei dem tatsächlichen Versandhändler bzw. Anbieter angeben. Bedenke dass möglicherweise auch beteiligte Banken und Bezahldienste den Namen erfahren.
-		</label>
+			{{.Translate "layout-client-name"}}
 		<input type="text" class="form-control" id="client-name" {{if .ShowHints}}aria-describedby="client-name-help"{{end}} name="client-name" value="{{.ClientName}}" {{if .ReadOnly}}disabled{{end}}>
 		{{if .ShowHints}}
-			<small id="client-name-help" class="form-text text-muted">Bedenke dass eine falsche Angabe im Gewährleistungs- oder Garantiefall unter Umständen zu Problemen führen kann.</small>
+			<small id="client-name-help" class="form-text text-muted">{{.Translate "layout-client-name-help"}}</small>
 		{{end}}
 	</div>
 
 	<label for="client-contact">
-		Kontaktmöglichkeit für Rückfragen (freiwillig, wird nicht weitergegeben und 14 Tage nach Abschluss des Auftrags gelöscht)
-		{{if .Actor.IsStore}} &ndash; <strong>bei Kontaktaufnahme bitte keine Auftragsnummer nennen</strong>{{end}}
+		{{.Translate "layout-client-contact"}}
+		{{if .Actor.IsStore}} &ndash; <strong>{{.Translate "layout-client-contact-help"}}</strong>{{end}}
 	</label>
 	<div class="form-row">
 		<div class="form-group col-md-6">
@@ -91,19 +90,19 @@
 	</div>
 
 	{{if .ShowHints}}
-		<p>Falls ein Altersnachweis nötig ist, kann er persönlich im Ladenlokal erbracht werden. Anderweitig nachweispflichtige Waren können nicht bestellt werden.</p>
+		<p>{{.Translate "layout-client-age"}}</p>
 	{{end}}
 
 	<p id="add-task-paragraph">
 		{{if not .ReadOnly}}
-			<button type="button" class="btn btn-success" id="add-task-button" onclick="var taskNumber = newTask(); addArticle(taskNumber);">Weiteren Auftrag hinzufügen</button>
+			<button type="button" class="btn btn-success" id="add-task-button" onclick="var taskNumber = newTask(); addArticle(taskNumber);">{{.Translate "layout-add"}}</button>
 		{{end}}
 	</p>
 
-	<h2>Abholung oder Weiterversand</h2>
+	<h2>{{.Translate "layout-delivery"}}</h2>
 
 	{{if .ShowHints}}
-		<p>Du kannst die Ware im Ladenlokal (Bernhard-Göring-Straße 162, 04277 Leipzig, beachte die Öffnungszeiten) abholen. Wir können sie auch per Post oder Paketdienst an dich weiterleiten.</p>
+		<p>{{.Translate "layout-delivery-text"}}</p>
 	{{end}}
 
 	{{if and (.ReadOnly) (ne .DeliveryMethod "store")}}
@@ -112,7 +111,7 @@
 		<div class="border border-secondary bg-light my-3 p-3 rounded">
 			<input type="radio" name="delivery-method" onchange="updateView()" id="delivery-method-store" value="store" {{if or (eq .DeliveryMethod "store") (eq .DeliveryMethod "")}}checked{{end}} {{if .ReadOnly}}disabled{{end}}>
 			<label for="delivery-method-store">
-				Ich hole die Ware <strong>unter Nennung der Auftragsnummer</strong> im Ladenlokal ab.
+				{{.Translate "layout-pickup"}}
 			</label>
 		</div>
 	{{end}}
@@ -123,7 +122,7 @@
 		<div class="border border-secondary bg-light my-3 p-3 rounded">
 			<input type="radio" name="delivery-method" onchange="updateView()" id="delivery-method-locker" value="locker" {{if eq .DeliveryMethod "locker"}}checked{{end}} {{if .ReadOnly}}disabled{{end}}>
 			<label for="delivery-method-locker">
-				Ich hole die Ware <strong>aus einem Schließfach</strong> im Ladenlokal ab. Ein geöffnetes Vorhängeschloss bringe ich vorbei.
+				{{.Translate "layout-locker"}}
 			</label>
 		</div>
 	{{end}}
@@ -134,7 +133,7 @@
 		<div class="border border-secondary bg-light my-3 p-3 rounded">
 			<input type="radio" name="delivery-method" onchange="updateView()" id="delivery-method-custom" value="custom" {{if eq .DeliveryMethod "custom"}}checked{{end}} {{if .ReadOnly}}disabled{{end}}>
 			<label for="delivery-method-custom">
-				Bitte schickt mir die Ware. Eine bezahlte und beschriftete Paketmarke bringe ich vorbei.
+				{{.Translate "layout-stamp"}}
 			</label>
 		</div>
 	{{end}}
@@ -147,7 +146,7 @@
 			<p>
 				<input type="radio" name="delivery-method" onchange="updateView()" id="delivery-method-shipping" value="shipping" {{if eq .DeliveryMethod "shipping"}}checked{{end}} {{if .ReadOnly}}disabled{{end}}>
 				<label for="delivery-method-shipping">
-					Bitte schickt mir die Ware an folgende Adresse.
+					{{.Translate "layout-shipping"}}
 				</label>
 			</p>
 
@@ -161,44 +160,44 @@
 
 			<div class="form-row">
 				<div class="form-group col-md-6">
-					<input type="text" class="form-control" name="shipping-first-name" placeholder="Vorname" value="{{.ShippingFirstName}}" {{if .ReadOnly}}disabled{{end}}>
+					<input type="text" class="form-control" name="shipping-first-name" placeholder="{{.Translate "layout-name1"}}" value="{{.ShippingFirstName}}" {{if .ReadOnly}}disabled{{end}}>
 				</div>
 				<div class="form-group col-md-6">
-					<input type="text" class="form-control" name="shipping-last-name" placeholder="Nachname" value="{{.ShippingLastName}}" {{if .ReadOnly}}disabled{{end}}>
+					<input type="text" class="form-control" name="shipping-last-name" placeholder="{{.Translate "layout-name2"}}" value="{{.ShippingLastName}}" {{if .ReadOnly}}disabled{{end}}>
 				</div>
 			</div>
 
 			<div class="form-group">
-				<input type="text" class="form-control" name="shipping-address-supplement" placeholder="Adresszusatz" value="{{.ShippingAddressSupplement}}" {{if .ReadOnly}}disabled{{end}}>
+				<input type="text" class="form-control" name="shipping-address-supplement" placeholder="{{.Translate "layout-address-supplement"}}" value="{{.ShippingAddressSupplement}}" {{if .ReadOnly}}disabled{{end}}>
 			</div>
 
 			<div class="form-row">
 				<div class="form-group col-md-9">
-					<input type="text" class="form-control" name="shipping-street" placeholder="Straße" value="{{.ShippingStreet}}" {{if .ReadOnly}}disabled{{end}}>
+					<input type="text" class="form-control" name="shipping-street" placeholder="{{.Translate "layout-street"}}" value="{{.ShippingStreet}}" {{if .ReadOnly}}disabled{{end}}>
 				</div>
 				<div class="form-group col-md-3">
-					<input type="text" class="form-control" name="shipping-street-number" placeholder="Hausnummer" value="{{.ShippingStreetNumber}}" {{if .ReadOnly}}disabled{{end}}>
+					<input type="text" class="form-control" name="shipping-street-number" placeholder="{{.Translate "layout-street-number"}}" value="{{.ShippingStreetNumber}}" {{if .ReadOnly}}disabled{{end}}>
 				</div>
 			</div>
 
 			<div class="form-row">
 				<div class="form-group col-md-3">
-					<input type="number" class="form-control" name="shipping-postcode" placeholder="Postleitzahl" value="{{.ShippingPostcode}}" {{if .ReadOnly}}disabled{{end}}>
+					<input type="number" class="form-control" name="shipping-postcode" placeholder="{{.Translate "layout-postcode"}}" value="{{.ShippingPostcode}}" {{if .ReadOnly}}disabled{{end}}>
 				</div>
 				<div class="form-group col-md-9">
-					<input type="text" class="form-control" name="shipping-town" placeholder="Stadt" value="{{.ShippingTown}}" {{if .ReadOnly}}disabled{{end}}>
+					<input type="text" class="form-control" name="shipping-town" placeholder="{{.Translate "layout-town"}}" value="{{.ShippingTown}}" {{if .ReadOnly}}disabled{{end}}>
 				</div>
 			</div>
 
 			{{if .ShowHints}}
 				<p class="mb-0">
-					Wie du die Adresse einer DHL-Packstation eingeben kannst, erfährst du auf <a href="https://dont.re/?https://parcelshopfinder.dhlparcel.com/html/note_direct_access_germany.html?setLng=de" target="_blank">dhlparcel.com</a>. Dazu brauchst du ein DHL-Kundenkonto mit Postnummer.
+					{{.Translate "layout-parcel"}}
 				</p>
 			{{end}}
 
 			{{if .Actor.IsStore}}
 				<div class="form-group row">
-					<label class="col-sm-6 col-form-label">Kosten für Weiterversand (bei null wird der Mindestwert genommen)</label>
+					<label class="col-sm-6 col-form-label">{{.Translate "layout-reshipment"}}</label>
 					<div class="col-sm-6">
 						<input class="form-control" name="reshipping-fee" onchange="updateView()" type="number" min="0.00" max="10000.00" step="0.01" value="{{FmtMachine .ReshippingFee}}" {{if .ReadOnly}}disabled{{end}}>
 					</div>
@@ -207,15 +206,15 @@
 		</div>
 	{{end}}
 
-	<h2>Zusammenfassung</h2>
+	<h2>{{.Translate "layout-summary"}}</h2>
 
 	<table class="table">
 		<thead>
 			<tr>
-				<th>Bezeichnung</th>
-				<th>Bestellwert</th>
-				<th>+ Auftragsgebühr</th>
-				<th>= Summe</th>
+				<th>{{.Translate "layout-name"}}</th>
+				<th>{{.Translate "layout-value"}}</th>
+				<th>{{.Translate "layout-charge"}}</th>
+				<th>{{.Translate "layout-sum"}}</th>
 			</tr>
 		</thead>
 		<tbody id="summary-tbody">
@@ -230,19 +229,19 @@
 					'<p>Status: {{.State.Description}}</p>' +
 					'<p>' +
 					'	{{if $.StoreCanTask "confirm-arrived" .}}' +
-					'		<a class="btn btn-success" href="/collection/{{$.ID}}/confirm-arrived/{{.ID}}">Ist angekommen</a>' +
+					'		<a class="btn btn-success" href="/collection/{{$.ID}}/confirm-arrived/{{.ID}}">{{.Translate "layout-status-arrived"}}</a>' +
 					'	{{end}}' +
 					'	{{if $.StoreCanTask "confirm-ordered" .}}' +
-					'		<a class="btn btn-success" href="/collection/{{$.ID}}/confirm-ordered/{{.ID}}">Als bestellt markieren</a>' +
+					'		<a class="btn btn-success" href="/collection/{{$.ID}}/confirm-ordered/{{.ID}}">{{.Translate "layout-status-ordered"}}</a>' +
 					'	{{end}}' +
 					'	{{if $.StoreCanTask "confirm-pickup" .}}' +
-					'		<a class="btn btn-success" href="/collection/{{$.ID}}/confirm-pickup/{{.ID}}">Als abgeholt markieren</a>' +
+					'		<a class="btn btn-success" href="/collection/{{$.ID}}/confirm-pickup/{{.ID}}">{{.Translate "layout-status-pickup"}}</a>' +
 					'	{{end}}' +
 					'	{{if $.StoreCanTask "confirm-reshipped" .}}' +
-					'		<a class="btn btn-success" href="/collection/{{$.ID}}/confirm-reshipped/{{.ID}}">Als weiterverschickt markieren</a>' +
+					'		<a class="btn btn-success" href="/collection/{{$.ID}}/confirm-reshipped/{{.ID}}">{{.Translate "layout-status-reshipped"}}</a>' +
 					'	{{end}}' +
 					'	{{if $.StoreCanTask "mark-failed" .}}' +
-					'		<a class="btn btn-warning" href="/collection/{{$.ID}}/mark-failed/{{.ID}}">Ist gescheitert</a>' +
+					'		<a class="btn btn-warning" href="/collection/{{$.ID}}/mark-failed/{{.ID}}">{{.Translate "layout-status-failed"}}</a>' +
 					'	{{end}}' +
 					'</p>'
 				{{else}}
