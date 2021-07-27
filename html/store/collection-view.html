@@ -1,46 +1,46 @@
 {{define "store"}}
-	<h1>Auftrag {{.ID}}</h1>
+	<h1>{{.Translate "coll-edit-order"}} {{.ID}}</h1>
 	{{range .Notifications}}
 		<div class="alert alert-success mt-3" role="alert">{{.}}</div>
 	{{end}}
-	<p><strong>Status:</strong> {{.State.Description}}</p>
-	<p><strong>Summe:</strong> {{FmtHuman .Sum}}</p>
+	<p><strong>{{.Translate "coll-edit-status"}}</strong> {{.State.Description}}</p>
+	<p><strong>{{.Translate "store-view-amount"}}</strong> {{FmtHuman .Sum}}</p>
 	<p>
 		{{if .StoreCan "accept"}}
-			<a class="btn btn-success" href="/collection/{{$.ID}}/accept">Bestellauftrag akzeptieren</a>
+			<a class="btn btn-success" href="/collection/{{$.ID}}/accept">{{.Translate "store-accept"}}<</a>
 		{{end}}
 		{{if .StoreCan "confirm-payment"}}
-			<a class="btn btn-success" href="/collection/{{$.ID}}/confirm-payment">Zahlung vermerken</a>
+			<a class="btn btn-success" href="/collection/{{$.ID}}/confirm-payment">{{.Translate "store-view-payment"}}</a>
 		{{end}}
 		{{if .StoreCan "confirm-pickup"}}
-			<a class="btn btn-success" href="/collection/{{$.ID}}/confirm-pickup">Wurde abgeholt</a>
+			<a class="btn btn-success" href="/collection/{{$.ID}}/confirm-pickup">{{.Translate "store-view-pickup"}}</a>
 		{{end}}
 		{{if .StoreCan "confirm-reshipped"}}
-			<a class="btn btn-success" href="/collection/{{$.ID}}/confirm-reshipped">Wurde weiterverschickt</a>
+			<a class="btn btn-success" href="/collection/{{$.ID}}/confirm-reshipped">{{.Translate "store-view-reshipped"}}</a>
 		{{end}}
 		{{if .StoreCan "message"}}
-			<a class="btn btn-warning" href="/collection/{{$.ID}}/message">Nachricht hinterlassen</a>
+			<a class="btn btn-warning" href="/collection/{{$.ID}}/message">{{.Translate "coll-msg"}}</a>
 		{{end}}
 		{{if .StoreCan "edit"}}
-			<a class="btn btn-warning" href="/collection/{{$.ID}}/edit">Bestellauftrag bearbeiten</a>
+			<a class="btn btn-warning" href="/collection/{{$.ID}}/edit">{{.Translate "coll-view-edit"}}</a>
 		{{end}}
 		{{if .StoreCan "return"}}
-			<a class="btn btn-warning" href="/collection/{{$.ID}}/return">Zur Überarbeitung zurückgeben</a>
+			<a class="btn btn-warning" href="/collection/{{$.ID}}/return">{{.Translate "store-return"}}</a>
 		{{end}}
 		{{if .StoreCan "price-rised"}}
-			<a class="btn btn-warning" href="/collection/{{$.ID}}/price-rised">Preis ist gestiegen, Nachzahlung erforderlich</a>
+			<a class="btn btn-warning" href="/collection/{{$.ID}}/price-rised">{{.Translate "store-view-rised"}}</a>
 		{{end}}
 		{{if .StoreCan "reject"}}
-			<a class="btn btn-danger" href="/collection/{{$.ID}}/reject">Ablehnen</a>
+			<a class="btn btn-danger" href="/collection/{{$.ID}}/reject">{{.Translate "store-reject"}}</a>
 		{{end}}
 		{{if .StoreCan "delete"}}
-			<a class="btn btn-danger" href="/collection/{{$.ID}}/delete">Löschen</a>
+			<a class="btn btn-danger" href="/collection/{{$.ID}}/delete">{{.Translate "store-view-delete"}}</a>
 		{{end}}
 		{{if .StoreCan "mark-spam"}}
-			<a class="btn btn-danger" href="/collection/{{$.ID}}/mark-spam">Als Spam markieren</a>
+			<a class="btn btn-danger" href="/collection/{{$.ID}}/mark-spam">{{.Translate "store-spam"}}</a>
 		{{end}}
 	</p>
-	<h2>Verlauf</h2>
+	<h2>{{.Translate "coll-view-course"}}</h2>
 	{{template "log" .}}
 	{{template "collection" .}}
 {{end}}
