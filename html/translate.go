@@ -22,7 +22,7 @@ var translations = map[string][]TagStr{
 	"confirm-yes": []TagStr{
 		TagStr{language.AmericanEnglish, "Yes, I am sure."},
 		TagStr{language.German, "Ja, ich bin mir sicher."},
-	},	
+	}, // /store/collection-delete.html, /store/collection-reject.html, /store/collection-mark-spam.html
 	"coll-cancel-invalid": []TagStr{
 		TagStr{language.AmericanEnglish, "Please confirm that you would like to cancel the order."},
 		TagStr{language.German, "Bitte bestätige, dass du den Auftrag abbrechen möchtest."},
@@ -30,7 +30,7 @@ var translations = map[string][]TagStr{
 	"go-back": []TagStr{
 		TagStr{language.AmericanEnglish, "Cancel and return"},
 		TagStr{language.German, "Abbrechen und zurück"},
-	},
+	}, // /client/collection-pay-btcpay.html, /client/collection-delete.html, /client/collection-edit.html, /client/collection-submit.html, /client/collection-message.html, /store/task-confirm-ordered.html, /store/collection-delete.html, /store/collection-accept.html, /store/collection-return.html, /store/collection-reject.html, /store/collection-price-rised.html, /store/task-mark-failed.html, /store/collection-edit.html, /store/task-confirm-reshipped.html, /store/collection-message.html, /store/collection-confirm-reshipped.html, /store/task-confirm-pickup.html, /store/task-confirm-arrived.html, /store/collection-confirm-pickup.html, /store/collection-mark-spam.html, /store/collection-confirm-payment.html
 	
 // collection-create.html	
 	"coll-new": []TagStr{
@@ -44,7 +44,7 @@ var translations = map[string][]TagStr{
 	"coll-id": []TagStr{
 		TagStr{language.AmericanEnglish, "Order ID"},
 		TagStr{language.German, "Auftragsnummer"},
-	},	
+	}, // /client/state-post.html, /client/state-get.html, /store/index.html	
 	"coll-id-invalid": []TagStr{
 		TagStr{language.AmericanEnglish, "There should be a ten-digit ID here. Please reload the page."},
 		TagStr{language.German, "Hier sollte eine zehnstellige Buchstabenkombination stehen. Bitte lade die Seite neu."},
@@ -52,7 +52,7 @@ var translations = map[string][]TagStr{
 	"coll-pass": []TagStr{
 		TagStr{language.AmericanEnglish, "Passphrase"},
 		TagStr{language.German, "Passphrase"},
-	},
+	}, // /client/state-post.html, /client/collection-login.html
 "coll-pass-invalid": []TagStr{
 		TagStr{language.AmericanEnglish, "Please enter a passphrase."},
 		TagStr{language.German, "Bitte gib eine Passphrase ein."},
@@ -68,7 +68,7 @@ var translations = map[string][]TagStr{
 	"cancel": []TagStr{
 		TagStr{language.AmericanEnglish, "Cancel"},
 		TagStr{language.German, "Abbrechen"},
-	},
+	}, // /client/collection-cancel.html, /client/state-post.html, /client/state-get.html, /client/collection-login.html
 
 // collection-delete.html
 	"coll-delete": []TagStr{
@@ -84,11 +84,11 @@ var translations = map[string][]TagStr{
 	"coll-edit-order": []TagStr{
 		TagStr{language.AmericanEnglish, "Order"},
 		TagStr{language.German, "Auftrag"},
-	},
+	}, // /client/state-post.html, /store/collection-view.html
 	"coll-edit-status": []TagStr{
 		TagStr{language.AmericanEnglish, "Status:"},
 		TagStr{language.German, "Status:"},
-	},
+	}, // /client/state-post.html, /store/collection-view.html, layout.html
 	"coll-edit-js": []TagStr{
 		TagStr{language.AmericanEnglish, "Sorry, this page requires JavaScript."},
 		TagStr{language.German, "Dieses Seite erfordert leider JavaScript."},
@@ -102,11 +102,11 @@ var translations = map[string][]TagStr{
 	"coll-login": []TagStr{
 		TagStr{language.AmericanEnglish, "Login"},
 		TagStr{language.German, "Anmelden"},
-	},
+	}, // /client/state-post.html, /client/state-get.html, /store/login.html
 	"coll-login-invalid-id": []TagStr{
 		TagStr{language.AmericanEnglish, "Please enter your ten-digit order ID."},
 		TagStr{language.German, "Bitte gib deine zehnstellige Auftragsnummer ein.},
-	},
+	}, // /state-get.html
 	"coll-login-invalid-pass": []TagStr{
 		TagStr{language.AmericanEnglish, "Please enter the correct passphrase."},
 		TagStr{language.German, "Bitte gib die korrekte Passphrase ein.},
@@ -116,11 +116,12 @@ var translations = map[string][]TagStr{
 	"coll-msg": []TagStr{
 		TagStr{language.AmericanEnglish, "Leave a message"},
 		TagStr{language.German, "Nachricht hinterlassen"},
-	},	
+	}, // /client/collection-view.html, /store/collection-message.html, /store/collection-view.html
 	"coll-md": []TagStr{
 		TagStr{language.AmericanEnglish, "You can type Markdown (CommonMark)."},
 		TagStr{language.German, "Du kannst Markdown (CommonMark) eingeben."},
-	},	
+	}, // /client/collection-submit.html, /store/collection-accept.html, /store/collection-return.html, /store/collection-reject.html, /store/collection-price-rised.html, /store/task-mark-failed.html, /store/collection-message.html, /store/collection-confirm-payment.html
+
 
 // collection-pay-btcpay.html
 	"coll-btcpay": []TagStr{
@@ -208,17 +209,17 @@ var translations = map[string][]TagStr{
 	"coll-view-course": []TagStr{
 		TagStr{language.AmericanEnglish, "Course"},
 		TagStr{language.German, "Verlauf"},
-	},
+	}, // /store/collection-view.html
 
 // error.html
 	"error1": []TagStr{
 		TagStr{language.AmericanEnglish, "Error"},
 		TagStr{language.German, "Fehler"},
-	},
+	}, // /store/error.html
 	"error2": []TagStr{
 		TagStr{language.AmericanEnglish, "Back to home page"},
 		TagStr{language.German, "Zurück zur Startseite"},
-	},
+	},  // /store/error.html
 
 // state-get.html
 	"state-get": []TagStr{
@@ -232,7 +233,7 @@ var translations = map[string][]TagStr{
 	"state-get-captcha": []TagStr{
 		TagStr{language.AmericanEnglish, "Please type the captcha correctly."},
 		TagStr{language.German, "Bitte tippe das Captcha korrekt ab."},
-	},
+	}, // layout.html
 	"state-get-reload": []TagStr{
 		TagStr{language.AmericanEnglish, "Load other image (requires JavaScript)"},
 		TagStr{language.German, "Anderes Bild laden (erfordert JavaScript)"},
