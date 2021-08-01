@@ -427,11 +427,11 @@ var translations = map[string][]TagStr{
 	"store-accept": []TagStr{
 		TagStr{language.AmericanEnglish, "Accept order"},
 		TagStr{language.German, "Auftrag akzeptieren"},
-	},	
+	}, // /store/collection-view.html
 	"store-msg": []TagStr{
 		TagStr{language.AmericanEnglish, "Message"},
 		TagStr{language.German, "Nachricht"},
-	},	
+	}, // /store/collection-return.html, /store/collection-reject.html, /store/task-mark-failed.html
 	"store-accept-text": []TagStr{
 		TagStr{language.AmericanEnglish, "The order has been accepted."},
 		TagStr{language.German, "Der Auftrag wurde akzeptiert."},
@@ -502,7 +502,7 @@ var translations = map[string][]TagStr{
 	"store-spam": []TagStr{
 		TagStr{language.AmericanEnglish, "Mark order as spam"},
 		TagStr{language.German, "Auftrag als Spam markieren"},
-	},
+	}, // /store/collection-view.html
 	"store-spam-text": []TagStr{
 		TagStr{language.AmericanEnglish, "Please confirm that you want to mark the order as spam."},
 		TagStr{language.German, "Bitte bestätige, dass du den Auftrag als Spam markieren möchtest."},
@@ -522,7 +522,7 @@ var translations = map[string][]TagStr{
 	"store-reject": []TagStr{
 		TagStr{language.AmericanEnglish, "Reject order"},
 		TagStr{language.German, "Auftrag ablehnen"},
-	},
+	}, // /store/collection-view.html
 	"store-reject-confirm": []TagStr{
 		TagStr{language.AmericanEnglish, "Please confirm that you wish to reject the order."},
 		TagStr{language.German, "Bitte bestätige, dass du den Auftrag ablehnen möchtest."},
@@ -536,7 +536,7 @@ var translations = map[string][]TagStr{
 	"store-return": []TagStr{
 		TagStr{language.AmericanEnglish, "Return order for revision"},
 		TagStr{language.German, "Auftrag zur Überarbeitung zurückgeben"},
-	},
+	}, // /store/collection-view.html
 	"store-return-text": []TagStr{
 		TagStr{language.AmericanEnglish, "Your order requires revision."},
 		TagStr{language.German, "Dein Auftrag erfordert Überarbeitung."},
@@ -592,7 +592,7 @@ var translations = map[string][]TagStr{
 	"store-paid": []TagStr{
 		TagStr{language.AmericanEnglish, "Paid"},
 		TagStr{language.German, "Bezahlt"},
-	},
+	}, // /store/collection-confirm-payment.html, 
 	"store-iorders": []TagStr{
 		TagStr{language.AmericanEnglish, "Individual orders"},
 		TagStr{language.German, "Einzelaufträge"},
