@@ -12,7 +12,7 @@
 			<a class="btn btn-success" href="/collection/{{$.ID}}/pay-btcpay">{{.Translate "coll-view-coins"}}</a>
 		{{end}}
 		{{if .ClientCan "submit"}}
-			<a class="btn btn-success" href="/collection/{{$.ID}}/submit">{{.Translate "coll-view-submit"}}</a>
+			<a class="btn btn-success" href="/collection/{{$.ID}}/submit">{{.Translate "coll-submit"}}</a>
 		{{end}}
 		{{if .ClientCan "edit"}}
 			<a class="btn btn-info" href="/collection/{{$.ID}}/edit">{{.Translate "store-edit"}}</a>
