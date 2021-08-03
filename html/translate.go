@@ -189,14 +189,6 @@ var translations = map[string][]TagStr{
 		TagStr{language.AmericanEnglish, "Pay with Bitcoin or Monero"},
 		TagStr{language.German, "Mit Bitcoin oder Monero bezahlen"},
 	},
-	"coll-view-submit": []TagStr{
-		TagStr{language.AmericanEnglish, "Submit order"},
-		TagStr{language.German, "Bestellauftrag einreichen"},
-	},
-	"coll-view-edit": []TagStr{
-		TagStr{language.AmericanEnglish, "Edit order"},
-		TagStr{language.German, "Bestellauftrag bearbeiten"},
-	},
 	"coll-view-cancel": []TagStr{
 		TagStr{language.AmericanEnglish, "Cancel order"},
 		TagStr{language.German, "Bestellauftrag abbrechen"},
