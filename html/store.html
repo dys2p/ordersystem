@@ -9,7 +9,10 @@
 				<button class="btn btn-secondary btn-sm" type="submit" name="logout">{{.Translate "logout"}}</a>
 			</form>
 		</div>
-		<div class="w-100"><!-- centers navbar-nav --></div>
+		<div class="w-100 text-right">
+			<a href="?lang=de" class="btn btn-secondary btn-sm ml-1">DE</a>
+			<a href="?lang=en" class="btn btn-secondary btn-sm ml-1">EN</a>
+		</div>
 	</nav>
 	<div class="container mt-3">
 		{{template "store" .}}

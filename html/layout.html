@@ -39,10 +39,10 @@
 {{define "log"}}
 <table class="table">
 	<thead>
-		<th>{{.Translate "layout-date"}}</th>
+		<th>{{.Translate "log-date"}}</th>
 		<th>{{.Translate "coll-edit-status"}}</th>
-		<th>{{.Translate "layout-note"}}</th>
-		<th>{{.Translate "layout-paid"}}</th>
+		<th>{{.Translate "log-remark"}}</th>
+		<th>{{.Translate "log-paid"}}</th>
 	</thead>
 	{{range .Log}}
 		<tr>
@@ -54,7 +54,7 @@
 	{{end}}
 	{{if .Paid}}
 		<tr>
-			<td class="text-right" colspan="3">{{.Translate "layout-amount"}}</td>
+			<td class="text-right" colspan="3">{{.Translate "log-sum"}}</td>
 			<td>{{FmtHuman .Paid}}</td>
 		</tr>
 	{{end}}
@@ -213,7 +213,7 @@
 			<tr>
 				<th>{{.Translate "layout-name"}}</th>
 				<th>{{.Translate "layout-value"}}</th>
-				<th>{{.Translate "layout-charge"}}</th>
+				<th>{{.Translate "layout-fee"}}</th>
 				<th>{{.Translate "layout-sum"}}</th>
 			</tr>
 		</thead>

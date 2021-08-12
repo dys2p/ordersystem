@@ -6,9 +6,11 @@
 		<div class="w-100 text-right">
 			<form class="mb-0" action="/logout" method="post">
 				{{with .AuthorizedCollID}}
-					<a class="btn btn-secondary btn-sm" href="/collection/{{.}}">{{.Translate "client-login"}} {{.}}</a>
-					<button class="btn btn-secondary btn-sm" type="submit" name="logout">{{.Translate "logout"}}</a>
+					<a class="btn btn-secondary btn-sm" href="/collection/{{.}}">{{$.Translate "client-login"}} {{.}}</a>
+					<button class="btn btn-secondary btn-sm" type="submit" name="logout">{{$.Translate "logout"}}</button>
 				{{end}}
+				<a href="?lang=de" class="btn btn-secondary btn-sm ml-1">DE</a>
+				<a href="?lang=en" class="btn btn-secondary btn-sm ml-1">EN</a>
 			</form>
 		</div>
 	</nav>

@@ -281,17 +281,20 @@ type collView struct {
 	ReadOnly      bool
 	ShowHints     bool
 	Notifications []string
+	html.Language
 }
 
 type clientHello struct {
 	AuthorizedCollID string
 	Notifications    []string
+	html.Language
 }
 
 func clientHelloGet(w http.ResponseWriter, r *http.Request) error {
 	return html.ClientHello.Execute(w, clientHello{
 		AuthorizedCollID: sessionCollID(r),
 		Notifications:    notifications(r.Context()),
+		Language:         GetLanguage(r),
 	})
 }
 
@@ -306,6 +309,7 @@ type clientCreate struct {
 	CheckWrittenDownErr bool
 
 	AuthorizedCollID string
+	html.Language
 }
 
 func (data *clientCreate) Valid() bool {
@@ -331,6 +335,7 @@ func clientCreateGet(w http.ResponseWriter, r *http.Request) error {
 		CollPass:         strings.Join(collPass, "-"),
 		CaptchaID:        captcha.NewLen(6),
 		AuthorizedCollID: sessionCollID(r),
+		Language:         GetLanguage(r),
 	})
 }
 
@@ -341,6 +346,7 @@ func clientCreatePost(w http.ResponseWriter, r *http.Request) error {
 		CollPass:         strings.TrimSpace(r.PostFormValue("collection-passphrase")),
 		CheckWrittenDown: r.PostFormValue("check-written-down") != "",
 		AuthorizedCollID: sessionCollID(r),
+		Language:         GetLanguage(r),
 	}
 
 	if !captcha.VerifyString(r.PostFormValue("captcha-id"), r.PostFormValue("captcha-solution")) {
@@ -380,6 +386,7 @@ func clientCollEditGet(w http.ResponseWriter, r *http.Request, coll *Collection)
 		Actor:      Client,
 		Collection: coll,
 		ShowHints:  true,
+		Language:   GetLanguage(r),
 	})
 }
 
@@ -403,6 +410,7 @@ type clientLogin struct {
 	CollPassErr bool
 
 	AuthorizedCollID string
+	html.Language
 }
 
 // success and error url for payment providers, so we don't reveal the collection ID to them
@@ -418,6 +426,7 @@ func clientCollCurrentGet(w http.ResponseWriter, r *http.Request) error {
 func clientCollLoginGet(w http.ResponseWriter, r *http.Request) error {
 	return html.ClientCollLogin.Execute(w, &clientLogin{
 		AuthorizedCollID: sessionCollID(r),
+		Language:         GetLanguage(r),
 	})
 }
 
@@ -426,6 +435,7 @@ func clientCollLoginPost(w http.ResponseWriter, r *http.Request) error {
 	var data = &clientLogin{
 		CollID:           id,
 		AuthorizedCollID: sessionCollID(r),
+		Language:         GetLanguage(r),
 	}
 	if !IsID(id) {
 		data.CollIDErr = true
@@ -449,19 +459,24 @@ func clientCollViewGet(w http.ResponseWriter, r *http.Request, coll *Collection)
 		Collection:    coll,
 		ReadOnly:      true,
 		Notifications: notifications(r.Context()),
+		Language:      GetLanguage(r),
 	})
 }
 
 type clientCollCancel struct {
 	*Collection
 	Err bool
+	html.Language
 }
 
 func clientCollCancelGet(w http.ResponseWriter, r *http.Request, coll *Collection) error {
 	if !coll.ClientCan("cancel") {
 		return ErrNotFound
 	}
-	return html.ClientCollCancel.Execute(w, &clientCollCancel{Collection: coll})
+	return html.ClientCollCancel.Execute(w, &clientCollCancel{
+		Collection: coll,
+		Language:   GetLanguage(r),
+	})
 }
 
 func clientCollCancelPost(w http.ResponseWriter, r *http.Request, coll *Collection) error {
@@ -472,6 +487,7 @@ func clientCollCancelPost(w http.ResponseWriter, r *http.Request, coll *Collecti
 		return html.ClientCollCancel.Execute(w, &clientCollCancel{
 			Collection: coll,
 			Err:        true,
+			Language:   GetLanguage(r),
 		})
 	}
 	if err := db.UpdateCollState(Client, coll, Cancelled, 0, ""); err != nil {
@@ -486,6 +502,7 @@ func clientCollCancelPost(w http.ResponseWriter, r *http.Request, coll *Collecti
 type collDelete struct {
 	*Collection
 	Err bool
+	html.Language
 }
 
 func clientCollDeleteGet(w http.ResponseWriter, r *http.Request, coll *Collection) error {
@@ -494,6 +511,7 @@ func clientCollDeleteGet(w http.ResponseWriter, r *http.Request, coll *Collectio
 	}
 	return html.ClientCollDelete.Execute(w, &collDelete{
 		Collection: coll,
+		Language:   GetLanguage(r),
 	})
 }
 
@@ -505,6 +523,7 @@ func clientCollDeletePost(w http.ResponseWriter, r *http.Request, coll *Collecti
 		return html.ClientCollDelete.Execute(w, &collDelete{
 			Collection: coll,
 			Err:        true,
+			Language:   GetLanguage(r),
 		})
 	}
 	if err := db.Delete(Client, coll); err != nil {
@@ -520,6 +539,7 @@ type clientCollPayBTCPay struct {
 	*Collection
 	CaptchaID  string
 	CaptchaErr bool
+	html.Language
 }
 
 func clientCollPayBTCPayGet(w http.ResponseWriter, r *http.Request, coll *Collection) error {
@@ -529,6 +549,7 @@ func clientCollPayBTCPayGet(w http.ResponseWriter, r *http.Request, coll *Collec
 	return html.ClientCollPayBTCPay.Execute(w, &clientCollPayBTCPay{
 		Collection: coll,
 		CaptchaID:  captcha.New(),
+		Language:   GetLanguage(r),
 	})
 }
 
@@ -542,6 +563,7 @@ func clientCollPayBTCPayPost(w http.ResponseWriter, r *http.Request, coll *Colle
 			Collection: coll,
 			CaptchaErr: true,
 			CaptchaID:  captcha.New(),
+			Language:   GetLanguage(r),
 		})
 	}
 
@@ -596,7 +618,13 @@ func clientCollMessageGet(w http.ResponseWriter, r *http.Request, coll *Collecti
 	if !coll.ClientCan("message") {
 		return ErrNotFound
 	}
-	return html.ClientCollMessage.Execute(w, coll)
+	return html.ClientCollMessage.Execute(w, struct {
+		*Collection
+		html.Language
+	}{
+		Collection: coll,
+		Language:   GetLanguage(r),
+	})
 }
 
 func clientCollMessagePost(w http.ResponseWriter, r *http.Request, coll *Collection) error {
@@ -619,6 +647,7 @@ func clientCollSubmitGet(w http.ResponseWriter, r *http.Request, coll *Collectio
 		Actor:      Client,
 		Collection: coll,
 		ReadOnly:   true,
+		Language:   GetLanguage(r),
 	})
 }
 
@@ -643,6 +672,7 @@ type clientState struct {
 	State      CollState
 
 	AuthorizedCollID string
+	html.Language
 }
 
 func (data *clientState) Valid() bool {
@@ -838,6 +868,7 @@ func clientStateGet(w http.ResponseWriter, r *http.Request) error {
 	return html.ClientStateGet.Execute(w, clientState{
 		AuthorizedCollID: sessionCollID(r),
 		CaptchaID:        captcha.New(),
+		Language:         GetLanguage(r),
 	})
 }
 
@@ -847,6 +878,7 @@ func clientStatePost(w http.ResponseWriter, r *http.Request) error {
 	var data = &clientState{
 		AuthorizedCollID: sessionCollID(r),
 		CollID:           strings.TrimSpace(r.PostFormValue("collection-id")),
+		Language:         GetLanguage(r),
 	}
 
 	if data.CollID == data.AuthorizedCollID {
@@ -883,9 +915,11 @@ func storeIndexGet(w http.ResponseWriter, r *http.Request) error {
 	return html.StoreIndex.Execute(w, struct {
 		*DB
 		Notifications []string
+		html.Language
 	}{
 		db,
 		notifications(r.Context()),
+		GetLanguage(r),
 	})
 }
 
@@ -895,6 +929,7 @@ func storeCollViewGet(w http.ResponseWriter, r *http.Request, coll *Collection) 
 		Collection:    coll,
 		ReadOnly:      true,
 		Notifications: notifications(r.Context()),
+		Language:      GetLanguage(r),
 	})
 }
 
@@ -902,7 +937,13 @@ func storeCollAcceptGet(w http.ResponseWriter, r *http.Request, coll *Collection
 	if !coll.StoreCan("accept") {
 		return ErrNotFound
 	}
-	return html.StoreCollAccept.Execute(w, coll)
+	return html.StoreCollAccept.Execute(w, struct {
+		*Collection
+		html.Language
+	}{
+		Collection: coll,
+		Language:   GetLanguage(r),
+	})
 }
 
 func storeCollAcceptPost(w http.ResponseWriter, r *http.Request, coll *Collection) error {
@@ -921,7 +962,10 @@ func storeCollDeleteGet(w http.ResponseWriter, r *http.Request, coll *Collection
 	if !coll.StoreCan("delete") {
 		return ErrNotFound
 	}
-	return html.StoreCollDelete.Execute(w, &collDelete{Collection: coll})
+	return html.StoreCollDelete.Execute(w, &collDelete{
+		Collection: coll,
+		Language:   GetLanguage(r),
+	})
 }
 
 func storeCollDeletePost(w http.ResponseWriter, r *http.Request, coll *Collection) error {
@@ -932,6 +976,7 @@ func storeCollDeletePost(w http.ResponseWriter, r *http.Request, coll *Collectio
 		return html.StoreCollDelete.Execute(w, &collDelete{
 			Collection: coll,
 			Err:        true,
+			Language:   GetLanguage(r),
 		})
 	}
 	if err := db.Delete(Store, coll); err != nil {
@@ -944,6 +989,7 @@ func storeCollDeletePost(w http.ResponseWriter, r *http.Request, coll *Collectio
 type taskView struct {
 	*Task
 	CollLink string
+	html.Language
 }
 
 func storeTaskConfirmArrivedGet(w http.ResponseWriter, r *http.Request, coll *Collection, task *Task) error {
@@ -953,6 +999,7 @@ func storeTaskConfirmArrivedGet(w http.ResponseWriter, r *http.Request, coll *Co
 	return html.StoreTaskConfirmArrived.Execute(w, taskView{
 		Task:     task,
 		CollLink: coll.Link(),
+		Language: GetLanguage(r),
 	})
 }
 
@@ -974,6 +1021,7 @@ func storeTaskConfirmOrderedGet(w http.ResponseWriter, r *http.Request, coll *Co
 	return html.StoreTaskConfirmOrdered.Execute(w, taskView{
 		Task:     task,
 		CollLink: coll.Link(),
+		Language: GetLanguage(r),
 	})
 }
 
@@ -995,6 +1043,7 @@ func storeTaskMarkFailedGet(w http.ResponseWriter, r *http.Request, coll *Collec
 	return html.StoreTaskMarkFailed.Execute(w, taskView{
 		Task:     task,
 		CollLink: coll.Link(),
+		Language: GetLanguage(r),
 	})
 }
 
@@ -1015,13 +1064,17 @@ func storeTaskMarkFailedPost(w http.ResponseWriter, r *http.Request, coll *Colle
 type storeCollConfirmPayment struct {
 	Coll *Collection
 	Err  bool
+	html.Language
 }
 
 func storeCollConfirmPaymentGet(w http.ResponseWriter, r *http.Request, coll *Collection) error {
 	if !coll.StoreCan("confirm-payment") {
 		return ErrNotFound
 	}
-	return html.StoreCollConfirmPayment.Execute(w, storeCollConfirmPayment{Coll: coll})
+	return html.StoreCollConfirmPayment.Execute(w, storeCollConfirmPayment{
+		Coll:     coll,
+		Language: GetLanguage(r),
+	})
 }
 
 func storeCollConfirmPaymentPost(w http.ResponseWriter, r *http.Request, coll *Collection) error {
@@ -1033,8 +1086,9 @@ func storeCollConfirmPaymentPost(w http.ResponseWriter, r *http.Request, coll *C
 	var paidAmountFloat, err = strconv.ParseFloat(r.PostFormValue("paid-amount"), 64)
 	if err != nil {
 		return html.StoreCollConfirmPayment.Execute(w, storeCollConfirmPayment{
-			Coll: coll,
-			Err:  true,
+			Coll:     coll,
+			Err:      true,
+			Language: GetLanguage(r),
 		})
 	}
 
@@ -1063,7 +1117,13 @@ func storeCollConfirmPickupGet(w http.ResponseWriter, r *http.Request, coll *Col
 	if !coll.StoreCan("confirm-pickup") {
 		return ErrNotFound
 	}
-	return html.StoreCollConfirmPickup.Execute(w, coll)
+	return html.StoreCollConfirmPickup.Execute(w, struct {
+		*Collection
+		html.Language
+	}{
+		Collection: coll,
+		Language:   GetLanguage(r),
+	})
 }
 
 func storeCollConfirmPickupPost(w http.ResponseWriter, r *http.Request, coll *Collection) error {
@@ -1099,7 +1159,13 @@ func storeCollConfirmReshippedGet(w http.ResponseWriter, r *http.Request, coll *
 	if !coll.StoreCan("confirm-reshipped") {
 		return ErrNotFound
 	}
-	return html.StoreCollConfirmReshipped.Execute(w, coll)
+	return html.StoreCollConfirmReshipped.Execute(w, struct {
+		*Collection
+		html.Language
+	}{
+		Collection: coll,
+		Language:   GetLanguage(r),
+	})
 }
 
 func storeCollConfirmReshippedPost(w http.ResponseWriter, r *http.Request, coll *Collection) error {
@@ -1138,6 +1204,7 @@ func storeTaskConfirmPickupGet(w http.ResponseWriter, r *http.Request, coll *Col
 	return html.StoreTaskConfirmPickup.Execute(w, taskView{
 		Task:     task,
 		CollLink: coll.Link(),
+		Language: GetLanguage(r),
 	})
 }
 
@@ -1163,6 +1230,7 @@ func storeTaskConfirmReshippedGet(w http.ResponseWriter, r *http.Request, coll *
 	return html.StoreTaskConfirmReshipped.Execute(w, taskView{
 		Task:     task,
 		CollLink: coll.Link(),
+		Language: GetLanguage(r),
 	})
 }
 
@@ -1188,6 +1256,7 @@ func storeCollEditGet(w http.ResponseWriter, r *http.Request, coll *Collection) 
 	return html.StoreCollEdit.Execute(w, collView{
 		Actor:      Store,
 		Collection: coll,
+		Language:   GetLanguage(r),
 	})
 }
 
@@ -1217,7 +1286,13 @@ func storeCollMessageGet(w http.ResponseWriter, r *http.Request, coll *Collectio
 	if !coll.StoreCan("message") {
 		return ErrNotFound
 	}
-	return html.StoreCollMessage.Execute(w, coll)
+	return html.StoreCollMessage.Execute(w, struct {
+		*Collection
+		html.Language
+	}{
+		coll,
+		GetLanguage(r),
+	})
 }
 
 func storeCollMessagePost(w http.ResponseWriter, r *http.Request, coll *Collection) error {
@@ -1234,7 +1309,13 @@ func storeCollPriceRisedGet(w http.ResponseWriter, r *http.Request, coll *Collec
 	if !coll.StoreCan("price-rised") {
 		return ErrNotFound
 	}
-	return html.StoreCollPriceRised.Execute(w, coll)
+	return html.StoreCollPriceRised.Execute(w, struct {
+		*Collection
+		html.Language
+	}{
+		coll,
+		GetLanguage(r),
+	})
 }
 
 func storeCollPriceRisedPost(w http.ResponseWriter, r *http.Request, coll *Collection) error {
@@ -1252,7 +1333,13 @@ func storeCollReturnGet(w http.ResponseWriter, r *http.Request, coll *Collection
 	if !coll.StoreCan("return") {
 		return ErrNotFound
 	}
-	return html.StoreCollReturn.Execute(w, coll)
+	return html.StoreCollReturn.Execute(w, struct {
+		*Collection
+		html.Language
+	}{
+		coll,
+		GetLanguage(r),
+	})
 }
 
 func storeCollReturnPost(w http.ResponseWriter, r *http.Request, coll *Collection) error {
@@ -1270,13 +1357,17 @@ func storeCollReturnPost(w http.ResponseWriter, r *http.Request, coll *Collectio
 type storeCollReject struct {
 	Coll *Collection
 	Err  bool
+	html.Language
 }
 
 func storeCollRejectGet(w http.ResponseWriter, r *http.Request, coll *Collection) error {
 	if !coll.StoreCan("reject") {
 		return ErrNotFound
 	}
-	return html.StoreCollReject.Execute(w, storeCollReject{Coll: coll})
+	return html.StoreCollReject.Execute(w, storeCollReject{
+		Coll:     coll,
+		Language: GetLanguage(r),
+	})
 }
 
 func storeCollRejectPost(w http.ResponseWriter, r *http.Request, coll *Collection) error {
@@ -1285,8 +1376,9 @@ func storeCollRejectPost(w http.ResponseWriter, r *http.Request, coll *Collectio
 	}
 	if r.PostFormValue("confirm-reject") == "" {
 		return html.StoreCollReject.Execute(w, storeCollReject{
-			Coll: coll,
-			Err:  true,
+			Coll:     coll,
+			Err:      true,
+			Language: GetLanguage(r),
 		})
 	}
 	if err := db.UpdateCollState(Store, coll, Rejected, 0, r.PostFormValue("reject-message")); err != nil {
@@ -1300,13 +1392,17 @@ func storeCollRejectPost(w http.ResponseWriter, r *http.Request, coll *Collectio
 type storeCollMarkSpam struct {
 	Coll *Collection
 	Err  bool
+	html.Language
 }
 
 func storeCollMarkSpamGet(w http.ResponseWriter, r *http.Request, coll *Collection) error {
 	if !coll.StoreCan("mark-spam") {
 		return ErrNotFound
 	}
-	return html.StoreCollMarkSpam.Execute(w, storeCollMarkSpam{Coll: coll})
+	return html.StoreCollMarkSpam.Execute(w, storeCollMarkSpam{
+		Coll:     coll,
+		Language: GetLanguage(r),
+	})
 }
 
 func storeCollMarkSpamPost(w http.ResponseWriter, r *http.Request, coll *Collection) error {
@@ -1315,8 +1411,9 @@ func storeCollMarkSpamPost(w http.ResponseWriter, r *http.Request, coll *Collect
 	}
 	if r.PostFormValue("confirm-mark-spam") == "" {
 		return html.StoreCollMarkSpam.Execute(w, storeCollMarkSpam{
-			Coll: coll,
-			Err:  true,
+			Coll:     coll,
+			Err:      true,
+			Language: GetLanguage(r),
 		})
 	}
 	if err := db.UpdateCollState(Store, coll, Spam, 0, "Dein Antrag wurde als Spam markiert."); err != nil {
@@ -1328,7 +1425,7 @@ func storeCollMarkSpamPost(w http.ResponseWriter, r *http.Request, coll *Collect
 }
 
 func storeLoginGet(w http.ResponseWriter, r *http.Request) error {
-	return html.StoreLogin.Execute(w, nil)
+	return html.StoreLogin.Execute(w, GetLanguage(r))
 }
 
 func storeLoginPost(w http.ResponseWriter, r *http.Request) error {

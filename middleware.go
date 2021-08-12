@@ -8,6 +8,15 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
+// GetLanguage returns the "lang" GET parameter or, if not present, the Accept-Language header value.
+// No matching is performed.
+func GetLanguage(r *http.Request) html.Language {
+	if lang := sessionManager.GetString(r.Context(), "lang"); lang != "" {
+		return html.Language(lang)
+	}
+	return html.Language(r.Header.Get("Accept-Language"))
+}
+
 type HandlerErrFunc func(http.ResponseWriter, *http.Request) error
 
 func auth(f http.HandlerFunc) http.HandlerFunc {
@@ -22,6 +31,9 @@ func auth(f http.HandlerFunc) http.HandlerFunc {
 
 func client(f HandlerErrFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if lang := r.URL.Query().Get("lang"); lang != "" {
+			sessionManager.Put(r.Context(), "lang", lang)
+		}
 		if err := f(w, r); err != nil {
 			var msg string
 			if err == ErrNotFound {
@@ -32,9 +44,11 @@ func client(f HandlerErrFunc) http.HandlerFunc {
 			html.ClientError.Execute(w, struct {
 				AuthorizedCollID string
 				Msg              string
+				html.Language
 			}{
 				sessionCollID(r),
 				msg,
+				GetLanguage(r),
 			})
 		}
 	}
@@ -63,7 +77,13 @@ func clientWithCollection(f func(w http.ResponseWriter, r *http.Request, coll *C
 func store(f HandlerErrFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if err := f(w, r); err != nil {
-			html.StoreError.Execute(w, err.Error())
+			html.StoreError.Execute(w, struct {
+				Msg string
+				html.Language
+			}{
+				err.Error(),
+				GetLanguage(r),
+			})
 		}
 	}
 }

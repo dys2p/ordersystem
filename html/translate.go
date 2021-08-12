@@ -1,8 +1,6 @@
 package html
 
 import (
-	"net/http"
-
 	"golang.org/x/text/language"
 	"golang.org/x/text/message"
 )
@@ -36,6 +34,10 @@ var translations = map[string][]TagStr{
 	"coll-new": []TagStr{
 		TagStr{language.AmericanEnglish, "Create new order"},
 		TagStr{language.German, "Neuen Bestellauftrag beginnen"},
+	},
+	"coll-view-edit": []TagStr{
+		TagStr{language.AmericanEnglish, "View or edit order"},
+		TagStr{language.German, "Auftrag ansehen oder bearbeiten"},
 	},
 	"coll-new-intro": []TagStr{
 		TagStr{language.AmericanEnglish, "We have generated a random order ID and passphrase for your new order:"},
@@ -128,13 +130,13 @@ var translations = map[string][]TagStr{
 		TagStr{language.German, "Mit Bitcoin oder Monero bezahlen"},
 	},
 	"coll-btcpay-text": []TagStr{
-		TagStr{language.AmericanEnglish, `<p>If you continue, an invoice about <strong>{{FmtHuman .Due}}</strong> will be generated on our BTCPayServer, you can pay with Bitcoin (BTC) or Monero (XMR). The invoice is valid for <strong>60&nbsp;minutes</strong>. Until the time expires, your transaction must be visible in the blockchain.</p>
-<p>Please make sure that you pay the bill <strong>on time, complete and in a single transaction</strong>. Only then we can accept the conversion rate. If your exchange or client deducts transaction fees from the amount, you must add them before. <strong>If your payment is late or partial, the coins will still be sold automatically on an exchange.</strong> After that, we will manually enter the achieved sale value here.</p>`},
+		TagStr{language.AmericanEnglish, `<p>If you continue, an invoice of <strong>{{FmtHuman .Due}}</strong> will be generated on our BTCPayServer. You can pay it with Bitcoin (BTC) or Monero (XMR). The invoice is valid for <strong>60&nbsp;minutes</strong>. Your transaction must become visible in the blockchain before this time expires.</p>
+<p>Please make sure that you pay the bill <strong>in time, completely and with a single transaction</strong>. Only then we can accept the conversion rate. If your exchange or client deducts transaction fees from the amount, you must add them before. <strong>If your payment is late or partial, the coins will still be sold automatically on an exchange.</strong> After that, we will manually enter the achieved sale value here.</p>`},
 		TagStr{language.German, `<p>Wenn du fortfährst, wird auf unserem BTCPayServer eine Rechnung über <strong>{{FmtHuman .Due}}</strong> erzeugt, du mit Bitcoin (BTC) oder Monero (XMR) bezahlen kannst. Die Rechnung ist <strong>60&nbsp;Minuten</strong> lang gültig. Bis zum Ablauf der Zeit muss deine Transaktion in der Blockchain sichtbar sein.</p>
 <p>Bitte achte darauf, dass du die Rechnung <strong>rechtzeitig, vollständig und mit einer einzelnen Transaktion</strong> bezahlst. Nur dann können wir den Umrechnungskurs akzeptieren. <strong>Falls deine Börse oder dein Client die Transaktionsgebühren von dem Betrag abzieht, musst du sie vorher hinzuaddieren.</strong> Falls deine Zahlung verspätet oder nur teilweise eintrifft, werden die Coins trotzdem automatisch an einer Börse verkauft. Danach werden wir den erzielten Verkaufswert manuell hier eintragen.</p>`},
 	},
 	"coll-btcpay-button": []TagStr{
-		TagStr{language.AmericanEnglish, "Generate invoice"},
+		TagStr{language.AmericanEnglish, "Create invoice"},
 		TagStr{language.German, "Rechnung erzeugen"},
 	},
 
@@ -148,7 +150,7 @@ var translations = map[string][]TagStr{
 		TagStr{language.German, `Bitte bestätige deinen Auftrag, indem du unten auf "Verbindlichen Bestellauftrag erteilen" klickst.`},
 	},
 	"coll-submit-payment": []TagStr{
-		TagStr{language.AmericanEnglish, "Once we have accepted your order, you can pay it <strong>only by prepayment</strong> in the following way:"},
+		TagStr{language.AmericanEnglish, "Once we have accepted your order, you can pay it <strong>in advance only</strong> in one of the following ways:"},
 		TagStr{language.German, "Sobald wir deine Bestellung akzeptiert haben, kannst du sie <strong>nur per Vorkasse</strong> auf folgende Weise bezahlen:"},
 	},
 	"coll-submit-cash": []TagStr{
@@ -160,8 +162,8 @@ var translations = map[string][]TagStr{
 		TagStr{language.German, "per Überweisung"},
 	},
 	"coll-submit-coins": []TagStr{
-		TagStr{language.AmericanEnglish, "with Bitcoin and Monero"},
-		TagStr{language.German, "mit Bitcoin und Monero"},
+		TagStr{language.AmericanEnglish, "with Bitcoin or Monero"},
+		TagStr{language.German, "mit Bitcoin oder Monero"},
 	},
 	"coll-submit-gwg": []TagStr{
 		TagStr{language.AmericanEnglish, "Please note the respective maximum limits according to the Money Laundering Act."},
@@ -172,7 +174,7 @@ var translations = map[string][]TagStr{
 		TagStr{language.German, "Bitte beachte unsere AGB und unsere Widerrufsbelehrung."},
 	},
 	"coll-submit-note": []TagStr{
-		TagStr{language.AmericanEnglish, "Space for notes"},
+		TagStr{language.AmericanEnglish, "Space for remarks"},
 		TagStr{language.German, "Raum für Anmerkungen"},
 	},
 	"coll-submit-button": []TagStr{
@@ -198,7 +200,7 @@ var translations = map[string][]TagStr{
 		TagStr{language.German, "Bestellauftrag löschen"},
 	},
 	"coll-view-course": []TagStr{
-		TagStr{language.AmericanEnglish, "Course"},
+		TagStr{language.AmericanEnglish, "Log"},
 		TagStr{language.German, "Verlauf"},
 	}, // /store/collection-view.html
 
@@ -208,7 +210,7 @@ var translations = map[string][]TagStr{
 		TagStr{language.German, "Fehler"},
 	}, // /store/error.html
 	"error2": []TagStr{
-		TagStr{language.AmericanEnglish, "Back to home page"},
+		TagStr{language.AmericanEnglish, "Back to main page"},
 		TagStr{language.German, "Zurück zur Startseite"},
 	}, // /store/error.html
 
@@ -218,7 +220,7 @@ var translations = map[string][]TagStr{
 		TagStr{language.German, "Auftragsstatus"},
 	},
 	"state-get-numbers": []TagStr{
-		TagStr{language.AmericanEnglish, "Please type in the numbers:"},
+		TagStr{language.AmericanEnglish, "Please type the digits:"},
 		TagStr{language.German, "Bitte tippe die Ziffern ab:"},
 	},
 	"state-get-captcha": []TagStr{
@@ -240,7 +242,7 @@ var translations = map[string][]TagStr{
 		TagStr{language.German, "Willkommen!"},
 	},
 	"coll-display-state": []TagStr{
-		TagStr{language.AmericanEnglish, "Display order state only"},
+		TagStr{language.AmericanEnglish, "Show order state only"},
 		TagStr{language.German, "Nur Auftragsstatus anzeigen"},
 	},
 
@@ -262,7 +264,7 @@ var translations = map[string][]TagStr{
 
 	// store.html
 	"store-overview": []TagStr{
-		TagStr{language.AmericanEnglish, "Overview"},
+		TagStr{language.AmericanEnglish, "What's new?"},
 		TagStr{language.German, "Übersicht"},
 	},
 
@@ -271,48 +273,48 @@ var translations = map[string][]TagStr{
 		TagStr{language.AmericanEnglish, "Please type the numbers to prove you mean it:"},
 		TagStr{language.German, "Bitte tippe die Ziffern ab, um zu beweisen, dass du es ernst meinst:"},
 	},
-	"layout-date": []TagStr{
+	"log-date": []TagStr{
 		TagStr{language.AmericanEnglish, "Date"},
 		TagStr{language.German, "Datum"},
 	},
-	"layout-note": []TagStr{
-		TagStr{language.AmericanEnglish, "Note"},
+	"log-remark": []TagStr{
+		TagStr{language.AmericanEnglish, "Remark"},
 		TagStr{language.German, "Vermerk"},
 	},
-	"layout-paid": []TagStr{
-		TagStr{language.AmericanEnglish, "amount paid"},
+	"log-paid": []TagStr{
+		TagStr{language.AmericanEnglish, "Amount paid"},
 		TagStr{language.German, "Bezahlter Betrag"},
 	},
-	"layout-amount": []TagStr{
-		TagStr{language.AmericanEnglish, "amount"},
+	"log-sum": []TagStr{
+		TagStr{language.AmericanEnglish, "Sum"},
 		TagStr{language.German, "Summe"},
 	},
 	"layout-client-name": []TagStr{
-		TagStr{language.AmericanEnglish, "The name under which we represent you. This is the name we will give to the actual merchant or provider. Keep in mind that involved banks and payment services may also find out the name.amount"},
+		TagStr{language.AmericanEnglish, "The name under which we represent you. This is the name we will give to the actual merchant or provider. Keep in mind that involved banks and payment services may also know the name."},
 		TagStr{language.German, "Der Name, unter dem wir dich vertreten. Diesen Namen werden wir bei dem tatsächlichen Versandhändler bzw. Anbieter angeben. Bedenke dass möglicherweise auch beteiligte Banken und Bezahldienste den Namen erfahren."},
 	},
 	"layout-client-name-help": []TagStr{
-		TagStr{language.AmericanEnglish, "Keep in mind that a false statement may lead to problems in the case of warranty or guarantee claims."},
+		TagStr{language.AmericanEnglish, "Keep in mind that a false statement may lead to problems in case of warranty or guarantee claims."},
 		TagStr{language.German, "Bedenke dass eine falsche Angabe im Gewährleistungs- oder Garantiefall unter Umständen zu Problemen führen kann."},
 	},
 	"layout-client-contact": []TagStr{
-		TagStr{language.AmericanEnglish, "Contact option for queries (optional, will not be passed on and deleted 14 days after completion of the order)amount"},
-		TagStr{language.German, "Kontaktmöglichkeit für Rückfragen (freiwillig, wird nicht weitergegeben und 14 Tage nach Abschluss des Auftrags gelöscht)"},
+		TagStr{language.AmericanEnglish, "Contact option for possible further inquiries (optional, will not be passed on, will be deleted 14 days after completion of the order)"},
+		TagStr{language.German, "Kontaktmöglichkeit für mögliche Rückfragen (freiwillig, wird nicht weitergegeben und 14 Tage nach Abschluss des Auftrags gelöscht)"},
 	},
 	"layout-client-contact-help": []TagStr{
-		TagStr{language.AmericanEnglish, "please do not mention order number when contacting us"},
+		TagStr{language.AmericanEnglish, "please do not mention the order number when contacting us"},
 		TagStr{language.German, "bei Kontaktaufnahme bitte keine Auftragsnummer nennen"},
 	},
 	"layout-client-age": []TagStr{
-		TagStr{language.AmericanEnglish, "If proof of age is required, it can be provided in person at the store. Goods requiring other proof cannot be ordered."},
-		TagStr{language.German, "Falls ein Altersnachweis nötig ist, kann er persönlich im Ladenlokal erbracht werden. Anderweitig nachweispflichtige Waren können nicht bestellt werden."},
+		TagStr{language.AmericanEnglish, "If proof of age is required, it can be provided in person at our store. Goods requiring other proof cannot be ordered."},
+		TagStr{language.German, "Falls ein Altersnachweis nötig ist, kann er persönlich in unserem Ladenlokal erbracht werden. Anderweitig nachweispflichtige Waren können nicht bestellt werden."},
 	},
 	"layout-add": []TagStr{
 		TagStr{language.AmericanEnglish, "Add another order"},
 		TagStr{language.German, "Weiteren Auftrag hinzufügen"},
 	},
 	"layout-delivery": []TagStr{
-		TagStr{language.AmericanEnglish, "Pick up or forwarding"},
+		TagStr{language.AmericanEnglish, "Pickup or forwarding"},
 		TagStr{language.German, "Abholung oder Weiterversand"},
 	},
 	"layout-delivery-text": []TagStr{
@@ -320,12 +322,12 @@ var translations = map[string][]TagStr{
 		TagStr{language.German, "Du kannst die Ware im Ladenlokal (Bernhard-Göring-Straße 162, 04277 Leipzig, beachte die Öffnungszeiten) abholen. Wir können sie auch per Post oder Paketdienst an dich weiterleiten."},
 	},
 	"layout-pickup": []TagStr{
-		TagStr{language.AmericanEnglish, "I pick up the goods <strong>under mention of the order ID</strong> in the store."},
+		TagStr{language.AmericanEnglish, "I pick up the goods in the store, <strong>mentioning the order ID</strong>."},
 		TagStr{language.German, "Ich hole die Ware <strong>unter Nennung der Auftragsnummer</strong> im Ladenlokal ab."},
 	},
 	"layout-locker": []TagStr{
-		TagStr{language.AmericanEnglish, "I pick up the goods <strong>from a locker</strong> in the store. I bring over an opened padlock."},
-		TagStr{language.German, "Ich hole die Ware <strong>aus einem Schließfach</strong> im Ladenlokal ab. Ein geöffnetes Vorhängeschloss bringe ich vorbei."},
+		TagStr{language.AmericanEnglish, "I pick up the goods <strong>from a locker</strong> in the store. I'm bringing you an opened padlock before."},
+		TagStr{language.German, "Ich hole die Ware <strong>aus einem Schließfach</strong> im Ladenlokal ab. Ein geöffnetes Vorhängeschloss bringe ich vorher vorbei."},
 	},
 	"layout-stamp": []TagStr{
 		TagStr{language.AmericanEnglish, "Please send me the goods. I will bring a paid and labeled parcel stamp."},
@@ -344,27 +346,27 @@ var translations = map[string][]TagStr{
 		TagStr{language.German, "Nachname"},
 	},
 	"layout-address-supplement": []TagStr{
-		TagStr{language.AmericanEnglish, "address supplement"},
+		TagStr{language.AmericanEnglish, "Address supplement"},
 		TagStr{language.German, "Adresszusatz"},
 	},
 	"layout-street": []TagStr{
-		TagStr{language.AmericanEnglish, "street"},
+		TagStr{language.AmericanEnglish, "Street"},
 		TagStr{language.German, "Straße"},
 	},
 	"layout-street-number": []TagStr{
-		TagStr{language.AmericanEnglish, "street number"},
+		TagStr{language.AmericanEnglish, "House number"},
 		TagStr{language.German, "Hausnummer"},
 	},
 	"layout-postcode": []TagStr{
-		TagStr{language.AmericanEnglish, "postcode"},
+		TagStr{language.AmericanEnglish, "Postal Code"},
 		TagStr{language.German, "Postleitzahl"},
 	},
 	"layout-town": []TagStr{
-		TagStr{language.AmericanEnglish, "town"},
+		TagStr{language.AmericanEnglish, "Town"},
 		TagStr{language.German, "Stadt"},
 	},
 	"layout-parcel": []TagStr{
-		TagStr{language.AmericanEnglish, `You can find out how to enter the address of a DHL Packstation at <a href="https://dont.re/?https://parcelshopfinder.dhlparcel.com/html/note_direct_access_germany.html?setLng=en" target="_blank">dhlparcel.com</a>. You will need a DHL customer account with a postal number.`},
+		TagStr{language.AmericanEnglish, `You can find out how to enter the address of a DHL Packstation at <a href="https://dont.re/?https://parcelshopfinder.dhlparcel.com/html/note_direct_access_germany.html?setLng=en" target="_blank">dhlparcel.com</a>. You will need a DHL customer account with a PostNumber.`},
 		TagStr{language.German, `Wie du die Adresse einer DHL-Packstation eingeben kannst, erfährst du auf <a href="https://dont.re/?https://parcelshopfinder.dhlparcel.com/html/note_direct_access_germany.html?setLng=de" target="_blank">dhlparcel.com</a>. Dazu brauchst du ein DHL-Kundenkonto mit Postnummer.`},
 	},
 	"layout-reshipment": []TagStr{
@@ -372,7 +374,7 @@ var translations = map[string][]TagStr{
 		TagStr{language.German, "Kosten für Weiterversand (bei null wird der Mindestwert genommen)."},
 	},
 	"layout-summary": []TagStr{
-		TagStr{language.AmericanEnglish, "summary"},
+		TagStr{language.AmericanEnglish, "Summary"},
 		TagStr{language.German, "Zusammenfassung"},
 	},
 	"layout-name": []TagStr{
@@ -383,12 +385,12 @@ var translations = map[string][]TagStr{
 		TagStr{language.AmericanEnglish, "Order value"},
 		TagStr{language.German, "Bestellwert"},
 	},
-	"layout-charge": []TagStr{
-		TagStr{language.AmericanEnglish, "Order charge"},
+	"layout-fee": []TagStr{
+		TagStr{language.AmericanEnglish, "Order fee"},
 		TagStr{language.German, "Auftragsgebühr"},
 	},
 	"layout-sum": []TagStr{
-		TagStr{language.AmericanEnglish, "= sum"},
+		TagStr{language.AmericanEnglish, "= Sum"},
 		TagStr{language.German, "= Summe"},
 	},
 	"layout-status-arrived": []TagStr{
@@ -445,7 +447,7 @@ var translations = map[string][]TagStr{
 
 	// store/collection-confirm-pickup.html
 	"store-pickup": []TagStr{
-		TagStr{language.AmericanEnglish, "Confirm pick up"},
+		TagStr{language.AmericanEnglish, "Confirm pickup"},
 		TagStr{language.German, "Abholung bestätigen"},
 	},
 	"store-pickup-text": []TagStr{
@@ -537,7 +539,7 @@ var translations = map[string][]TagStr{
 		TagStr{language.German, "Summe:"},
 	},
 	"store-view-payment": []TagStr{
-		TagStr{language.AmericanEnglish, "Note payment"},
+		TagStr{language.AmericanEnglish, "Enter payment"},
 		TagStr{language.German, "Zahlung vermerken"},
 	},
 	"store-view-pickup": []TagStr{
@@ -587,10 +589,10 @@ var translations = map[string][]TagStr{
 		TagStr{language.German, "Einzelaufträge"},
 	},
 	"store-open-order": []TagStr{
-		TagStr{language.AmericanEnglish, "Thereof not yet ordered"},
+		TagStr{language.AmericanEnglish, "Not ordered yet thereof"},
 		TagStr{language.German, "Davon noch nicht bestellt"},
 	},
-	"store-complet": []TagStr{
+	"store-completed": []TagStr{
 		TagStr{language.AmericanEnglish, "Completed"},
 		TagStr{language.German, "Abgeschlossen"},
 	},
@@ -654,18 +656,6 @@ var translations = map[string][]TagStr{
 
 // Language is any string. It will be matched by golang.org/x/text/language.Make and golang.org/x/text/language.NewMatcher.
 type Language string
-
-// GetLanguage returns the "lang" GET parameter or, if not present, the Accept-Language header value.
-// No matching is performed.
-func GetLanguage(r *http.Request) Language {
-	if lang := r.URL.Query().Get("lang"); lang != "" {
-		if len(lang) > 35 {
-			lang = lang[:35] // max length of language tag
-		}
-		return Language(lang)
-	}
-	return Language(r.Header.Get("Accept-Language"))
-}
 
 func (lang Language) Translate(key string, args ...interface{}) string {
 	item, ok := translations[key]
