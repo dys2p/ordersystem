@@ -76,6 +76,9 @@ func clientWithCollection(f func(w http.ResponseWriter, r *http.Request, coll *C
 
 func store(f HandlerErrFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if lang := r.URL.Query().Get("lang"); lang != "" {
+			sessionManager.Put(r.Context(), "lang", lang)
+		}
 		if err := f(w, r); err != nil {
 			html.StoreError.Execute(w, struct {
 				Msg string

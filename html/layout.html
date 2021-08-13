@@ -229,19 +229,19 @@
 					'<p>Status: {{.State.Description}}</p>' +
 					'<p>' +
 					'	{{if $.StoreCanTask "confirm-arrived" .}}' +
-					'		<a class="btn btn-success" href="/collection/{{$.ID}}/confirm-arrived/{{.ID}}">{{.Translate "layout-status-arrived"}}</a>' +
+					'		<a class="btn btn-success" href="/collection/{{$.ID}}/confirm-arrived/{{.ID}}">{{$.Translate "layout-status-arrived"}}</a>' +
 					'	{{end}}' +
 					'	{{if $.StoreCanTask "confirm-ordered" .}}' +
-					'		<a class="btn btn-success" href="/collection/{{$.ID}}/confirm-ordered/{{.ID}}">{{.Translate "layout-status-ordered"}}</a>' +
+					'		<a class="btn btn-success" href="/collection/{{$.ID}}/confirm-ordered/{{.ID}}">{{$.Translate "layout-status-ordered"}}</a>' +
 					'	{{end}}' +
 					'	{{if $.StoreCanTask "confirm-pickup" .}}' +
-					'		<a class="btn btn-success" href="/collection/{{$.ID}}/confirm-pickup/{{.ID}}">{{.Translate "layout-status-pickup"}}</a>' +
+					'		<a class="btn btn-success" href="/collection/{{$.ID}}/confirm-pickup/{{.ID}}">{{$.Translate "layout-status-pickup"}}</a>' +
 					'	{{end}}' +
 					'	{{if $.StoreCanTask "confirm-reshipped" .}}' +
-					'		<a class="btn btn-success" href="/collection/{{$.ID}}/confirm-reshipped/{{.ID}}">{{.Translate "layout-status-reshipped"}}</a>' +
+					'		<a class="btn btn-success" href="/collection/{{$.ID}}/confirm-reshipped/{{.ID}}">{{$.Translate "layout-status-reshipped"}}</a>' +
 					'	{{end}}' +
 					'	{{if $.StoreCanTask "mark-failed" .}}' +
-					'		<a class="btn btn-warning" href="/collection/{{$.ID}}/mark-failed/{{.ID}}">{{.Translate "layout-status-failed"}}</a>' +
+					'		<a class="btn btn-warning" href="/collection/{{$.ID}}/mark-failed/{{.ID}}">{{$.Translate "layout-status-failed"}}</a>' +
 					'	{{end}}' +
 					'</p>'
 				{{else}}

@@ -300,7 +300,7 @@ var translations = map[string][]TagStr{
 		TagStr{language.German, "Bedenke dass eine falsche Angabe im Gewährleistungs- oder Garantiefall unter Umständen zu Problemen führen kann."},
 	},
 	"layout-client-contact": []TagStr{
-		TagStr{language.AmericanEnglish, "Contact option for possible further inquiries (optional, will not be passed on, will be deleted 14 days after completion of the order)"},
+		TagStr{language.AmericanEnglish, "Contact option for possible further inquiries (optional, will not be given to others, will be deleted 14 days after completion of the order)"},
 		TagStr{language.German, "Kontaktmöglichkeit für mögliche Rückfragen (freiwillig, wird nicht weitergegeben und 14 Tage nach Abschluss des Auftrags gelöscht)"},
 	},
 	"layout-client-contact-help": []TagStr{

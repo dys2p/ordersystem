@@ -7,7 +7,7 @@
 	<p><strong>{{.Translate "store-view-amount"}}</strong> {{FmtHuman .Sum}}</p>
 	<p>
 		{{if .StoreCan "accept"}}
-			<a class="btn btn-success" href="/collection/{{$.ID}}/accept">{{.Translate "store-accept"}}<</a>
+			<a class="btn btn-success" href="/collection/{{$.ID}}/accept">{{.Translate "store-accept"}}</a>
 		{{end}}
 		{{if .StoreCan "confirm-payment"}}
 			<a class="btn btn-success" href="/collection/{{$.ID}}/confirm-payment">{{.Translate "store-view-payment"}}</a>
