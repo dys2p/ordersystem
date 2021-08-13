@@ -1,6 +1,6 @@
 {{define "client"}}
 	<h1>{{.Translate "coll-edit-order"}} {{.CollID}}</h1>
-	<p class="mt-3">{{.Translate "coll-edit-status"}} {{.State.Description}}</p>
+	<p class="mt-3">{{.Translate "coll-edit-status"}} <strong>{{.Translate .State.NameKey}}</strong> ({{.Translate .State.DescriptionKey}})</p>
 	<p>{{.Translate "state-post-login"}}</p>
 
 	<!-- errors are displayed in the login form -->

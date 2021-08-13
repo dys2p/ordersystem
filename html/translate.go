@@ -14,6 +14,156 @@ type TagStr struct {
 
 // global variable used by type Language
 var translations = map[string][]TagStr{
+
+	// collection state
+	"collstate-accepted": []TagStr{
+		TagStr{language.AmericanEnglish, "Accepted"},
+		TagStr{language.German, "Angenommen"},
+	},
+	"collstate-desc-accepted": []TagStr{
+		TagStr{language.AmericanEnglish, "Your order has been accepted. Please transfer the money to us. We will then execute your order."},
+		TagStr{language.German, "Dein Bestellauftrag wurde angenommen. Bitte lasse uns das Geld zukommen. Dann führen wir den Bestellauftrag aus."},
+	},
+	"collstate-archived": []TagStr{
+		TagStr{language.AmericanEnglish, "Archived"},
+		TagStr{language.German, "Archiviert"},
+	},
+	"collstate-desc-archived": []TagStr{
+		TagStr{language.AmericanEnglish, "Your contact and delivery information has been deleted."},
+		TagStr{language.German, "Kontakt- und Lieferinformationen wurden gelöscht."},
+	},
+	"collstate-cancelled": []TagStr{
+		TagStr{language.AmericanEnglish, "Cancelled"},
+		TagStr{language.German, "Abgebrochen"},
+	},
+	"collstate-desc-cancelled": []TagStr{
+		TagStr{language.AmericanEnglish, "Your order has been cancelled."},
+		TagStr{language.German, "Dein Bestellauftrag wurde abgebrochen."},
+	},
+	// "deleted" is used for transition only, of course
+	"collstate-draft": []TagStr{
+		TagStr{language.AmericanEnglish, "Draft"},
+		TagStr{language.German, "Entwurf"},
+	},
+	"collstate-desc-draft": []TagStr{
+		TagStr{language.AmericanEnglish, "You can edit your order. Don't forget to submit it when you're ready."},
+		TagStr{language.German, "Du kannst deinen Bestellauftrag bearbeiten. Wenn du fertig bist, dann reiche ihn ein."},
+	},
+	"collstate-finalized": []TagStr{
+		TagStr{language.AmericanEnglish, "Finalized"},
+		TagStr{language.German, "Abgeschlossen"},
+	},
+	"collstate-desc-finalized": []TagStr{
+		TagStr{language.AmericanEnglish, "All your goods have been picked up or reshipped."},
+		TagStr{language.German, "Die Ware wurde vollständig abgeholt oder verschickt."},
+	},
+	"collstate-needs-revise": []TagStr{
+		TagStr{language.AmericanEnglish, "Revision required"},
+		TagStr{language.German, "Erfordert Überarbeitung"},
+	},
+	"collstate-desc-needs-revise": []TagStr{
+		TagStr{language.AmericanEnglish, "We have a request regarding your order."},
+		TagStr{language.German, "Wir haben eine Rückfrage zu deinem Bestellauftrag."},
+	},
+	"collstate-paid": []TagStr{
+		TagStr{language.AmericanEnglish, "Paid, is being executed"},
+		TagStr{language.German, "Bezahlt, wird ausgeführt"},
+	},
+	"collstate-desc-paid": []TagStr{
+		TagStr{language.AmericanEnglish, "We have received your money and are executing your order."},
+		TagStr{language.German, "Wir haben dein Geld erhalten und sind dabei, deine Bestellaufträge auszuführen."},
+	},
+	"collstate-rejected": []TagStr{
+		TagStr{language.AmericanEnglish, "Rejected"},
+		TagStr{language.German, "Abgelehnt"},
+	},
+	"collstate-desc-rejected": []TagStr{
+		TagStr{language.AmericanEnglish, "Unfortunately we can't execute your order."},
+		TagStr{language.German, "Wir können deinen Bestellauftrag leider nicht ausführen."},
+	},
+	"collstate-spam": []TagStr{
+		TagStr{language.AmericanEnglish, "Spam"},
+		TagStr{language.German, "Spam"},
+	},
+	"collstate-desc-spam": []TagStr{
+		TagStr{language.AmericanEnglish, "This order has been marked as spam. If that was a mistake, please contact us."},
+		TagStr{language.German, "Dieser Bestellauftrag wurde als Spam markiert. Falls das ein Fehler war, kontaktiere uns bitte."},
+	},
+	"collstate-submitted": []TagStr{
+		TagStr{language.AmericanEnglish, "Submitted"},
+		TagStr{language.German, "Eingereicht"},
+	},
+	"collstate-desc-submitted": []TagStr{
+		TagStr{language.AmericanEnglish, "You have submitted your order. We are checking it as soon as possible."},
+		TagStr{language.German, "Du hast deinen Bestellauftrag abgeschickt. Er wird jetzt von uns geprüft."},
+	},
+	"collstate-underpaid": []TagStr{
+		TagStr{language.AmericanEnglish, "Underpaid"},
+		TagStr{language.German, "Unterbezahlt"},
+	},
+	"collstate-desc-underpaid": []TagStr{
+		TagStr{language.AmericanEnglish, "Please transfer the difference amount to us or let us know if we should modify your order."},
+		TagStr{language.German, "Bitte lasse uns den Differenzbetrag zukommen oder teile uns mit, ob wir deinen Auftrag ändern sollen."},
+	},
+
+	// task state
+	"taskstate-failed": []TagStr{
+		TagStr{language.AmericanEnglish, "Failed"},
+		TagStr{language.German, "Gescheitert"},
+	},
+	"taskstate-desc-failed": []TagStr{
+		TagStr{language.AmericanEnglish, "Execution of this individual order failed."},
+		TagStr{language.German, "Die Ausführung dieser Bestellung ist gescheitert."},
+	},
+	"taskstate-fetched": []TagStr{
+		TagStr{language.AmericanEnglish, "Picked up"},
+		TagStr{language.German, "Abgeholt"},
+	},
+	"taskstate-desc-fetched": []TagStr{
+		TagStr{language.AmericanEnglish, "Goods have been picked up from our place."},
+		TagStr{language.German, "Die Ware wurde bei uns abgeholt."},
+	},
+	"taskstate-not-ordered-yet": []TagStr{
+		TagStr{language.AmericanEnglish, "Not ordered yet"},
+		TagStr{language.German, "Noch nicht bestellt"},
+	},
+	"taskstate-desc-not-ordered-yet": []TagStr{
+		TagStr{language.AmericanEnglish, "We have not executed the order yet."},
+		TagStr{language.German, "Wir haben die Bestellung noch nicht ausgeführt."},
+	},
+	"taskstate-ordered": []TagStr{
+		TagStr{language.AmericanEnglish, "Ordered"},
+		TagStr{language.German, "Bestellt"},
+	},
+	"taskstate-desc-ordered": []TagStr{
+		TagStr{language.AmericanEnglish, "We have executed your order. You will be informed when the goods arrive."},
+		TagStr{language.German, "Wir haben deinen Bestellauftrag ausgeführt. Du wirst benachrichtigt, wenn die Ware eintrifft."},
+	},
+	"taskstate-ready": []TagStr{
+		TagStr{language.AmericanEnglish, "Arrived"},
+		TagStr{language.German, "Eingetroffen"},
+	},
+	"taskstate-desc-ready": []TagStr{
+		TagStr{language.AmericanEnglish, "The goods have arrived at our place."},
+		TagStr{language.German, "Die Ware ist bei uns eingetroffen."},
+	},
+	"taskstate-reshipped": []TagStr{
+		TagStr{language.AmericanEnglish, "Reshipped to you"},
+		TagStr{language.German, "Weiterverschickt"},
+	},
+	"taskstate-desc-reshipped": []TagStr{
+		TagStr{language.AmericanEnglish, "We have reshipped your goods to you."},
+		TagStr{language.German, "Wir haben deine Ware an dich weiterverschickt."},
+	},
+	"taskstate-unfetched": []TagStr{
+		TagStr{language.AmericanEnglish, "Not picked up"},
+		TagStr{language.German, "Nicht abgeholt"},
+	},
+	"taskstate-desc-unfetched": []TagStr{
+		TagStr{language.AmericanEnglish, "Your goods have not been picked up. Please contact us."},
+		TagStr{language.German, "Deine Ware wurde nicht abgeholt. Bitte melde dich bei uns."},
+	},
+
 	// collection-cancel.html
 	"coll-cancel": []TagStr{
 		TagStr{language.AmericanEnglish, "Cancel order"},

@@ -47,7 +47,7 @@
 	{{range .Log}}
 		<tr>
 			<td>{{.Date.Format}}</td>
-			<td>{{.NewState.Name}}</td>
+			<td>{{$.Translate .NewState.NameKey}}</td>
 			<td>{{.TextHTML}}</td>
 			<td>{{if .Paid}}{{FmtHuman .Paid}}{{end}}</td>
 		</tr>
@@ -226,7 +226,7 @@
 			addTask({{.}}, {{$.ReadOnly}} || {{not (.Writeable $.Actor)}}, {{$.ShowHints}},
 				{{if $.Actor.IsStore}}
 					'<p>ID: {{.ID}}</p>' +
-					'<p>Status: {{.State.Description}}</p>' +
+					'<p>Status: <strong>{{$.Translate .State.NameKey}}</strong> ({{$.Translate .State.DescriptionKey}})</p>' +
 					'<p>' +
 					'	{{if $.StoreCanTask "confirm-arrived" .}}' +
 					'		<a class="btn btn-success" href="/collection/{{$.ID}}/confirm-arrived/{{.ID}}">{{$.Translate "layout-status-arrived"}}</a>' +
@@ -245,7 +245,7 @@
 					'	{{end}}' +
 					'</p>'
 				{{else}}
-					'<p>Status: {{.State.Description}}</p>'
+					'<p>Status: <strong>{{$.Translate .State.NameKey}}</strong> ({{$.Translate .State.DescriptionKey}})</p>'
 				{{end}}
 			);
 		{{else}}

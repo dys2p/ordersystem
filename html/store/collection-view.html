@@ -3,7 +3,7 @@
 	{{range .Notifications}}
 		<div class="alert alert-success mt-3" role="alert">{{.}}</div>
 	{{end}}
-	<p><strong>{{.Translate "coll-edit-status"}}</strong> {{.State.Description}}</p>
+	<p><strong>{{.Translate "coll-edit-status"}}</strong> <strong>{{.Translate .State.NameKey}}</strong> ({{.Translate .State.DescriptionKey}})</p>
 	<p><strong>{{.Translate "store-view-amount"}}</strong> {{FmtHuman .Sum}}</p>
 	<p>
 		{{if .StoreCan "accept"}}
