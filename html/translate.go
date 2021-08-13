@@ -1,6 +1,8 @@
 package html
 
 import (
+	"html/template"
+
 	"golang.org/x/text/language"
 	"golang.org/x/text/message"
 )
@@ -657,11 +659,11 @@ var translations = map[string][]TagStr{
 // Language is any string. It will be matched by golang.org/x/text/language.Make and golang.org/x/text/language.NewMatcher.
 type Language string
 
-func (lang Language) Translate(key string, args ...interface{}) string {
+func (lang Language) Translate(key string, args ...interface{}) template.HTML {
 	item, ok := translations[key]
 	if !ok {
 		// no translation available, create language tag and print
-		return message.NewPrinter(language.Make(string(lang))).Sprintf(key, args...)
+		return template.HTML(message.NewPrinter(language.Make(string(lang))).Sprintf(key, args...))
 	}
 	// choose language tag from list of translations
 	langs := make([]language.Tag, len(item))
@@ -669,5 +671,5 @@ func (lang Language) Translate(key string, args ...interface{}) string {
 		langs[i] = item[i].Tag
 	}
 	tag, i := language.MatchStrings(language.NewMatcher(langs), string(lang))
-	return message.NewPrinter(tag).Sprintf(item[i].Str, args...)
+	return template.HTML(message.NewPrinter(tag).Sprintf(item[i].Str, args...))
 }
