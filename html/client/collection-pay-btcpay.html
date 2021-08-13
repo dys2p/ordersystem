@@ -1,6 +1,6 @@
 {{define "client"}}
 <h1>{{.Translate "coll-btcpay"}}</h1>
-{{.Translate "coll-btcpay-text"}}
+{{.Translate "coll-btcpay-text" (FmtHuman .Due)}}
 <form method="post">
 	{{template "captcha" .}}
 	<div class="text-right">

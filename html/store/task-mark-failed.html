@@ -3,7 +3,7 @@
 	<form method="post">
 		<div class="form-group">
 			<label for="mark-failed-message">{{.Translate "store-msg"}}</label>
-			<textarea class="form-control" id="mark-failed-message" name="mark-failed-message" rows="3">{{.Translate "store-failed"}}</textarea>
+			<textarea class="form-control" id="mark-failed-message" name="mark-failed-message" rows="3">{{.Translate "store-failed" .Merchant}}</textarea>
 			<small class="form-text text-muted">{{.Translate "coll-md"}}</small>
 		</div>
 		<div class="text-right">

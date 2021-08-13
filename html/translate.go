@@ -130,9 +130,9 @@ var translations = map[string][]TagStr{
 		TagStr{language.German, "Mit Bitcoin oder Monero bezahlen"},
 	},
 	"coll-btcpay-text": []TagStr{
-		TagStr{language.AmericanEnglish, `<p>If you continue, an invoice of <strong>{{FmtHuman .Due}}</strong> will be generated on our BTCPayServer. You can pay it with Bitcoin (BTC) or Monero (XMR). The invoice is valid for <strong>60&nbsp;minutes</strong>. Your transaction must become visible in the blockchain before this time expires.</p>
+		TagStr{language.AmericanEnglish, `<p>If you continue, an invoice of <strong>%s</strong> will be generated on our BTCPayServer. You can pay it with Bitcoin (BTC) or Monero (XMR). The invoice is valid for <strong>60&nbsp;minutes</strong>. Your transaction must become visible in the blockchain before this time expires.</p>
 <p>Please make sure that you pay the bill <strong>in time, completely and with a single transaction</strong>. Only then we can accept the conversion rate. If your exchange or client deducts transaction fees from the amount, you must add them before. <strong>If your payment is late or partial, the coins will still be sold automatically on an exchange.</strong> After that, we will manually enter the achieved sale value here.</p>`},
-		TagStr{language.German, `<p>Wenn du fortfährst, wird auf unserem BTCPayServer eine Rechnung über <strong>{{FmtHuman .Due}}</strong> erzeugt, du mit Bitcoin (BTC) oder Monero (XMR) bezahlen kannst. Die Rechnung ist <strong>60&nbsp;Minuten</strong> lang gültig. Bis zum Ablauf der Zeit muss deine Transaktion in der Blockchain sichtbar sein.</p>
+		TagStr{language.German, `<p>Wenn du fortfährst, wird auf unserem BTCPayServer eine Rechnung über <strong>%s</strong> erzeugt, du mit Bitcoin (BTC) oder Monero (XMR) bezahlen kannst. Die Rechnung ist <strong>60&nbsp;Minuten</strong> lang gültig. Bis zum Ablauf der Zeit muss deine Transaktion in der Blockchain sichtbar sein.</p>
 <p>Bitte achte darauf, dass du die Rechnung <strong>rechtzeitig, vollständig und mit einer einzelnen Transaktion</strong> bezahlst. Nur dann können wir den Umrechnungskurs akzeptieren. <strong>Falls deine Börse oder dein Client die Transaktionsgebühren von dem Betrag abzieht, musst du sie vorher hinzuaddieren.</strong> Falls deine Zahlung verspätet oder nur teilweise eintrifft, werden die Coins trotzdem automatisch an einer Börse verkauft. Danach werden wir den erzielten Verkaufswert manuell hier eintragen.</p>`},
 	},
 	"coll-btcpay-button": []TagStr{
@@ -649,8 +649,8 @@ var translations = map[string][]TagStr{
 		TagStr{language.German, "Einzelauftrag als gescheitert markieren"},
 	},
 	"store-failed": []TagStr{
-		TagStr{language.AmericanEnglish, `Unfortunately, the individual order at "{{.Merchant}}" failed.`},
-		TagStr{language.German, `Die Einzelbestellung bei "{{.Merchant}}" ist leider gescheitert.`},
+		TagStr{language.AmericanEnglish, `Unfortunately, the individual order at "%s" failed.`},
+		TagStr{language.German, `Die Einzelbestellung bei "%s" ist leider gescheitert.`},
 	},
 }
 
