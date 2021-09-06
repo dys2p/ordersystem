@@ -115,6 +115,7 @@ func main() {
 			Transition{State(Accepted), Store, "confirm-payment", State(Underpaid)}, // client pays, but not enough
 			Transition{State(Accepted), Store, "delete", State(Deleted)},
 			Transition{State(Accepted), Store, "edit", State(Accepted)},
+			Transition{State(Accepted), Store, "return", State(NeedsRevise)},
 			Transition{State(Draft), Bot, "delete", State(Deleted)},
 			Transition{State(Draft), Client, "delete", State(Deleted)},
 			Transition{State(Draft), Client, "edit", State(Draft)},
