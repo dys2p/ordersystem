@@ -272,9 +272,9 @@ type ShippingService struct {
 func (data *ClientInput) ShippingServices() []ShippingService {
 	var services = []ShippingService{
 		ShippingService{"dhl-paket-analog", "DHL Paket (versichert), analog frankiert: ab 7,49 €", 749},
-		ShippingService{"dhl-paket-digital", "DHL Paket (versichert), digital frankiert: ab 4,99 €", 499},
-		ShippingService{"post-einschreiben-einwurf", "Deutsche Post Einschreiben Einwurf: ab 3,00 €", 300},
-		ShippingService{"post-einschreiben-wert", "Deutsche Post Einschreiben Wert: ab 5,10 €", 510},
+		ShippingService{"dhl-paket-digital", "DHL Paket (versichert), digital frankiert: ab 5,94 €", 594},  // 499 * 1.19
+		ShippingService{"post-einschreiben-einwurf", "Deutsche Post Einschreiben Einwurf: ab 3,81 €", 381}, // (85 + 235) * 1.19
+		ShippingService{"post-einschreiben-wert", "Deutsche Post Einschreiben Wert: ab 6,31 €", 631},       // (85 + 445) * 1.19
 	}
 	if data.ShippingServiceID == "" {
 		return services
