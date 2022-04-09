@@ -28,8 +28,8 @@ github.com/decred/dcrd/lru v1.0.0/go.mod h1:mxKOwFd7lFjN2GZYsiz/ecgqR6kkYAl+0pz0
 github.com/dys2p/bitpay v0.1.4 h1:BObdPgVjQBDY91+T4PRFe3Yjm6diZPBBdvo+x/miJNs=
 github.com/dys2p/bitpay v0.1.4/go.mod h1:P2KLNuDRHhaiVOhxqxFrmrFtdj6K/51ob+EE8Dt6Xy4=
 github.com/dys2p/btcpay v0.1.6/go.mod h1:PhoRfQYTu1hAThbCh0dutuUonLf0WPb72huHr19ujgU=
-github.com/dys2p/btcpay v0.3.1 h1:JYxTAsfpoUqNI7CiUJkClAYY8k9VZPGaSvfnwHv9x2c=
-github.com/dys2p/btcpay v0.3.1/go.mod h1:PhoRfQYTu1hAThbCh0dutuUonLf0WPb72huHr19ujgU=
+github.com/dys2p/btcpay v0.4.0 h1:UizbaTJav6FkTTGcVn+SEDWSL5w34AvML6JQLSQGmdg=
+github.com/dys2p/btcpay v0.4.0/go.mod h1:PhoRfQYTu1hAThbCh0dutuUonLf0WPb72huHr19ujgU=
 github.com/dys2p/digitalgoods v0.0.0-20210327110606-811e9934f931 h1:ulbfYXU2h5QQhDhFt55RsVWtBCT/MfKTIJfHVS8siiU=
 github.com/dys2p/digitalgoods v0.0.0-20210327110606-811e9934f931/go.mod h1:Yr023aVh71go4R1qWpxQqHFJyNkujlV8GYgCj99BPm4=
 github.com/fsnotify/fsnotify v1.4.7/go.mod h1:jwhsz4b93w/PPRr/qN1Yymfu8t87LnFCMoQvtojpjFo=
