@@ -101,8 +101,8 @@ function drop(ev) {
 //---------------------------- edit form ---------------------------------------
 
 var numTasks = 0;
-const storeFeeBase = 1290;
-const storeFeeShare = 0.02;
+const storeFeeBase = 1000;
+const storeFeeShare = 0.05;
 
 function addAddCost(taskNumber, data = {name: "", price: 0}, readOnly = false) {
 	document.getElementById(`footer-${taskNumber}`).insertAdjacentHTML("afterend",
@@ -209,7 +209,7 @@ function newTask(readOnly = false, showHints = true, header = "") {
 				<td><!-- column with add and remove buttons --></td>
 			</tr>
 			<tr>
-				<td colspan="4" style="text-align: right">+ Auftragsgebühr (12,90 € + 2 % des Bestellwerts)</td>
+				<td colspan="4" style="text-align: right">+ Auftragsgebühr (10 € + 5 % des Bestellwerts)</td>
 				<td name="store-fee"></td>
 				<td><!-- column with add and remove buttons --></td>
 			</tr>
