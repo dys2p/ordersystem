@@ -247,7 +247,6 @@ function removeTask(button) {
 function readData(includeElements = false) {
 
 	var data = {
-		"client-name":                 byNameStr("client-name"),
 		"client-contact":              byNameStr("client-contact"),
 		"client-contact-protocol":     byNameStr("client-contact-protocol"),
 		"shipping-address-supplement": byNameStr("shipping-address-supplement"),

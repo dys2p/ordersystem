@@ -219,7 +219,6 @@ func (data *CollectionData) PaymentHasBeenReceivedLate(paymentID string) bool {
 }
 
 type ClientInput struct {
-	ClientName                string `json:"client-name"`
 	ClientContact             string `json:"client-contact"`
 	ClientContactProtocol     string `json:"client-contact-protocol"`
 	DeliveryMethod            string `json:"delivery-method"`
