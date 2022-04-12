@@ -7,9 +7,17 @@
 	<link rel="stylesheet" href="/static/bootstrap.min.css" />
 	<script src="/static/ordersystem.js"></script>
 	<style>
-		input[type=radio]{
+		.radio-label {
+			display: flex;
+			align-items: center;
+		}
+		.radio-label input[type=radio]{
 			transform:scale(1.5);
 			margin: 0.5em;
+		}
+		.radio-label label {
+			flex-grow: 1;
+			margin: 0 0 0 0.5em;
 		}
 		td > p:last-child {
 			margin-bottom: 0 !important;
@@ -99,7 +107,7 @@
 	{{if and (.ReadOnly) (ne .DeliveryMethod "store")}}
 		<!-- hide -->
 	{{else}}
-		<div class="border border-secondary bg-light my-3 p-3 rounded">
+		<div class="radio-label border border-secondary bg-light my-3 p-3 rounded">
 			<input type="radio" name="delivery-method" onchange="updateView()" id="delivery-method-store" value="store" {{if or (eq .DeliveryMethod "store") (eq .DeliveryMethod "")}}checked{{end}} {{if .ReadOnly}}disabled{{end}}>
 			<label for="delivery-method-store">
 				Ich hole die Ware <strong>unter Nennung der Auftragsnummer</strong> im Ladenlokal ab.
@@ -110,7 +118,7 @@
 	{{if and (.ReadOnly) (ne .DeliveryMethod "locker")}}
 		<!-- hide -->
 	{{else}}
-		<div class="border border-secondary bg-light my-3 p-3 rounded">
+		<div class="radio-label border border-secondary bg-light my-3 p-3 rounded">
 			<input type="radio" name="delivery-method" onchange="updateView()" id="delivery-method-locker" value="locker" {{if eq .DeliveryMethod "locker"}}checked{{end}} {{if .ReadOnly}}disabled{{end}}>
 			<label for="delivery-method-locker">
 				Ich hole die Ware <strong>aus einem Schließfach</strong> im Ladenlokal ab. Ein geöffnetes Vorhängeschloss bringe ich vorbei.
@@ -121,7 +129,7 @@
 	{{if and (.ReadOnly) (ne .DeliveryMethod "custom")}}
 		<!-- hide -->
 	{{else}}
-		<div class="border border-secondary bg-light my-3 p-3 rounded">
+		<div class="radio-label border border-secondary bg-light my-3 p-3 rounded">
 			<input type="radio" name="delivery-method" onchange="updateView()" id="delivery-method-custom" value="custom" {{if eq .DeliveryMethod "custom"}}checked{{end}} {{if .ReadOnly}}disabled{{end}}>
 			<label for="delivery-method-custom">
 				Bitte schickt mir die Ware. Eine bezahlte und beschriftete Paketmarke bringe ich vorbei.
@@ -134,7 +142,7 @@
 	{{else}}
 		<div class="border border-secondary bg-light my-3 p-3 rounded">
 
-			<p>
+			<p class="radio-label">
 				<input type="radio" name="delivery-method" onchange="updateView()" id="delivery-method-shipping" value="shipping" {{if eq .DeliveryMethod "shipping"}}checked{{end}} {{if .ReadOnly}}disabled{{end}}>
 				<label for="delivery-method-shipping">
 					Bitte schickt mir die Ware an folgende Adresse.
