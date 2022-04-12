@@ -3,7 +3,11 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	{{block "head" .}}{{end}}
+	<link rel="stylesheet" href="https://proxysto.re/assets/style.css">
+	<link rel="icon" type="image/png" href="https://proxysto.re/assets/images/favicon-96.png" sizes="96x96">
+	<meta name="description" content="Datensparsamer Bestellshop">
+	<meta name="author" content="ProxyStore">
+	<title>ProxyStore</title>
 	<link rel="stylesheet" href="/static/bootstrap.min.css" />
 	<script src="/static/ordersystem.js"></script>
 	<style>
@@ -26,7 +30,17 @@
 </head>
 <body>
 	{{template "body" .}}
-	{{block "footer" .}}{{end}}
+	<!-- copied from website -->
+	<footer class="footer">
+        <div class="container">
+                <a class="text-muted" href="https://proxysto.re/kontakt.html"><strong>Kontakt</strong></a>
+                <a class="text-muted" href="https://proxysto.re/agb.html">AGB</a>
+                <a class="text-muted" href="https://proxysto.re/datenschutz.html">Datenschutz</a>
+                <a class="text-muted" href="https://proxysto.re/impressum.html">Impressum</a>
+                <a class="text-muted" href="https://proxysto.re/widerrufsbelehrung.html">Widerrufsbelehrung</a>
+                <a class="text-muted" href="https://proxysto.re/kontakt.html">Fehler oder Hinweise? Schreib uns!</a>
+        </div>
+	</footer>
 </body>
 </html>
 
@@ -101,7 +115,7 @@
 	<h2>Abholung oder Weiterversand</h2>
 
 	{{if .ShowHints}}
-		<p>Du kannst die Ware im Ladenlokal (Bernhard-Göring-Straße 162, 04277 Leipzig, beachte die Öffnungszeiten) abholen. Wir können sie auch per Post oder Paketdienst an dich weiterleiten.</p>
+		<p>Unser Ladenlokal befindet sich in der Bernhard-Göring-Straße 162, 04277 Leipzig. Bitte beachte die <a rel="noreferrer" href="https://proxysto.re">Öffnungszeiten</a>.</p>
 	{{end}}
 
 	{{if and (.ReadOnly) (ne .DeliveryMethod "store")}}
