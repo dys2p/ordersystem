@@ -243,6 +243,7 @@ func (data *ClientInput) ContactProtocols() []ContactProtocol {
 		ContactProtocol{"email", "E-Mail"},
 		ContactProtocol{"xmpp-otr", "Jabber mit OTR"},
 		ContactProtocol{"matrix", "Matrix"},
+		ContactProtocol{"session", "Session"},
 		ContactProtocol{"signal", "Signal"},
 	}
 	if data.ClientContactProtocol == "" {
