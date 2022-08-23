@@ -59,7 +59,7 @@ func main() {
 
 	// userdb
 
-	users, err = userdb.Open()
+	users, err = userdb.Open("data/users.json")
 	if err != nil {
 		log.Printf("error opening userdb: %v", err)
 		return
