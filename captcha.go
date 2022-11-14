@@ -10,7 +10,7 @@ import (
 
 func init() {
 
-	db, err := sql.Open("sqlite3", "data/captcha.sqlite3?_busy_timeout=10000&_journal=WAL&_sync=NORMAL&cache=shared")
+	db, err := sql.Open("sqlite3", "/var/lib/ordersystem/captcha.sqlite3?_busy_timeout=10000&_journal=WAL&_sync=NORMAL&cache=shared")
 	if err != nil {
 		panic(err)
 	}
