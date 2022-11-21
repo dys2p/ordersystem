@@ -441,14 +441,6 @@ var translations = map[string][]TagStr{
 		TagStr{language.AmericanEnglish, "Sum"},
 		TagStr{language.German, "Summe"},
 	},
-	"layout-client-name": []TagStr{
-		TagStr{language.AmericanEnglish, "The name under which we represent you. This is the name we will give to the actual merchant or provider. Keep in mind that involved banks and payment services may also know the name."},
-		TagStr{language.German, "Der Name, unter dem wir dich vertreten. Diesen Namen werden wir bei dem tatsächlichen Versandhändler bzw. Anbieter angeben. Bedenke dass möglicherweise auch beteiligte Banken und Bezahldienste den Namen erfahren."},
-	},
-	"layout-client-name-help": []TagStr{
-		TagStr{language.AmericanEnglish, "Keep in mind that a false statement may lead to problems in case of warranty or guarantee claims."},
-		TagStr{language.German, "Bedenke dass eine falsche Angabe im Gewährleistungs- oder Garantiefall unter Umständen zu Problemen führen kann."},
-	},
 	"layout-client-contact": []TagStr{
 		TagStr{language.AmericanEnglish, "Contact option for possible further inquiries (optional, will not be given to others, will be deleted 14 days after completion of the order)"},
 		TagStr{language.German, "Kontaktmöglichkeit für mögliche Rückfragen (freiwillig, wird nicht weitergegeben und 14 Tage nach Abschluss des Auftrags gelöscht)"},
@@ -471,7 +463,7 @@ var translations = map[string][]TagStr{
 	},
 	"layout-delivery-text": []TagStr{
 		TagStr{language.AmericanEnglish, "You can pick up the goods in our store (Bernhard-Goering-Strasse 162, 04277 Leipzig, note the opening hours). We can also forward them to you by mail or parcel service."},
-		TagStr{language.German, "Du kannst die Ware im Ladenlokal (Bernhard-Göring-Straße 162, 04277 Leipzig, beachte die Öffnungszeiten) abholen. Wir können sie auch per Post oder Paketdienst an dich weiterleiten."},
+		TagStr{language.German, `Unser Ladenlokal befindet sich in der Bernhard-Göring-Straße 162, 04277 Leipzig. Bitte beachte die <a rel="noreferrer" href="https://proxysto.re">Öffnungszeiten</a>.`},
 	},
 	"layout-pickup": []TagStr{
 		TagStr{language.AmericanEnglish, "I pick up the goods in the store, <strong>mentioning the order ID</strong>."},
@@ -487,7 +479,7 @@ var translations = map[string][]TagStr{
 	},
 	"layout-shipping": []TagStr{
 		TagStr{language.AmericanEnglish, "Please send me the goods to the following address."},
-		TagStr{language.German, "Bitte schickt mir die Ware an folgende Adresse."},
+		TagStr{language.German, `Bitte schickt mir die Ware. Ich gebe die Lieferadresse hier an oder sende sie euch per Post auf einem Zettel oder einem <a rel="noreferrer" href="https://www.dhl.de/content/dam/images/pdf/dhl-versandschein-eu-online-ausfuellbar-310320.pdf">DHL-Versandschein</a>. (Bei Übermittlung auf Papier und analoger Frankierung wird die Lieferadresse bei uns nicht digital erfasst.)`},
 	},
 	"layout-name1": []TagStr{
 		TagStr{language.AmericanEnglish, "First name"},
@@ -518,7 +510,7 @@ var translations = map[string][]TagStr{
 		TagStr{language.German, "Stadt"},
 	},
 	"layout-parcel": []TagStr{
-		TagStr{language.AmericanEnglish, `You can find out how to enter the address of a DHL Packstation at <a href="https://dont.re/?https://parcelshopfinder.dhlparcel.com/html/note_direct_access_germany.html?setLng=en" target="_blank">dhlparcel.com</a>. You will need a DHL customer account with a PostNumber.`},
+		TagStr{language.AmericanEnglish, `You can find out how to enter the address of a DHL Packstation at <a rel="noreferrer" href="https://parcelshopfinder.dhlparcel.com/html/note_direct_access_germany.html?setLng=en" target="_blank">dhlparcel.com</a>. You will need a DHL customer account with a PostNumber.`},
 		TagStr{language.German, `Wie du die Adresse einer DHL-Packstation eingeben kannst, erfährst du auf <a href="https://dont.re/?https://parcelshopfinder.dhlparcel.com/html/note_direct_access_germany.html?setLng=de" target="_blank">dhlparcel.com</a>. Dazu brauchst du ein DHL-Kundenkonto mit Postnummer.`},
 	},
 	"layout-reshipment": []TagStr{

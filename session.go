@@ -15,7 +15,7 @@ var sessionManager *scs.SessionManager
 
 func initSessionManager() error {
 
-	sessionDB, err := sql.Open("sqlite3", "data/sessions.sqlite3?_busy_timeout=10000&_journal=WAL&_sync=NORMAL&cache=shared")
+	sessionDB, err := sql.Open("sqlite3", "/var/lib/ordersystem/sessions.sqlite3?_busy_timeout=10000&_journal=WAL&_sync=NORMAL&cache=shared")
 	if err != nil {
 		return err
 	}

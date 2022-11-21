@@ -4,8 +4,8 @@ import (
 	"math"
 )
 
-const storeFeeBase = 1290
-const storeFeeShare = 0.02
+const storeFeeBase = 1000
+const storeFeeShare = 0.05
 
 type Task struct {
 	// stored as SQL row, but partly unmarshaled from user input, hence the JSON tags

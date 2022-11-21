@@ -3,13 +3,25 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	{{block "head" .}}{{end}}
+	<link rel="stylesheet" href="https://proxysto.re/assets/style.css">
+	<link rel="icon" type="image/png" href="https://proxysto.re/assets/images/favicon-96.png" sizes="96x96">
+	<meta name="description" content="Datensparsamer Bestellshop">
+	<meta name="author" content="ProxyStore">
+	<title>Order Service – ProxyStore</title>
 	<link rel="stylesheet" href="/static/bootstrap.min.css" />
 	<script src="/static/ordersystem.js"></script>
 	<style>
-		input[type=radio]{
+		.radio-label {
+			display: flex;
+			align-items: center;
+		}
+		.radio-label input[type=radio]{
 			transform:scale(1.5);
 			margin: 0.5em;
+		}
+		.radio-label label {
+			flex-grow: 1;
+			margin: 0 0 0 0.5em;
 		}
 		td > p:last-child {
 			margin-bottom: 0 !important;
@@ -18,7 +30,17 @@
 </head>
 <body>
 	{{template "body" .}}
-	{{block "footer" .}}{{end}}
+	<!-- copied from website -->
+	<footer class="footer">
+        <div class="container">
+                <a class="text-muted" href="https://proxysto.re/kontakt.html"><strong>Kontakt</strong></a>
+                <a class="text-muted" href="https://proxysto.re/agb.html">AGB</a>
+                <a class="text-muted" href="https://proxysto.re/datenschutz.html">Datenschutz</a>
+                <a class="text-muted" href="https://proxysto.re/impressum.html">Impressum</a>
+                <a class="text-muted" href="https://proxysto.re/widerrufsbelehrung-kauf.html">Widerrufsbelehrung</a>
+                <a class="text-muted" href="https://proxysto.re/kontakt.html">Fehler oder Hinweise? Schreib uns!</a>
+        </div>
+	</footer>
 </body>
 </html>
 
@@ -63,16 +85,6 @@
 
 {{define "collection"}}
 
-	<div class="form-group">
-		<label for="client-name">
-			{{.Translate "layout-client-name"}}
-		</label>
-		<input type="text" class="form-control" id="client-name" {{if .ShowHints}}aria-describedby="client-name-help"{{end}} name="client-name" value="{{.ClientName}}" {{if .ReadOnly}}disabled{{end}}>
-		{{if .ShowHints}}
-			<small id="client-name-help" class="form-text text-muted">{{.Translate "layout-client-name-help"}}</small>
-		{{end}}
-	</div>
-
 	<label for="client-contact">
 		{{.Translate "layout-client-contact"}}
 		{{if .Actor.IsStore}} &ndash; <strong>{{.Translate "layout-client-contact-help"}}</strong>{{end}}
@@ -109,7 +121,7 @@
 	{{if and (.ReadOnly) (ne .DeliveryMethod "store")}}
 		<!-- hide -->
 	{{else}}
-		<div class="border border-secondary bg-light my-3 p-3 rounded">
+		<div class="radio-label border border-secondary bg-light my-3 p-3 rounded">
 			<input type="radio" name="delivery-method" onchange="updateView()" id="delivery-method-store" value="store" {{if or (eq .DeliveryMethod "store") (eq .DeliveryMethod "")}}checked{{end}} {{if .ReadOnly}}disabled{{end}}>
 			<label for="delivery-method-store">
 				{{.Translate "layout-pickup"}}
@@ -120,7 +132,7 @@
 	{{if and (.ReadOnly) (ne .DeliveryMethod "locker")}}
 		<!-- hide -->
 	{{else}}
-		<div class="border border-secondary bg-light my-3 p-3 rounded">
+		<div class="radio-label border border-secondary bg-light my-3 p-3 rounded">
 			<input type="radio" name="delivery-method" onchange="updateView()" id="delivery-method-locker" value="locker" {{if eq .DeliveryMethod "locker"}}checked{{end}} {{if .ReadOnly}}disabled{{end}}>
 			<label for="delivery-method-locker">
 				{{.Translate "layout-locker"}}
@@ -131,7 +143,7 @@
 	{{if and (.ReadOnly) (ne .DeliveryMethod "custom")}}
 		<!-- hide -->
 	{{else}}
-		<div class="border border-secondary bg-light my-3 p-3 rounded">
+		<div class="radio-label border border-secondary bg-light my-3 p-3 rounded">
 			<input type="radio" name="delivery-method" onchange="updateView()" id="delivery-method-custom" value="custom" {{if eq .DeliveryMethod "custom"}}checked{{end}} {{if .ReadOnly}}disabled{{end}}>
 			<label for="delivery-method-custom">
 				{{.Translate "layout-stamp"}}

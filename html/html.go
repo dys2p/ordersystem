@@ -33,7 +33,7 @@ func parse(fn ...string) *template.Template {
 	for i := range fn {
 		fn[i] = fn[i] + ".html"
 	}
-	return template.Must(template.Must(template.New("layout.html").Funcs(funcs).ParseFS(files, fn...)).ParseGlob("data/custom.html"))
+	return template.Must(template.Must(template.New("layout.html").Funcs(funcs).ParseFS(files, fn...)).ParseGlob("/etc/ordersystem/custom.html"))
 }
 
 var (

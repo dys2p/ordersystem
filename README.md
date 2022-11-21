@@ -16,3 +16,8 @@ ordersystem uses an SQLite Database, continuous replication using [Litestream](h
   * Events: "A new payment has been received", "An invoice has been settled"
 * Store access token
   * PublicKey: use the hex SIN which ordersystem writes to the log on startup
+
+## ToDo
+
+* client should see task ID
+* reshipping: integrate shipment number (if desired) into user interface
