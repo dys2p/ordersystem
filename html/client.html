@@ -5,16 +5,18 @@
 		<a class="nav-item nav-link text-dark px-2 py-0" href="https://toolbox77.de">toolbox77</a>
 	</nav>
 	<nav class="navbar navbar-expand-sm navbar-light bg-light">
-		<div class="w-100">
-			{{block "brand" .}}{{end}}
-		</div>
-		<div class="w-100 text-right">
-			<form class="mb-0" action="/logout" method="post">
+		<div class="container-fluid">
+			<div class="col">
+				{{block "brand" .}}{{end}}
+			</div>
+			<div class="col text-end">
 				{{with .AuthorizedCollID}}
-					<a class="btn btn-secondary btn-sm" href="/collection/{{.}}">Angemeldet als {{.}}</a>
-					<button class="btn btn-secondary btn-sm" type="submit" name="logout">Abmelden</a>
+					<form class="mb-0" action="/logout" method="post">
+						<a class="btn btn-secondary btn-sm" href="/collection/{{.}}">Angemeldet als {{.}}</a>
+						<button class="btn btn-secondary btn-sm" type="submit" name="logout">Abmelden</a>
+					</form>
 				{{end}}
-			</form>
+			</div>
 		</div>
 	</nav>
 	<div class="container mt-3">

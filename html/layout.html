@@ -11,6 +11,9 @@
 	<link rel="stylesheet" href="/static/bootstrap.min.css" />
 	<script src="/static/ordersystem.js"></script>
 	<style>
+		a {
+			text-decoration: none;
+		}
 		.radio-label {
 			display: flex;
 			align-items: center;
@@ -76,7 +79,7 @@
 	{{end}}
 	{{if .Paid}}
 		<tr>
-			<td class="text-right" colspan="3">Summe</td>
+			<td class="text-end" colspan="3">Summe</td>
 			<td>{{FmtHuman .Paid}}</td>
 		</tr>
 	{{end}}
