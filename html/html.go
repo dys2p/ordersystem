@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"html/template"
 	"math"
+	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -33,7 +35,7 @@ func parse(fn ...string) *template.Template {
 	for i := range fn {
 		fn[i] = fn[i] + ".html"
 	}
-	return template.Must(template.Must(template.New("layout.html").Funcs(funcs).ParseFS(files, fn...)).ParseGlob("/etc/ordersystem/custom.html"))
+	return template.Must(template.Must(template.New("layout.html").Funcs(funcs).ParseFS(files, fn...)).ParseGlob(filepath.Join(os.Getenv("CONFIGURATION_DIRECTORY"), "custom.html")))
 }
 
 var (

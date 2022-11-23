@@ -3,6 +3,8 @@ package main
 import (
 	"database/sql"
 	"log"
+	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/dchest/captcha"
@@ -10,7 +12,7 @@ import (
 
 func init() {
 
-	db, err := sql.Open("sqlite3", "/var/lib/ordersystem/captcha.sqlite3?_busy_timeout=10000&_journal=WAL&_sync=NORMAL&cache=shared")
+	db, err := sql.Open("sqlite3", filepath.Join(os.Getenv("STATE_DIRECTORY"), "captcha.sqlite3?_busy_timeout=10000&_journal=WAL&_sync=NORMAL&cache=shared"))
 	if err != nil {
 		panic(err)
 	}

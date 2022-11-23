@@ -5,6 +5,8 @@ import (
 	"database/sql"
 	"fmt"
 	"net/http"
+	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/alexedwards/scs/sqlite3store"
@@ -15,7 +17,7 @@ var sessionManager *scs.SessionManager
 
 func initSessionManager() error {
 
-	sessionDB, err := sql.Open("sqlite3", "/var/lib/ordersystem/sessions.sqlite3?_busy_timeout=10000&_journal=WAL&_sync=NORMAL&cache=shared")
+	sessionDB, err := sql.Open("sqlite3", filepath.Join(os.Getenv("STATE_DIRECTORY"), "sessions.sqlite3?_busy_timeout=10000&_journal=WAL&_sync=NORMAL&cache=shared"))
 	if err != nil {
 		return err
 	}

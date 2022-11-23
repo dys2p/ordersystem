@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"sync"
@@ -51,7 +52,7 @@ func main() {
 
 	// SQL db
 
-	var sqlDB, err = sql.Open("sqlite3", "/var/lib/ordersystem/ordersystem.sqlite3?_busy_timeout=10000&_journal=WAL&_sync=NORMAL&cache=shared")
+	var sqlDB, err = sql.Open("sqlite3", filepath.Join(os.Getenv("STATE_DIRECTORY"), "ordersystem.sqlite3?_busy_timeout=10000&_journal=WAL&_sync=NORMAL&cache=shared"))
 	if err != nil {
 		log.Printf("error opening database: %v", err)
 		return
@@ -59,7 +60,7 @@ func main() {
 
 	// userdb
 
-	users, err = userdb.Open("/etc/ordersystem/users.json")
+	users, err = userdb.Open(filepath.Join(os.Getenv("CONFIGURATION_DIRECTORY"), "users.json"))
 	if err != nil {
 		log.Printf("error opening userdb: %v", err)
 		return
@@ -67,7 +68,7 @@ func main() {
 
 	// bitpay
 
-	bitpayClient, err = bitpay.LoadClient("/etc/ordersystem/bitpay.json")
+	bitpayClient, err = bitpay.LoadClient(filepath.Join(os.Getenv("CONFIGURATION_DIRECTORY"), "bitpay.json"))
 	if err != nil {
 		log.Printf("error creating bitpay API client: %v", err)
 		if !*test {
@@ -83,7 +84,7 @@ func main() {
 		btcpayStore = btcpay.NewDummyStore()
 		log.Println("\033[33m" + "warning: using btcpay dummy store" + "\033[0m")
 	} else {
-		btcpayStore, err = btcpay.Load("/etc/ordersystem/btcpay.json")
+		btcpayStore, err = btcpay.Load(filepath.Join(os.Getenv("CONFIGURATION_DIRECTORY"), "btcpay.json"))
 		if err != nil {
 			log.Printf("error loading btcpay store: %v", err)
 			return
