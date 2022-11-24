@@ -1,8 +1,8 @@
 {{define "store"}}
 	<h1>Einzelauftrag als gescheitert markieren</h1>
 	<form method="post">
-		<div class="form-group">
-			<label for="mark-failed-message">Nachricht</label>
+		<div class="mb-3">
+			<label class="form-label" for="mark-failed-message">Nachricht</label>
 			<textarea class="form-control" id="mark-failed-message" name="mark-failed-message" rows="3">Die Einzelbestellung bei "{{.Merchant}}" ist leider gescheitert.</textarea>
 			<small class="form-text text-muted">Du kannst Markdown (CommonMark) eingeben.</small>
 		</div>

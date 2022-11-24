@@ -2,9 +2,9 @@
 	<h1>Auftragsstatus</h1>
 
 	<form method="post">
-		<div class="form-group row">
-			<label class="col-sm-3 col-form-label" for="collection-id">Auftragsnummer</label>
-			<div class="col-sm-9">
+		<div class="mb-3">
+			<label class="form-label" for="collection-id">Auftragsnummer</label>
+			<div>
 				<input type="text" class="form-control {{if .CollIDErr}}is-invalid{{end}}" id="collection-id" name="collection-id" value="{{.CollID}}">
 				<div class="invalid-feedback">Bitte gib deine zehnstellige Auftragsnummer ein.</div>
 			</div>
@@ -14,8 +14,8 @@
 			<img id="captcha-image" src="/captcha/{{.CaptchaID}}.png" alt="Captcha image">
 		</p>
 
-		<div class="form-group">
-			<label for="captcha-solution">Bitte tippe die Ziffern ab:</label>
+		<div class="mb-3">
+			<label class="form-label" for="captcha-solution">Bitte tippe die Ziffern ab:</label>
 			<input class="form-control {{if .CaptchaErr}}is-invalid{{end}}" id="captcha-solution" name="captcha-solution">
 			<div class="invalid-feedback">Bitte tippe das Captcha korrekt ab.</div>
 			<small class="form-text text-muted"><a href="#" onclick="reloadCaptcha(); return false;">Anderes Bild laden (erfordert JavaScript)</a></small>

@@ -126,7 +126,7 @@ function addArticle(taskNumber, data = {link: "", properties: "", quantity: 1, p
 			<td><input class="form-control" ${readOnly ? 'readonly' : ''} name="properties" value="${data['properties']}"  placeholder="z. B. Größe und Farbe"></td>
 			<td><input class="form-control" ${readOnly ? 'readonly' : ''} name="quantity"   value="${data['quantity']}"    type="number" size="3" min="1" step="1" onchange="updateView()"></td>
 			<td><input class="form-control" ${readOnly ? 'readonly' : ''} name="price"      value="${data['price'] / 100}" type="number" size="8" min="0" step="0.01" max="10000" onchange="updateView()"></td>
-			<td><div class="col-form-label" name="sum"></div></td>
+			<td><div class="form-label" name="sum"></div></td>
 			<td>
 				${readOnly ? '' : '<button type="button" class="btn btn-danger btn-sm" onclick="removeArticle(this)">&ndash;</button>'}
 			</td>
@@ -170,9 +170,9 @@ function newTask(readOnly = false, showHints = true, header = "") {
 
 	${header ? header : ''}
 
-	<div class="form-group">
-		<label>Link zum Versandhändler bzw. Anbieter</label>
-		<input type="text" class="form-control" name="merchant" onchange="updateView()" ${readOnly ? 'readonly' : ''}>
+	<div class="mb-3">
+		<label class="form-label">Link zum Versandhändler bzw. Anbieter</label>
+		<input class="form-control" type="text" name="merchant" onchange="updateView()" ${readOnly ? 'readonly' : ''}>
 		${showHints ? '<small class="form-text text-muted">Um Waren von verschiedenen Versandhändlern zu bestellen, füge bitte einen weiteren Einzelauftrag hinzu.</small>' : ''}
 	</div>
 
@@ -192,7 +192,7 @@ function newTask(readOnly = false, showHints = true, header = "") {
 		<tbody ondrop="drop(event)" ondragover="allowDrop(event)">
 			<tr id="footer-${taskNumber}">
 				<td colspan="4" style="text-align: right">
-					<div class="col-form-label">
+					<div class="form-label">
 						Kosten für Versand und Verpackung
 					</div>
 				</td>

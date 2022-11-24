@@ -1,13 +1,13 @@
 {{define "store"}}
 	<h1>Auftrag ablehnen</h1>
 	<form method="post">
-		<div class="form-group form-check">
+		<div class="mb-3 form-check">
 			<input type="checkbox" class="form-check-input {{if .Err}}is-invalid{{end}}" id="check" name="confirm-reject">
 			<label class="form-check-label" for="check">Ja, ich bin mir sicher.</label>
 			<div class="invalid-feedback">Bitte bestätige, dass du den Auftrag ablehnen möchtest.</div>
 		</div>
-		<div class="form-group">
-			<label for="reject-message">Nachricht</label>
+		<div class="mb-3">
+			<label class="form-label" for="reject-message">Nachricht</label>
 			<textarea class="form-control" id="reject-message" name="reject-message" rows="3">Dein Auftrag musste leider abgelehnt werden.</textarea>
 			<small class="form-text text-muted">Du kannst Markdown (CommonMark) eingeben.</small>
 		</div>

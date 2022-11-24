@@ -52,8 +52,8 @@
 <p class="text-center">
 	<img id="captcha-image" src="/captcha/{{.CaptchaID}}.png" alt="Captcha image">
 </p>
-<div class="form-group">
-	<label for="captcha-solution">Bitte tippe die Ziffern ab, um zu beweisen, dass du es ernst meinst:</label>
+<div class="mb-3">
+	<label class="form-label" for="captcha-solution">Bitte tippe die Ziffern ab, um zu beweisen, dass du es ernst meinst:</label>
 	<input class="form-control {{if .CaptchaErr}}is-invalid{{end}}" id="captcha-solution" name="captcha-solution">
 	<div class="invalid-feedback">Bitte tippe das Captcha korrekt ab.</div>
 	<small class="form-text text-muted"><a href="#" onclick="reloadCaptcha(); return false;">Anderes Bild laden (erfordert JavaScript)</a></small>
@@ -87,20 +87,19 @@
 {{end}}
 
 {{define "collection"}}
-
-	<label for="client-contact">
+	<label class="form-label" for="client-contact">
 		Kontaktmöglichkeit für Rückfragen (freiwillig, wird nicht weitergegeben und 14 Tage nach Abschluss des Auftrags gelöscht)
 		{{if .Actor.IsStore}} &ndash; <strong>bei Kontaktaufnahme bitte keine Auftragsnummer nennen</strong>{{end}}
 	</label>
-	<div class="form-row">
-		<div class="form-group col-md-6">
-			<select class="form-control" name="client-contact-protocol" {{if .ReadOnly}}disabled{{end}}>
+	<div class="mb-3 row">
+		<div class="col-md-6">
+			<select class="form-select" name="client-contact-protocol" {{if .ReadOnly}}disabled{{end}}>
 				{{range .ContactProtocols}}
 					<option value="{{.ID}}" {{if eq $.ClientContactProtocol .ID}}selected{{end}}>{{.Name}}</option>
 				{{end}}
 			</select>
 		</div>
-		<div class="form-group col-md-6">
+		<div class="col-md-6">
 			<input type="text" class="form-control" id="client-contact" name="client-contact" value="{{.ClientContact}}" {{if .ReadOnly}}disabled{{end}}>
 		</div>
 	</div>
@@ -166,41 +165,41 @@
 				</label>
 			</p>
 
-			<div class="form-group">
-				<select class="form-control" name="shipping-service" onchange="updateView()" {{if .ReadOnly}}disabled{{end}}>
+			<div class="mb-3">
+				<select class="form-select" name="shipping-service" onchange="updateView()" {{if .ReadOnly}}disabled{{end}}>
 					{{range .ShippingServices}}
 						<option value="{{.ID}}" {{if eq $.ShippingServiceID .ID}}selected{{end}} data-min-cost="{{.MinCost}}">{{.Name}}</option>
 					{{end}}
 				</select>
 			</div>
 
-			<div class="form-row">
-				<div class="form-group col-md-6">
+			<div class="mb-3 row">
+				<div class="col-md-6">
 					<input type="text" class="form-control" name="shipping-first-name" placeholder="Vorname" value="{{.ShippingFirstName}}" {{if .ReadOnly}}disabled{{end}}>
 				</div>
-				<div class="form-group col-md-6">
+				<div class="col-md-6">
 					<input type="text" class="form-control" name="shipping-last-name" placeholder="Nachname" value="{{.ShippingLastName}}" {{if .ReadOnly}}disabled{{end}}>
 				</div>
 			</div>
 
-			<div class="form-group">
+			<div class="mb-3">
 				<input type="text" class="form-control" name="shipping-address-supplement" placeholder="Adresszusatz" value="{{.ShippingAddressSupplement}}" {{if .ReadOnly}}disabled{{end}}>
 			</div>
 
-			<div class="form-row">
-				<div class="form-group col-md-9">
+			<div class="mb-3 row">
+				<div class="col-md-9">
 					<input type="text" class="form-control" name="shipping-street" placeholder="Straße" value="{{.ShippingStreet}}" {{if .ReadOnly}}disabled{{end}}>
 				</div>
-				<div class="form-group col-md-3">
+				<div class="col-md-3">
 					<input type="text" class="form-control" name="shipping-street-number" placeholder="Hausnummer" value="{{.ShippingStreetNumber}}" {{if .ReadOnly}}disabled{{end}}>
 				</div>
 			</div>
 
-			<div class="form-row">
-				<div class="form-group col-md-3">
+			<div class="mb-3 row">
+				<div class="col-md-3">
 					<input type="number" class="form-control" name="shipping-postcode" placeholder="Postleitzahl" value="{{.ShippingPostcode}}" {{if .ReadOnly}}disabled{{end}}>
 				</div>
-				<div class="form-group col-md-9">
+				<div class="col-md-9">
 					<input type="text" class="form-control" name="shipping-town" placeholder="Stadt" value="{{.ShippingTown}}" {{if .ReadOnly}}disabled{{end}}>
 				</div>
 			</div>
@@ -212,7 +211,7 @@
 			{{end}}
 
 			{{if .Actor.IsStore}}
-				<div class="form-group row">
+				<div class="mb-3 row">
 					<label class="col-sm-6 col-form-label">Kosten für Weiterversand (bei null wird der Mindestwert genommen)</label>
 					<div class="col-sm-6">
 						<input class="form-control" name="reshipping-fee" onchange="updateView()" type="number" min="0.00" max="10000.00" step="0.01" value="{{FmtMachine .ReshippingFee}}" {{if .ReadOnly}}disabled{{end}}>

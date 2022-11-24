@@ -1,15 +1,17 @@
 {{define "body"}}
 	<nav class="navbar navbar-expand-sm navbar-dark bg-dark">
-		<div class="w-100">
-			{{block "brand" .}}{{end}}
+		<div class="container-fluid">
+			<div class="col">
+				{{block "brand" .}}{{end}}
+			</div>
+			<div class="col navbar-nav justify-content-center">
+				<a class="btn btn-secondary btn-sm mx-1" href="/">Übersicht</a>
+				<form class="mb-0 mx-1" action="/logout" method="post">
+					<button class="btn btn-secondary btn-sm" type="submit" name="logout">Abmelden</a>
+				</form>
+			</div>
+			<div class="col"><!-- centers navbar-nav --></div>
 		</div>
-		<div class="navbar-nav">
-			<a class="btn btn-secondary btn-sm mx-1" href="/">Übersicht</a>
-			<form class="mb-0 mx-1" action="/logout" method="post">
-				<button class="btn btn-secondary btn-sm" type="submit" name="logout">Abmelden</a>
-			</form>
-		</div>
-		<div class="w-100"><!-- centers navbar-nav --></div>
 	</nav>
 	<div class="container mt-3">
 		{{template "store" .}}

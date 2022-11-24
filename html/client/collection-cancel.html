@@ -1,7 +1,7 @@
 {{define "client"}}
 <h1>Auftrag abbrechen</h1>
 <form method="post">
-	<div class="form-group form-check">
+	<div class="mb-3 form-check">
 		<input type="checkbox" class="form-check-input {{if .Err}}is-invalid{{end}}" id="confirm-cancel" name="confirm-cancel">
 		<label class="form-check-label" for="confirm-cancel">Ja, ich bin mir sicher.</label>
 		<div class="invalid-feedback">Bitte bestätige, dass du den Auftrag abbrechen möchtest.</div>
