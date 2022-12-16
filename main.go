@@ -1045,9 +1045,12 @@ func storeCollConfirmPaymentPost(w http.ResponseWriter, r *http.Request, coll *C
 	// set to underpaid or paid
 
 	var newState CollState
-	if paidAmount >= coll.Due() {
+	switch {
+	case paidAmount == -1*coll.Paid():
+		newState = Unpaid
+	case paidAmount >= coll.Due():
 		newState = Paid
-	} else {
+	default:
 		newState = Underpaid
 	}
 
