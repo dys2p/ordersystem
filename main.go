@@ -145,6 +145,7 @@ func main() {
 			Transition{State(Underpaid), Bot, "confirm-payment", State(Underpaid)},
 			Transition{State(Underpaid), Client, "message", State(Underpaid)},
 			Transition{State(Underpaid), Client, "pay", State(Underpaid)},            // becomes Paid if payment arrives
+			Transition{State(Underpaid), Store, "confirm-payment", State(Accepted)},  // store refunds whole amount
 			Transition{State(Underpaid), Store, "confirm-payment", State(Paid)},      // client pays missing amount
 			Transition{State(Underpaid), Store, "confirm-payment", State(Underpaid)}, // client pays a part of the missing amount
 			Transition{State(Underpaid), Store, "edit", State(Paid)},                 // store modifies the collection, the sum drops, paid sum is now enough
