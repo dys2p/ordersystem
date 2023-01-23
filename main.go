@@ -6,12 +6,14 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"io"
 	"io/fs"
 	"log"
 	"math"
 	"net/http"
 	"os"
 	"os/signal"
+	"path"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -24,6 +26,7 @@ import (
 	"github.com/dys2p/btcpay"
 	"github.com/dys2p/digitalgoods/userdb"
 	"github.com/dys2p/ordersystem/html"
+	"github.com/dys2p/ordersystem/html/sites"
 	"github.com/julienschmidt/httprouter"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/sethvargo/go-diceware/diceware"
@@ -217,6 +220,16 @@ func main() {
 	clientRouter.HandlerFunc(http.MethodPost, "/collection/:collid/pay-btcpay", clientWithCollection(clientCollPayBTCPayPost))
 	clientRouter.HandlerFunc(http.MethodGet, "/collection/:collid/submit", clientWithCollection(clientCollSubmitGet))
 	clientRouter.HandlerFunc(http.MethodPost, "/collection/:collid/submit", clientWithCollection(clientCollSubmitPost))
+
+	clientRouter.HandlerFunc(http.MethodGet, "/de/cancellation-form.html", siteGet)
+	clientRouter.HandlerFunc(http.MethodGet, "/de/cancellation-policy.html", siteGet)
+	clientRouter.HandlerFunc(http.MethodGet, "/de/contact.html", siteGet)
+	clientRouter.HandlerFunc(http.MethodGet, "/de/delivery.html", siteGet)
+	clientRouter.HandlerFunc(http.MethodGet, "/de/imprint.html", siteGet)
+	clientRouter.HandlerFunc(http.MethodGet, "/de/payment.html", siteGet)
+	clientRouter.HandlerFunc(http.MethodGet, "/de/privacy.html", siteGet)
+	clientRouter.HandlerFunc(http.MethodGet, "/de/terms.html", siteGet)
+
 	clientRouter.HandlerFunc(http.MethodPost, "/rpc", rpc)
 	clientRouter.HandlerFunc(http.MethodGet, "/state", client(clientStateGet))
 	clientRouter.HandlerFunc(http.MethodPost, "/state", client(clientStatePost))
@@ -279,6 +292,7 @@ func main() {
 }
 
 type collView struct {
+	html.TemplateData
 	*Collection
 	Actor         Actor
 	ReadOnly      bool
@@ -287,18 +301,21 @@ type collView struct {
 }
 
 type clientHello struct {
-	AuthorizedCollID string
-	Notifications    []string
+	html.TemplateData
+	Notifications []string
 }
 
 func clientHelloGet(w http.ResponseWriter, r *http.Request) error {
 	return html.ClientHello.Execute(w, clientHello{
-		AuthorizedCollID: sessionCollID(r),
-		Notifications:    notifications(r.Context()),
+		TemplateData: html.TemplateData{
+			AuthorizedCollID: sessionCollID(r),
+		},
+		Notifications: notifications(r.Context()),
 	})
 }
 
 type clientCreate struct {
+	html.TemplateData
 	CollID              string
 	CollIDErr           bool
 	CollPass            string
@@ -307,8 +324,6 @@ type clientCreate struct {
 	CaptchaErr          bool
 	CheckWrittenDown    bool
 	CheckWrittenDownErr bool
-
-	AuthorizedCollID string
 }
 
 func (data *clientCreate) Valid() bool {
@@ -330,20 +345,24 @@ func clientCreateGet(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 	return html.ClientCreate.Execute(w, &clientCreate{
-		CollID:           NewID(),
-		CollPass:         strings.Join(collPass, "-"),
-		CaptchaID:        captcha.NewLen(6),
-		AuthorizedCollID: sessionCollID(r),
+		TemplateData: html.TemplateData{
+			AuthorizedCollID: sessionCollID(r),
+		},
+		CollID:    NewID(),
+		CollPass:  strings.Join(collPass, "-"),
+		CaptchaID: captcha.NewLen(6),
 	})
 }
 
 func clientCreatePost(w http.ResponseWriter, r *http.Request) error {
 
 	var data = &clientCreate{
+		TemplateData: html.TemplateData{
+			AuthorizedCollID: sessionCollID(r),
+		},
 		CollID:           strings.TrimSpace(r.PostFormValue("collection-id")),
 		CollPass:         strings.TrimSpace(r.PostFormValue("collection-passphrase")),
 		CheckWrittenDown: r.PostFormValue("check-written-down") != "",
-		AuthorizedCollID: sessionCollID(r),
 	}
 
 	if !captcha.VerifyString(r.PostFormValue("captcha-id"), r.PostFormValue("captcha-solution")) {
@@ -401,11 +420,10 @@ func clientCollEditPost(w http.ResponseWriter, r *http.Request, coll *Collection
 }
 
 type clientLogin struct {
+	html.TemplateData
 	CollID      string
 	CollIDErr   bool
 	CollPassErr bool
-
-	AuthorizedCollID string
 }
 
 // success and error url for payment providers, so we don't reveal the collection ID to them
@@ -420,15 +438,19 @@ func clientCollCurrentGet(w http.ResponseWriter, r *http.Request) error {
 
 func clientCollLoginGet(w http.ResponseWriter, r *http.Request) error {
 	return html.ClientCollLogin.Execute(w, &clientLogin{
-		AuthorizedCollID: sessionCollID(r),
+		TemplateData: html.TemplateData{
+			AuthorizedCollID: sessionCollID(r),
+		},
 	})
 }
 
 func clientCollLoginPost(w http.ResponseWriter, r *http.Request) error {
 	var id = strings.TrimSpace(r.FormValue("collection-id"))
 	var data = &clientLogin{
-		CollID:           id,
-		AuthorizedCollID: sessionCollID(r),
+		TemplateData: html.TemplateData{
+			AuthorizedCollID: sessionCollID(r),
+		},
+		CollID: id,
 	}
 	if !IsID(id) {
 		data.CollIDErr = true
@@ -456,6 +478,7 @@ func clientCollViewGet(w http.ResponseWriter, r *http.Request, coll *Collection)
 }
 
 type clientCollCancel struct {
+	html.TemplateData
 	*Collection
 	Err bool
 }
@@ -487,6 +510,7 @@ func clientCollCancelPost(w http.ResponseWriter, r *http.Request, coll *Collecti
 
 // used by client and store
 type collDelete struct {
+	html.TemplateData
 	*Collection
 	Err bool
 }
@@ -520,6 +544,7 @@ func clientCollDeletePost(w http.ResponseWriter, r *http.Request, coll *Collecti
 }
 
 type clientCollPayBTCPay struct {
+	html.TemplateData
 	*Collection
 	CaptchaID  string
 	CaptchaErr bool
@@ -599,7 +624,13 @@ func clientCollMessageGet(w http.ResponseWriter, r *http.Request, coll *Collecti
 	if !coll.ClientCan("message") {
 		return ErrNotFound
 	}
-	return html.ClientCollMessage.Execute(w, coll)
+	return html.ClientCollMessage.Execute(w, struct {
+		html.TemplateData
+		*Collection
+	}{
+		html.TemplateData{},
+		coll,
+	})
 }
 
 func clientCollMessagePost(w http.ResponseWriter, r *http.Request, coll *Collection) error {
@@ -639,13 +670,12 @@ func clientCollSubmitPost(w http.ResponseWriter, r *http.Request, coll *Collecti
 
 // for both Get and Post
 type clientState struct {
+	html.TemplateData
 	CaptchaID  string
 	CaptchaErr bool
 	CollID     string
 	CollIDErr  bool
 	State      CollState
-
-	AuthorizedCollID string
 }
 
 func (data *clientState) Valid() bool {
@@ -653,6 +683,31 @@ func (data *clientState) Valid() bool {
 		data.CollIDErr = true
 	}
 	return !data.CaptchaErr && !data.CollIDErr
+}
+
+func siteGet(w http.ResponseWriter, r *http.Request) {
+	name := strings.TrimSuffix(path.Base(r.URL.Path), ".html")
+
+	file, err := sites.Files.Open(filepath.Join( /*langstr, */ name + ".md"))
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	content, err := io.ReadAll(file)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	err = html.ClientSite.Execute(w, struct {
+		html.TemplateData
+		Content string
+	}{
+		html.TemplateData{},
+		string(content),
+	})
+	if err != nil {
+		log.Println(err)
+	}
 }
 
 func rpc(w http.ResponseWriter, r *http.Request) {
@@ -839,8 +894,10 @@ func invoiceSettled(coll *Collection, invoice *bitpay.Invoice) error {
 // no Collection instances involved
 func clientStateGet(w http.ResponseWriter, r *http.Request) error {
 	return html.ClientStateGet.Execute(w, clientState{
-		AuthorizedCollID: sessionCollID(r),
-		CaptchaID:        captcha.New(),
+		TemplateData: html.TemplateData{
+			AuthorizedCollID: sessionCollID(r),
+		},
+		CaptchaID: captcha.New(),
 	})
 }
 
@@ -848,8 +905,10 @@ func clientStateGet(w http.ResponseWriter, r *http.Request) error {
 func clientStatePost(w http.ResponseWriter, r *http.Request) error {
 
 	var data = &clientState{
-		AuthorizedCollID: sessionCollID(r),
-		CollID:           strings.TrimSpace(r.PostFormValue("collection-id")),
+		TemplateData: html.TemplateData{
+			AuthorizedCollID: sessionCollID(r),
+		},
+		CollID: strings.TrimSpace(r.PostFormValue("collection-id")),
 	}
 
 	if data.CollID == data.AuthorizedCollID {
@@ -884,9 +943,11 @@ func clientLogoutPost(w http.ResponseWriter, r *http.Request) error {
 
 func storeIndexGet(w http.ResponseWriter, r *http.Request) error {
 	return html.StoreIndex.Execute(w, struct {
+		html.TemplateData
 		*DB
 		Notifications []string
 	}{
+		html.TemplateData{},
 		db,
 		notifications(r.Context()),
 	})
@@ -905,7 +966,13 @@ func storeCollAcceptGet(w http.ResponseWriter, r *http.Request, coll *Collection
 	if !coll.StoreCan("accept") {
 		return ErrNotFound
 	}
-	return html.StoreCollAccept.Execute(w, coll)
+	return html.StoreCollAccept.Execute(w, struct {
+		html.TemplateData
+		*Collection
+	}{
+		html.TemplateData{},
+		coll,
+	})
 }
 
 func storeCollAcceptPost(w http.ResponseWriter, r *http.Request, coll *Collection) error {
@@ -945,6 +1012,7 @@ func storeCollDeletePost(w http.ResponseWriter, r *http.Request, coll *Collectio
 }
 
 type taskView struct {
+	html.TemplateData
 	*Task
 	CollLink string
 }
@@ -1016,6 +1084,7 @@ func storeTaskMarkFailedPost(w http.ResponseWriter, r *http.Request, coll *Colle
 }
 
 type storeCollConfirmPayment struct {
+	html.TemplateData
 	Coll *Collection
 	Err  bool
 }
@@ -1069,7 +1138,13 @@ func storeCollConfirmPickupGet(w http.ResponseWriter, r *http.Request, coll *Col
 	if !coll.StoreCan("confirm-pickup") {
 		return ErrNotFound
 	}
-	return html.StoreCollConfirmPickup.Execute(w, coll)
+	return html.StoreCollConfirmPickup.Execute(w, struct {
+		html.TemplateData
+		*Collection
+	}{
+		html.TemplateData{},
+		coll,
+	})
 }
 
 func storeCollConfirmPickupPost(w http.ResponseWriter, r *http.Request, coll *Collection) error {
@@ -1105,7 +1180,13 @@ func storeCollConfirmReshippedGet(w http.ResponseWriter, r *http.Request, coll *
 	if !coll.StoreCan("confirm-reshipped") {
 		return ErrNotFound
 	}
-	return html.StoreCollConfirmReshipped.Execute(w, coll)
+	return html.StoreCollConfirmReshipped.Execute(w, struct {
+		html.TemplateData
+		*Collection
+	}{
+		html.TemplateData{},
+		coll,
+	})
 }
 
 func storeCollConfirmReshippedPost(w http.ResponseWriter, r *http.Request, coll *Collection) error {
@@ -1223,7 +1304,13 @@ func storeCollMessageGet(w http.ResponseWriter, r *http.Request, coll *Collectio
 	if !coll.StoreCan("message") {
 		return ErrNotFound
 	}
-	return html.StoreCollMessage.Execute(w, coll)
+	return html.StoreCollMessage.Execute(w, struct {
+		html.TemplateData
+		*Collection
+	}{
+		html.TemplateData{},
+		coll,
+	})
 }
 
 func storeCollMessagePost(w http.ResponseWriter, r *http.Request, coll *Collection) error {
@@ -1240,7 +1327,13 @@ func storeCollPriceRisedGet(w http.ResponseWriter, r *http.Request, coll *Collec
 	if !coll.StoreCan("price-rised") {
 		return ErrNotFound
 	}
-	return html.StoreCollPriceRised.Execute(w, coll)
+	return html.StoreCollPriceRised.Execute(w, struct {
+		html.TemplateData
+		*Collection
+	}{
+		html.TemplateData{},
+		coll,
+	})
 }
 
 func storeCollPriceRisedPost(w http.ResponseWriter, r *http.Request, coll *Collection) error {
@@ -1258,7 +1351,13 @@ func storeCollReturnGet(w http.ResponseWriter, r *http.Request, coll *Collection
 	if !coll.StoreCan("return") {
 		return ErrNotFound
 	}
-	return html.StoreCollReturn.Execute(w, coll)
+	return html.StoreCollReturn.Execute(w, struct {
+		html.TemplateData
+		*Collection
+	}{
+		html.TemplateData{},
+		coll,
+	})
 }
 
 func storeCollReturnPost(w http.ResponseWriter, r *http.Request, coll *Collection) error {
@@ -1274,6 +1373,7 @@ func storeCollReturnPost(w http.ResponseWriter, r *http.Request, coll *Collectio
 }
 
 type storeCollReject struct {
+	html.TemplateData
 	Coll *Collection
 	Err  bool
 }
@@ -1304,6 +1404,7 @@ func storeCollRejectPost(w http.ResponseWriter, r *http.Request, coll *Collectio
 }
 
 type storeCollMarkSpam struct {
+	html.TemplateData
 	Coll *Collection
 	Err  bool
 }
@@ -1334,7 +1435,7 @@ func storeCollMarkSpamPost(w http.ResponseWriter, r *http.Request, coll *Collect
 }
 
 func storeLoginGet(w http.ResponseWriter, r *http.Request) error {
-	return html.StoreLogin.Execute(w, nil)
+	return html.StoreLogin.Execute(w, html.TemplateData{})
 }
 
 func storeLoginPost(w http.ResponseWriter, r *http.Request) error {

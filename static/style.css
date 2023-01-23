@@ -1,0 +1,89 @@
+.ritole {
+	unicode-bidi: bidi-override;
+	direction: rtl;
+}
+
+* {
+	hyphens: auto;
+}
+
+@media (min-width: 1200px) {
+	.equal-width-xl {
+		flex: 1 1 0px;
+	}
+}
+
+/* https://payalord.github.io/xZoom/docs/index.html#usefultips */
+
+.xzoom-gallery {
+	margin-left: 0 !important;
+	margin-bottom: 0 !important;
+	max-height: 6em;
+}
+
+/* toggle navbar without javascript */
+input.toggler {
+	display: none;
+}
+input.toggler:checked ~ div {
+	display: block;
+}
+
+.nav-active {
+	background-color: #e7e7e7;
+	border-bottom: solid black 2px;
+}
+
+/* from util.html */
+.selected-category {
+	font-weight: bold;
+}
+
+/* footer flex-grow  */
+html, body {
+	height: 100%;
+}
+body {
+	display: flex;
+	flex-flow: column;
+}
+footer {
+	flex-grow: 1;
+
+	background-color: #f8f9fa;
+	font-size: small;
+	margin-top: 2em;
+	padding: 2em 0.75em 0.75em 0.75em;
+}
+
+footer ul {
+	padding-left: 0;
+}
+
+footer li {
+	list-style-type: none;
+	padding-bottom: 0.33em;
+}
+
+/* links */
+a {
+	text-decoration: none;
+}
+
+/* make all images responsive */
+img {
+	max-width: 100%;
+	height: auto;
+}
+
+/* headings */
+h3 { font-size: 1.4rem; }
+h4 { font-size: 1.2rem; }
+h5 { font-size: 1rem; }
+
+/* style all blockquotes independently from bootstrap */
+blockquote {
+	border-left: solid 5px #d0d0d0;
+	font-style: italic;
+	padding-left: 0.5em;
+}
