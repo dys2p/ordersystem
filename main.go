@@ -270,7 +270,7 @@ func main() {
 
 	// run until we receive an interrupt or any listener fails
 
-	log.Printf("running")
+	log.Printf("listening to 127.0.0.1:9000 and 127.0.0.1:9001")
 	<-stop // blocks
 	log.Println("shutting down")
 	clientSrv.Shutdown()
