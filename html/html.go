@@ -25,52 +25,46 @@ func FmtMachine(cents int) string {
 	return fmt.Sprintf("%.2f", centsToFloat(cents)) // for some APIs and HTML <input> tags
 }
 
-var funcs = template.FuncMap{
-	"FmtHuman":   FmtHuman,
-	"FmtMachine": FmtMachine,
-}
-
 func parse(fn ...string) *template.Template {
-	fn = append([]string{"layout"}, fn...)
-	for i := range fn {
-		fn[i] = fn[i] + ".html"
-	}
-	return template.Must(template.Must(template.New("layout.html").Funcs(funcs).ParseFS(files, fn...)).ParseGlob(filepath.Join(os.Getenv("CONFIGURATION_DIRECTORY"), "custom.html")))
+	return template.Must(template.Must(template.New(fn[0]).Funcs(template.FuncMap{
+		"FmtHuman":   FmtHuman,
+		"FmtMachine": FmtMachine,
+	}).ParseFS(files, fn...)).ParseGlob(filepath.Join(os.Getenv("CONFIGURATION_DIRECTORY"), "*.html")))
 }
 
 var (
-	ClientError         = parse("client", "client/error")
-	ClientHello         = parse("client", "client/hello")
-	ClientCreate        = parse("client", "client/collection-create")
-	ClientCollCancel    = parse("client", "client/collection-cancel")
-	ClientCollDelete    = parse("client", "client/collection-delete")
-	ClientCollEdit      = parse("client", "client/collection-edit")
-	ClientCollLogin     = parse("client", "client/collection-login")
-	ClientCollMessage   = parse("client", "client/collection-message")
-	ClientCollPayBTCPay = parse("client", "client/collection-pay-btcpay")
-	ClientCollSubmit    = parse("client", "client/collection-submit")
-	ClientCollView      = parse("client", "client/collection-view")
-	ClientStateGet      = parse("client", "client/state-get")
-	ClientStatePost     = parse("client", "client/state-post")
+	ClientError         = parse("layout.html", "client.html", "client/error.html")
+	ClientHello         = parse("layout.html", "client.html", "client/hello.html")
+	ClientCreate        = parse("layout.html", "client.html", "client/collection-create.html")
+	ClientCollCancel    = parse("layout.html", "client.html", "client/collection-cancel.html")
+	ClientCollDelete    = parse("layout.html", "client.html", "client/collection-delete.html")
+	ClientCollEdit      = parse("layout.html", "client.html", "client/collection-edit.html")
+	ClientCollLogin     = parse("layout.html", "client.html", "client/collection-login.html")
+	ClientCollMessage   = parse("layout.html", "client.html", "client/collection-message.html")
+	ClientCollPayBTCPay = parse("layout.html", "client.html", "client/collection-pay-btcpay.html")
+	ClientCollSubmit    = parse("layout.html", "client.html", "client/collection-submit.html")
+	ClientCollView      = parse("layout.html", "client.html", "client/collection-view.html")
+	ClientStateGet      = parse("layout.html", "client.html", "client/state-get.html")
+	ClientStatePost     = parse("layout.html", "client.html", "client/state-post.html")
 
-	StoreError                = parse("store", "store/error")
-	StoreIndex                = parse("store", "store/index")
-	StoreLogin                = parse("store", "store/login")
-	StoreCollAccept           = parse("store", "store/collection-accept")
-	StoreCollConfirmPayment   = parse("store", "store/collection-confirm-payment")
-	StoreCollConfirmPickup    = parse("store", "store/collection-confirm-pickup")
-	StoreCollConfirmReshipped = parse("store", "store/collection-confirm-reshipped")
-	StoreCollDelete           = parse("store", "store/collection-delete")
-	StoreCollEdit             = parse("store", "store/collection-edit")
-	StoreCollMarkSpam         = parse("store", "store/collection-mark-spam")
-	StoreCollMessage          = parse("store", "store/collection-message")
-	StoreCollPriceRised       = parse("store", "store/collection-price-rised")
-	StoreCollReturn           = parse("store", "store/collection-return")
-	StoreCollReject           = parse("store", "store/collection-reject")
-	StoreCollView             = parse("store", "store/collection-view")
-	StoreTaskConfirmArrived   = parse("store", "store/task-confirm-arrived")
-	StoreTaskConfirmOrdered   = parse("store", "store/task-confirm-ordered")
-	StoreTaskConfirmPickup    = parse("store", "store/task-confirm-pickup")
-	StoreTaskConfirmReshipped = parse("store", "store/task-confirm-reshipped")
-	StoreTaskMarkFailed       = parse("store", "store/task-mark-failed")
+	StoreError                = parse("layout.html", "store.html", "store/error.html")
+	StoreIndex                = parse("layout.html", "store.html", "store/index.html")
+	StoreLogin                = parse("layout.html", "store.html", "store/login.html")
+	StoreCollAccept           = parse("layout.html", "store.html", "store/collection-accept.html")
+	StoreCollConfirmPayment   = parse("layout.html", "store.html", "store/collection-confirm-payment.html")
+	StoreCollConfirmPickup    = parse("layout.html", "store.html", "store/collection-confirm-pickup.html")
+	StoreCollConfirmReshipped = parse("layout.html", "store.html", "store/collection-confirm-reshipped.html")
+	StoreCollDelete           = parse("layout.html", "store.html", "store/collection-delete.html")
+	StoreCollEdit             = parse("layout.html", "store.html", "store/collection-edit.html")
+	StoreCollMarkSpam         = parse("layout.html", "store.html", "store/collection-mark-spam.html")
+	StoreCollMessage          = parse("layout.html", "store.html", "store/collection-message.html")
+	StoreCollPriceRised       = parse("layout.html", "store.html", "store/collection-price-rised.html")
+	StoreCollReturn           = parse("layout.html", "store.html", "store/collection-return.html")
+	StoreCollReject           = parse("layout.html", "store.html", "store/collection-reject.html")
+	StoreCollView             = parse("layout.html", "store.html", "store/collection-view.html")
+	StoreTaskConfirmArrived   = parse("layout.html", "store.html", "store/task-confirm-arrived.html")
+	StoreTaskConfirmOrdered   = parse("layout.html", "store.html", "store/task-confirm-ordered.html")
+	StoreTaskConfirmPickup    = parse("layout.html", "store.html", "store/task-confirm-pickup.html")
+	StoreTaskConfirmReshipped = parse("layout.html", "store.html", "store/task-confirm-reshipped.html")
+	StoreTaskMarkFailed       = parse("layout.html", "store.html", "store/task-mark-failed.html")
 )
