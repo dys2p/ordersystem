@@ -50,7 +50,7 @@ func (s TaskState) Description() template.HTML {
 	case Ordered:
 		desc = "(Wir haben deinen Bestellauftrag ausgeführt. Du wirst benachrichtigt, wenn die Ware eintrifft.)"
 	case Ready:
-		desc = "(Die Ware ist bei uns eingetroffen.)"
+		desc = "(Die Ware ist bei uns eingetroffen. Du kannst sie abholen bzw. wir versenden sie bald an dich weiter.)"
 	case Reshipped:
 		desc = "(Wir haben deine Ware an dich weiterverschickt.)"
 	case Unfetched:
