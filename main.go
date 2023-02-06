@@ -131,7 +131,8 @@ func main() {
 			Transition{State(NeedsRevise), Client, "submit", State(Submitted)},
 			Transition{State(Paid), Bot, "confirm-payment", State(Paid)},
 			Transition{State(Paid), Bot, "finalize", State(Finalized)},
-			Transition{State(Paid), Store, "confirm-payment", State(Paid)}, // refund overpaid amount
+			Transition{State(Paid), Store, "confirm-payment", State(Accepted)}, // all tasks failed
+			Transition{State(Paid), Store, "confirm-payment", State(Paid)},     // refund overpaid amount
 			Transition{State(Paid), Store, "confirm-pickup", State(Paid)},
 			Transition{State(Paid), Store, "confirm-reshipped", State(Paid)},
 			Transition{State(Paid), Store, "edit", State(Paid)}, // price or availability changed after payment
