@@ -11,15 +11,24 @@
 	</head>
 	<body>
 		<header>
-			<nav class="navbar navbar-expand-xl navbar-light py-0" style="background-color: rgba(240,242,244) !important">
+			<nav class="navbar navbar-expand-xl navbar-light py-0" style="background-color: rgb(240,242,244) !important">
 				<div class="container-fluid">
-					<input class="toggler" type="checkbox" id="toggle-shopbar">
-					<label for="toggle-shopbar" class="navbar-toggler my-2">
-						<div class="navbar-toggler-icon"></div>
+					<!-- checkbox -->
+					<input type="checkbox" class="toggler" aria-hidden="true" id="open-shopbar">
+					<!-- togglers -->
+					<label for="open-shopbar" class="navbar-toggler my-2">
+						<div class="open navbar-toggler-icon"></div>
+						<div class="close btn-close"></div>
 					</label>
-					<label for="toggle-shopbar" class="d-xl-none me-2">
+					<div class="d-xl-none">
+						<a class="open visually-hidden-focusable" role="button" href="#open-shopbar">Open shops menu</a>
+						<a class="close visually-hidden-focusable" role="button" href="#">Close shops menu</a>
+					</div>
+					<!-- closed -->
+					<label for="open-shopbar" class="d-xl-none me-2">
 						<div class="navbar-text">{{.Map "de" "Alle Angebote und Projekte" "en" "All Services and Projects"}}</div>
 					</label>
+					<!-- opened -->
 					<div class="collapse navbar-collapse">
 						<div class="navbar-brand equal-width-xl"></div>
 						<div class="navbar-nav equal-width-xl d-flex justify-content-center">
@@ -32,20 +41,17 @@
 							<a class="nav-item nav-link text-dark text-nowrap p-3 {{if and (eq .Website "proxysto.re") (ne .Page "warum")}}nav-active{{end}}" rel="noreferrer" href="https://proxysto.re/{{.Locale}}">
 								<i class="fa-solid fa-store"></i> {{.Map "de" "Ladengeschäft" "en" "Local Store"}}
 							</a>
-							<a class="nav-item nav-link text-dark text-nowrap p-3 {{if eq .Website "order.proxysto.re"                       }}nav-active{{end}}" rel="noreferrer" href="https://order.proxysto.re">
-								<i class="fa-solid fa-tags"></i> {{.Map "de" "Bestellservice" "en" "Order Service"}}
-							</a>
 							<a class="nav-item nav-link text-dark text-nowrap p-3 {{if eq .Website "digitalgoods.proxysto.re"                }}nav-active{{end}}" rel="noreferrer" href="https://digitalgoods.proxysto.re/{{.Locale}}">
 								<i class="fa-solid fa-ticket"></i> {{.Map "de" "Digitale Güter" "en" "Digital Goods"}}
 							</a>
+							<a class="nav-item nav-link text-dark text-nowrap p-3 {{if eq .Website "shop.proxysto.re"                        }}nav-active{{end}}" rel="noreferrer" href="https://shop.proxysto.re">
+								<i class="fa-solid fa-cart-shopping"></i> {{.Map "de" "Onlineshop" "en" "Online shop"}}
+							</a>
+							<a class="nav-item nav-link text-dark text-nowrap p-3 {{if eq .Website "order.proxysto.re"                       }}nav-active{{end}}" rel="noreferrer" href="https://order.proxysto.re">
+								<i class="fa-solid fa-tags"></i> {{.Map "de" "Bestellservice" "en" "Order Service"}}
+							</a>
 							<a class="nav-item nav-link text-dark text-nowrap p-3 {{if eq .Website "druck.proxysto.re"                       }}nav-active{{end}}" rel="noreferrer" href="https://druck.proxysto.re">
 								<i class="fa-solid fa-print"></i> {{.Map "de" "Onlinedruckerei" "en" "Online printing"}}
-							</a>
-							<a class="nav-item nav-link text-dark text-nowrap p-3 {{if eq .Website "shop.proxysto.re"                        }}nav-active{{end}}" rel="noreferrer" href="https://shop.proxysto.re">
-								<i class="fa-solid fa-cart-shopping"></i> ProxyStore
-							</a>
-							<a class="nav-item nav-link text-dark text-nowrap p-3 {{if eq .Website "toolbox77.de"                            }}nav-active{{end}}" rel="noreferrer" href="https://toolbox77.de">
-								<i class="fa-solid fa-cart-shopping"></i> toolbox77
 							</a>
 						</div>
 						<div class="equal-width-xl text-end text-nowrap">
@@ -133,5 +139,10 @@
 				</p>
 			</div>
 		</footer>
+
+		<!-- HTML noscript tag does not work with NoScript browser addon, so we go this way -->
+		<script>
+			document.querySelectorAll("[name='apply-changes-nojs']").forEach(e => e.remove());
+		</script>
 	</body>
 </html>

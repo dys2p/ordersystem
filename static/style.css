@@ -25,7 +25,22 @@
 input.toggler {
 	display: none;
 }
-input.toggler:checked ~ div {
+.close {
+	display: none;
+}
+:is(input.toggler:checked, input.toggler:target) ~ div {
+	display: block;
+}
+:is(input.toggler:checked, input.toggler:target) ~ .open {
+	display: none;
+}
+:is(input.toggler:checked, input.toggler:target) ~ * .open {
+	display: none;
+}
+:is(input.toggler:checked, input.toggler:target) ~ .close {
+	display: block;
+}
+:is(input.toggler:checked, input.toggler:target) ~ * .close {
 	display: block;
 }
 
@@ -86,4 +101,10 @@ blockquote {
 	border-left: solid 5px #d0d0d0;
 	font-style: italic;
 	padding-left: 0.5em;
+}
+
+pre {
+	background-color: #f2f2f2;
+	border-radius: 0.375rem;
+	padding: 0.6em 0.8em;
 }
