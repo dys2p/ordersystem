@@ -1,0 +1,14 @@
+{{define "store"}}
+	<h1>Auftrag als eingereicht markieren</h1>
+	<form method="post">
+		<div class="mb-3">
+			<label class="form-label" for="submit-message">Raum für Anmerkungen</label>
+			<textarea class="form-control" id="submit-message" name="submit-message" rows="3"></textarea>
+			<small class="form-text text-muted">Du kannst Markdown (CommonMark) eingeben.</small>
+		</div>
+		<div class="mb-3 text-end">
+			<a class="btn btn-secondary" href="{{.Link}}">Abbrechen und zurück</a>
+			<button class="btn btn-success" type="submit">Als eingereicht markieren</button>
+		</div>
+	</form>
+{{end}}

@@ -124,6 +124,7 @@ func main() {
 			Transition{State(Draft), Client, "delete", State(Deleted)},
 			Transition{State(Draft), Client, "edit", State(Draft)},
 			Transition{State(Draft), Client, "submit", State(Submitted)},
+			Transition{State(Draft), Store, "submit", State(Submitted)},
 			Transition{State(Finalized), Store, "message", State(Finalized)}, // "Hi, we just shipped your order."
 			Transition{State(Finalized), Bot, "archive", State(Archived)},
 			Transition{State(NeedsRevise), Client, "cancel", State(Cancelled)},

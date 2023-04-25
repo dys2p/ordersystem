@@ -33,6 +33,9 @@
 		{{if .StoreCan "reject"}}
 			<a class="btn btn-danger" href="/collection/{{$.ID}}/reject">Ablehnen</a>
 		{{end}}
+		{{if .StoreCan "submit"}}
+			<a class="btn btn-danger" href="/collection/{{$.ID}}/submit">Als eingereicht markieren</a>
+		{{end}}
 		{{if .StoreCan "delete"}}
 			<a class="btn btn-danger" href="/collection/{{$.ID}}/delete">Löschen</a>
 		{{end}}

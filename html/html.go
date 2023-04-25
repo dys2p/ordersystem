@@ -106,6 +106,7 @@ var (
 	StoreCollPriceRised       = parse("template.html", "layout.html", "store.html", "store/collection-price-rised.html")
 	StoreCollReturn           = parse("template.html", "layout.html", "store.html", "store/collection-return.html")
 	StoreCollReject           = parse("template.html", "layout.html", "store.html", "store/collection-reject.html")
+	StoreCollSubmit           = parse("template.html", "layout.html", "store.html", "store/collection-submit.html")
 	StoreCollView             = parse("template.html", "layout.html", "store.html", "store/collection-view.html")
 	StoreTaskConfirmArrived   = parse("template.html", "layout.html", "store.html", "store/task-confirm-arrived.html")
 	StoreTaskConfirmOrdered   = parse("template.html", "layout.html", "store.html", "store/task-confirm-ordered.html")
