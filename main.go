@@ -26,6 +26,7 @@ import (
 	"github.com/dys2p/btcpay"
 	"github.com/dys2p/digitalgoods/userdb"
 	"github.com/dys2p/eco/diceware"
+	"github.com/dys2p/eco/id"
 	"github.com/dys2p/ordersystem/html"
 	"github.com/dys2p/ordersystem/html/sites"
 	"github.com/julienschmidt/httprouter"
@@ -328,8 +329,20 @@ type clientCreate struct {
 	CheckWrittenDownErr bool
 }
 
+func isID(s string) bool {
+	if len(s) != 6 && len(s) != 10 {
+		return false
+	}
+	for _, r := range s {
+		if !strings.ContainsRune(id.AlphanumCaseInsensitiveDigits, r) {
+			return false
+		}
+	}
+	return true
+}
+
 func (data *clientCreate) Valid() bool {
-	if !IsID(data.CollID) {
+	if !isID(data.CollID) {
 		data.CollIDErr = true
 	}
 	if data.CollPass == "" {
@@ -350,7 +363,7 @@ func clientCreateGet(w http.ResponseWriter, r *http.Request) error {
 		TemplateData: html.TemplateData{
 			AuthorizedCollID: sessionCollID(r),
 		},
-		CollID:    NewID(),
+		CollID:    id.New(6, id.AlphanumCaseInsensitiveDigits),
 		CollPass:  collPass,
 		CaptchaID: captcha.NewLen(6),
 	})
@@ -454,7 +467,7 @@ func clientCollLoginPost(w http.ResponseWriter, r *http.Request) error {
 		},
 		CollID: id,
 	}
-	if !IsID(id) {
+	if !isID(id) {
 		data.CollIDErr = true
 		return html.ClientCollLogin.Execute(w, data)
 	}
@@ -681,7 +694,7 @@ type clientState struct {
 }
 
 func (data *clientState) Valid() bool {
-	if !IsID(data.CollID) {
+	if !isID(data.CollID) {
 		data.CollIDErr = true
 	}
 	return !data.CaptchaErr && !data.CollIDErr

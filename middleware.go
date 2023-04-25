@@ -45,8 +45,8 @@ func clientWithCollection(f func(w http.ResponseWriter, r *http.Request, coll *C
 	return client(
 		func(w http.ResponseWriter, r *http.Request) error {
 			var collID = httprouter.ParamsFromContext(r.Context()).ByName("collid")
-			if !IsID(collID) {
-				return ErrNotFound
+			if len(collID) > 10 {
+				collID = collID[:10]
 			}
 			if sessionManager.GetString(r.Context(), "coll-id") != collID {
 				return ErrNotFound // not logged in, or into another collection
@@ -72,8 +72,8 @@ func storeWithCollection(f func(w http.ResponseWriter, r *http.Request, coll *Co
 	return store(
 		func(w http.ResponseWriter, r *http.Request) error {
 			var collID = httprouter.ParamsFromContext(r.Context()).ByName("collid")
-			if !IsID(collID) {
-				return ErrNotFound
+			if len(collID) > 10 {
+				collID = collID[:10]
 			}
 			var coll, err = db.ReadColl(collID)
 			if err != nil {

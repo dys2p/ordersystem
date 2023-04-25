@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/dys2p/eco/id"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -106,7 +107,7 @@ func (coll *Collection) Merge(actor Actor, untrustedColl *Collection) error {
 
 	for _, task := range untrustedColl.Tasks {
 		if strings.TrimSpace(task.ID) == "" {
-			task.ID = NewID()
+			task.ID = id.New(10, id.AlphanumCaseInsensitiveDigits)
 		}
 	}
 
