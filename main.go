@@ -25,11 +25,11 @@ import (
 	"github.com/dys2p/bitpay"
 	"github.com/dys2p/btcpay"
 	"github.com/dys2p/digitalgoods/userdb"
+	"github.com/dys2p/eco/diceware"
 	"github.com/dys2p/ordersystem/html"
 	"github.com/dys2p/ordersystem/html/sites"
 	"github.com/julienschmidt/httprouter"
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/sethvargo/go-diceware/diceware"
 )
 
 //go:embed static
@@ -342,7 +342,7 @@ func (data *clientCreate) Valid() bool {
 }
 
 func clientCreateGet(w http.ResponseWriter, r *http.Request) error {
-	var collPass, err = diceware.GenerateWithWordList(5, WordListGermanSmall)
+	collPass, err := diceware.Length(5, diceware.German)
 	if err != nil {
 		return err
 	}
@@ -351,7 +351,7 @@ func clientCreateGet(w http.ResponseWriter, r *http.Request) error {
 			AuthorizedCollID: sessionCollID(r),
 		},
 		CollID:    NewID(),
-		CollPass:  strings.Join(collPass, "-"),
+		CollPass:  collPass,
 		CaptchaID: captcha.NewLen(6),
 	})
 }
