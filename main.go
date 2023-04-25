@@ -21,10 +21,10 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/dchest/captcha"
 	"github.com/dys2p/bitpay"
 	"github.com/dys2p/btcpay"
 	"github.com/dys2p/digitalgoods/userdb"
+	"github.com/dys2p/eco/captcha"
 	"github.com/dys2p/eco/diceware"
 	"github.com/dys2p/eco/id"
 	"github.com/dys2p/ordersystem/html"
@@ -61,6 +61,10 @@ func main() {
 		log.Printf("error opening database: %v", err)
 		return
 	}
+
+	// captcha
+
+	captcha.Initialize(filepath.Join(os.Getenv("STATE_DIRECTORY"), "captcha.sqlite3"))
 
 	// userdb
 
@@ -237,7 +241,7 @@ func main() {
 	clientRouter.HandlerFunc(http.MethodGet, "/state", client(clientStateGet))
 	clientRouter.HandlerFunc(http.MethodPost, "/state", client(clientStatePost))
 	clientRouter.HandlerFunc(http.MethodPost, "/logout", client(clientLogoutPost))
-	clientRouter.Handler("GET", "/captcha/:fn", captcha.Server(captcha.StdWidth, captcha.StdHeight))
+	clientRouter.Handler("GET", "/captcha/:fn", captcha.Handler())
 
 	var clientSrv = ListenAndServe("tcp", ":9000", sessionManager.LoadAndSave(clientRouter), stop)
 
@@ -323,8 +327,7 @@ type clientCreate struct {
 	CollIDErr           bool
 	CollPass            string
 	CollPassErr         bool
-	CaptchaID           string
-	CaptchaErr          bool
+	Captcha             captcha.TemplateData
 	CheckWrittenDown    bool
 	CheckWrittenDownErr bool
 }
@@ -351,7 +354,7 @@ func (data *clientCreate) Valid() bool {
 	if !data.CheckWrittenDown {
 		data.CheckWrittenDownErr = true
 	}
-	return !data.CollIDErr && !data.CollPassErr && !data.CaptchaErr && !data.CheckWrittenDownErr
+	return !data.CollIDErr && !data.CollPassErr && !data.Captcha.Err && !data.CheckWrittenDownErr
 }
 
 func clientCreateGet(w http.ResponseWriter, r *http.Request) error {
@@ -363,9 +366,11 @@ func clientCreateGet(w http.ResponseWriter, r *http.Request) error {
 		TemplateData: html.TemplateData{
 			AuthorizedCollID: sessionCollID(r),
 		},
-		CollID:    id.New(6, id.AlphanumCaseInsensitiveDigits),
-		CollPass:  collPass,
-		CaptchaID: captcha.NewLen(6),
+		CollID:   id.New(6, id.AlphanumCaseInsensitiveDigits),
+		CollPass: collPass,
+		Captcha: captcha.TemplateData{
+			ID: captcha.New(),
+		},
 	})
 }
 
@@ -380,12 +385,12 @@ func clientCreatePost(w http.ResponseWriter, r *http.Request) error {
 		CheckWrittenDown: r.PostFormValue("check-written-down") != "",
 	}
 
-	if !captcha.VerifyString(r.PostFormValue("captcha-id"), r.PostFormValue("captcha-solution")) {
-		data.CaptchaErr = true
+	if !captcha.Verify(r.PostFormValue("captcha-id"), r.PostFormValue("captcha-solution")) {
+		data.Captcha.Err = true
 	}
 
 	if !data.Valid() {
-		data.CaptchaID = captcha.New() // old captcha has been deleted during verification, so let's create a new one
+		data.Captcha.ID = captcha.New() // old captcha has been deleted during verification, so let's create a new one
 		return html.ClientCreate.Execute(w, data)
 	}
 
@@ -561,8 +566,7 @@ func clientCollDeletePost(w http.ResponseWriter, r *http.Request, coll *Collecti
 type clientCollPayBTCPay struct {
 	html.TemplateData
 	*Collection
-	CaptchaID  string
-	CaptchaErr bool
+	Captcha captcha.TemplateData
 }
 
 func clientCollPayBTCPayGet(w http.ResponseWriter, r *http.Request, coll *Collection) error {
@@ -571,7 +575,9 @@ func clientCollPayBTCPayGet(w http.ResponseWriter, r *http.Request, coll *Collec
 	}
 	return html.ClientCollPayBTCPay.Execute(w, &clientCollPayBTCPay{
 		Collection: coll,
-		CaptchaID:  captcha.New(),
+		Captcha: captcha.TemplateData{
+			ID: captcha.New(),
+		},
 	})
 }
 
@@ -580,11 +586,13 @@ func clientCollPayBTCPayPost(w http.ResponseWriter, r *http.Request, coll *Colle
 	if !coll.ClientCan("pay") {
 		return ErrNotFound
 	}
-	if !captcha.VerifyString(r.PostFormValue("captcha-id"), r.PostFormValue("captcha-solution")) {
+	if !captcha.Verify(r.PostFormValue("captcha-id"), r.PostFormValue("captcha-solution")) {
 		return html.ClientCollPayBTCPay.Execute(w, &clientCollPayBTCPay{
 			Collection: coll,
-			CaptchaErr: true,
-			CaptchaID:  captcha.New(),
+			Captcha: captcha.TemplateData{
+				ID:  captcha.New(),
+				Err: true,
+			},
 		})
 	}
 
@@ -686,18 +694,17 @@ func clientCollSubmitPost(w http.ResponseWriter, r *http.Request, coll *Collecti
 // for both Get and Post
 type clientState struct {
 	html.TemplateData
-	CaptchaID  string
-	CaptchaErr bool
-	CollID     string
-	CollIDErr  bool
-	State      CollState
+	Captcha   captcha.TemplateData
+	CollID    string
+	CollIDErr bool
+	State     CollState
 }
 
 func (data *clientState) Valid() bool {
 	if !isID(data.CollID) {
 		data.CollIDErr = true
 	}
-	return !data.CaptchaErr && !data.CollIDErr
+	return !data.Captcha.Err && !data.CollIDErr
 }
 
 func siteGet(w http.ResponseWriter, r *http.Request) {
@@ -912,7 +919,9 @@ func clientStateGet(w http.ResponseWriter, r *http.Request) error {
 		TemplateData: html.TemplateData{
 			AuthorizedCollID: sessionCollID(r),
 		},
-		CaptchaID: captcha.New(),
+		Captcha: captcha.TemplateData{
+			ID: captcha.New(),
+		},
 	})
 }
 
@@ -931,12 +940,12 @@ func clientStatePost(w http.ResponseWriter, r *http.Request) error {
 		return nil
 	}
 
-	if !captcha.VerifyString(r.PostFormValue("captcha-id"), r.PostFormValue("captcha-solution")) {
-		data.CaptchaErr = true
+	if !captcha.Verify(r.PostFormValue("captcha-id"), r.PostFormValue("captcha-solution")) {
+		data.Captcha.Err = true
 	}
 
 	if !data.Valid() {
-		data.CaptchaID = captcha.New() // old captcha has been deleted during verification, so let's create a new one
+		data.Captcha.ID = captcha.New() // old captcha has been deleted during verification, so let's create a new one
 		return html.ClientStateGet.Execute(w, data)
 	}
 

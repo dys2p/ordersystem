@@ -10,18 +10,7 @@
 			</div>
 		</div>
 
-		<p class="text-center">
-			<img id="captcha-image" src="/captcha/{{.CaptchaID}}.png" alt="Captcha image">
-		</p>
-
-		<div class="mb-3">
-			<label class="form-label" for="captcha-solution">Bitte tippe die Ziffern ab:</label>
-			<input class="form-control {{if .CaptchaErr}}is-invalid{{end}}" id="captcha-solution" name="captcha-solution">
-			<div class="invalid-feedback">Bitte tippe das Captcha korrekt ab.</div>
-			<small class="form-text text-muted"><a href="#" onclick="reloadCaptcha(); return false;">Anderes Bild laden (erfordert JavaScript)</a></small>
-		</div>
-
-		<input type="hidden" name="captcha-id" value="{{.CaptchaID}}">
+		{{template "captcha" .Captcha}}
 
 		<div class="mb-3 text-end">
 			<a href="/" class="btn btn-secondary">Abbrechen</a>

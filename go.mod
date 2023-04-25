@@ -5,7 +5,6 @@ go 1.16
 require (
 	github.com/alexedwards/scs/sqlite3store v0.0.0-20220528130143-d93ace5be94b
 	github.com/alexedwards/scs/v2 v2.5.0
-	github.com/dchest/captcha v1.0.0
 	github.com/dys2p/bitpay v0.1.5
 	github.com/dys2p/btcpay v0.5.0
 	github.com/dys2p/digitalgoods v0.0.0-20221114093158-319682a0d18b

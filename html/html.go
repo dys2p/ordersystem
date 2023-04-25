@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/dys2p/eco/captcha"
 	"gitlab.com/golang-commonmark/markdown"
 	"golang.org/x/text/language"
 )
@@ -66,14 +67,14 @@ func FmtMachine(cents int) string {
 }
 
 func parse(fn ...string) *template.Template {
-	return template.Must(template.Must(template.New(fn[0]).Funcs(template.FuncMap{
+	return template.Must(template.Must(template.Must(template.New(fn[0]).Funcs(template.FuncMap{
 		"Caps":       strings.ToUpper,
 		"FmtHuman":   FmtHuman,
 		"FmtMachine": FmtMachine,
 		"Markdown": func(input string) template.HTML {
 			return template.HTML(md.RenderToString([]byte(input)))
 		},
-	}).ParseFS(files, fn...)).ParseGlob(filepath.Join(os.Getenv("CONFIGURATION_DIRECTORY"), "*.html")))
+	}).ParseFS(files, fn...)).ParseGlob(filepath.Join(os.Getenv("CONFIGURATION_DIRECTORY"), "*.html"))).Parse(captcha.TemplateString))
 }
 
 var (
