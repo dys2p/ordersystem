@@ -278,6 +278,8 @@ func main() {
 	storeRouter.HandlerFunc(http.MethodPost, "/collection/:collid/return", auth(storeWithCollection(storeCollReturnPost)))
 	storeRouter.HandlerFunc(http.MethodGet, "/collection/:collid/reject", auth(storeWithCollection(storeCollRejectGet)))
 	storeRouter.HandlerFunc(http.MethodPost, "/collection/:collid/reject", auth(storeWithCollection(storeCollRejectPost)))
+	storeRouter.HandlerFunc(http.MethodGet, "/collection/:collid/submit", auth(storeWithCollection(storeCollSubmitGet)))
+	storeRouter.HandlerFunc(http.MethodPost, "/collection/:collid/submit", auth(storeWithCollection(storeCollSubmitPost)))
 	storeRouter.HandlerFunc(http.MethodGet, "/collection/:collid/confirm-arrived/:taskid", auth(storeWithTask(storeTaskConfirmArrivedGet)))
 	storeRouter.HandlerFunc(http.MethodPost, "/collection/:collid/confirm-arrived/:taskid", auth(storeWithTask(storeTaskConfirmArrivedPost)))
 	storeRouter.HandlerFunc(http.MethodGet, "/collection/:collid/confirm-ordered/:taskid", auth(storeWithTask(storeTaskConfirmOrderedGet)))
@@ -1423,6 +1425,30 @@ func storeCollRejectPost(w http.ResponseWriter, r *http.Request, coll *Collectio
 		return err
 	}
 	notify(r.Context(), "Der Auftrag %s wurde abgelehnt.", coll.ID)
+	http.Redirect(w, r, coll.Link(), http.StatusSeeOther)
+	return nil
+}
+
+type storeCollSubmit struct {
+	html.TemplateData
+	Coll *Collection
+}
+
+func storeCollSubmitGet(w http.ResponseWriter, r *http.Request, coll *Collection) error {
+	if !coll.StoreCan("submit") {
+		return ErrNotFound
+	}
+	return html.StoreCollSubmit.Execute(w, storeCollSubmit{Coll: coll})
+}
+
+func storeCollSubmitPost(w http.ResponseWriter, r *http.Request, coll *Collection) error {
+	if !coll.StoreCan("submit") {
+		return ErrNotFound
+	}
+	if err := db.UpdateCollState(Store, coll, Submitted, 0, r.PostFormValue("submit-message")); err != nil {
+		return err
+	}
+	notify(r.Context(), "Der Auftrag %s wurde eingereicht.", coll.ID)
 	http.Redirect(w, r, coll.Link(), http.StatusSeeOther)
 	return nil
 }
