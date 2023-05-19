@@ -8,7 +8,7 @@ require (
 	github.com/dys2p/bitpay v0.1.5
 	github.com/dys2p/btcpay v0.5.0
 	github.com/dys2p/digitalgoods v0.0.0-20221114093158-319682a0d18b
-	github.com/dys2p/eco v0.0.0-20230416135255-1ccb096bb085
+	github.com/dys2p/eco v0.0.0-20230519101453-31573821986e
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/mattn/go-sqlite3 v1.14.16
 	gitlab.com/golang-commonmark/linkify v0.0.0-20200225224916-64bca66f6ad3 // indirect

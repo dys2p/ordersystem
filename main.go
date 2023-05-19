@@ -387,7 +387,7 @@ func clientCreatePost(w http.ResponseWriter, r *http.Request) error {
 		CheckWrittenDown: r.PostFormValue("check-written-down") != "",
 	}
 
-	if !captcha.Verify(r.PostFormValue("captcha-id"), r.PostFormValue("captcha-solution")) {
+	if !captcha.Verify(r.PostFormValue("captcha-id"), r.PostFormValue("captcha-answer")) {
 		data.Captcha.Err = true
 	}
 
@@ -588,7 +588,7 @@ func clientCollPayBTCPayPost(w http.ResponseWriter, r *http.Request, coll *Colle
 	if !coll.ClientCan("pay") {
 		return ErrNotFound
 	}
-	if !captcha.Verify(r.PostFormValue("captcha-id"), r.PostFormValue("captcha-solution")) {
+	if !captcha.Verify(r.PostFormValue("captcha-id"), r.PostFormValue("captcha-answer")) {
 		return html.ClientCollPayBTCPay.Execute(w, &clientCollPayBTCPay{
 			Collection: coll,
 			Captcha: captcha.TemplateData{
@@ -942,7 +942,7 @@ func clientStatePost(w http.ResponseWriter, r *http.Request) error {
 		return nil
 	}
 
-	if !captcha.Verify(r.PostFormValue("captcha-id"), r.PostFormValue("captcha-solution")) {
+	if !captcha.Verify(r.PostFormValue("captcha-id"), r.PostFormValue("captcha-answer")) {
 		data.Captcha.Err = true
 	}
 
