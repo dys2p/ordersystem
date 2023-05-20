@@ -37,6 +37,7 @@ github.com/dys2p/digitalgoods v0.0.0-20221114093158-319682a0d18b h1:rfqt7Ka2t/pi
 github.com/dys2p/digitalgoods v0.0.0-20221114093158-319682a0d18b/go.mod h1:H1BzEMX7mU3JWdUocRxrpzMxTA81xmkapzjYxAeByJw=
 github.com/dys2p/eco v0.0.0-20230519101453-31573821986e h1:ZNv9dgrYzFlJywLh/i/LrsNkL+Rwl5mwTJt7Kk8b2gw=
 github.com/dys2p/eco v0.0.0-20230519101453-31573821986e/go.mod h1:ZVLwREwbXfTOFgxs5AAFK/JgRYv6JGYYDH53pXnW6UI=
+github.com/dys2p/paypal v0.1.1 h1:2/fR2lhwVrp3A1IdgCK1skDMSxb0IMO335OWvLPwPQU=
 github.com/dys2p/paypal v0.1.1/go.mod h1:hUXIstQ2+PjsoEC8jDDaaSwzMPn6dBCZv7uWBw7MG3Q=
 github.com/emersion/go-sasl v0.0.0-20200509203442-7bfe0ed36a21/go.mod h1:iL2twTeMvZnrg54ZoPDNfJaJaqy0xIQFuBdrLsmspwQ=
 github.com/emersion/go-sasl v0.0.0-20220912192320-0145f2c60ead/go.mod h1:iL2twTeMvZnrg54ZoPDNfJaJaqy0xIQFuBdrLsmspwQ=
@@ -109,6 +110,7 @@ golang.org/x/crypto v0.0.0-20210921155107-089bfa567519/go.mod h1:GvvjBRRGRdwPK5y
 golang.org/x/crypto v0.1.0/go.mod h1:RecgLatLF4+eUMCP1PoPZQb+cVrJcOPbHkTkbkB9sbw=
 golang.org/x/crypto v0.2.0 h1:BRXPfhNivWL5Yq0BGQ39a2sW6t44aODpfxkWjYdzewE=
 golang.org/x/crypto v0.2.0/go.mod h1:hebNnKkNXi2UzZN1eVRvBB7co0a+JxK6XbPiWVs/3J4=
+golang.org/x/exp v0.0.0-20230321023759-10a507213a29 h1:ooxPy7fPvB4kwsA2h+iBNHkAbp/4JxTSwCmvdjEYmug=
 golang.org/x/exp v0.0.0-20230321023759-10a507213a29/go.mod h1:CxIveKay+FTh1D0yPZemJVgC/95VzuuOLq5Qi4xnoYc=
 golang.org/x/mod v0.3.0/go.mod h1:s0Qsj1ACt9ePp/hMypM3fl4fZqREWJwdYDEqhRiZZUA=
 golang.org/x/mod v0.6.0-dev.0.20220419223038-86c51ed26bb4/go.mod h1:jJ57K6gSWd91VN4djpZkiMVwK6gcyfeH4XE8wZrZaV4=
