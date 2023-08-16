@@ -8,7 +8,7 @@ Unsere Onlineshops und Webseiten liegen auf einem verschlüsselten dedizierten S
 
 ## Direkte Kommunikation mit uns
 
-Unser E-Mail-Server läuft auf unserem verschlüsselten virtuellen Server bei dem Anbieter Hetzner. Geschäftliche Nachrichten ("Geschäftsbriefe") müssen wir sechs Jahre lang speichern.
+Unser E-Mail-Server läuft auf einem verschlüsselten dedizierten Server beim Anbieter Hetzner in Deutschland. Geschäftliche Nachrichten ("Geschäftsbriefe") müssen wir sechs Jahre lang speichern.
 
 ## Erhebung von Daten, Zweck der Datenverarbeitung, Speicherdauer
 

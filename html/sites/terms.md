@@ -1,5 +1,7 @@
 # Allgemeine Geschäftsbedingungen
 
+Irrtümer und technische Fehler vorbehalten. Dazu zählen auch Lagerirrtümer und Fehler beim Einlesen der Wechselkurse.
+
 ## Rückzahlungen
 
 Falls du uns zu viel Geld übermittelt hast oder aus anderen Gründen Geld von uns zurück bekommst, erfolgt die Rückzahlung auf dem selben Weg, auf dem wir das Geld von dir erhalten haben.
