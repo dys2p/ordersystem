@@ -1,8 +1,10 @@
 package main
 
 import (
+	"bytes"
 	"database/sql"
 	"embed"
+	"encoding/csv"
 	"errors"
 	"flag"
 	"fmt"
@@ -15,6 +17,7 @@ import (
 	"os/signal"
 	"path"
 	"path/filepath"
+	"slices"
 	"strconv"
 	"strings"
 	"sync"
@@ -286,6 +289,7 @@ func main() {
 	storeRouter.HandlerFunc(http.MethodPost, "/collection/:collid/confirm-ordered/:taskid", auth(storeWithTask(storeTaskConfirmOrderedPost)))
 	storeRouter.HandlerFunc(http.MethodGet, "/collection/:collid/mark-failed/:taskid", auth(storeWithTask(storeTaskMarkFailedGet)))
 	storeRouter.HandlerFunc(http.MethodPost, "/collection/:collid/mark-failed/:taskid", auth(storeWithTask(storeTaskMarkFailedPost)))
+	storeRouter.HandlerFunc(http.MethodGet, "/export", auth(store(storeExport)))
 	storeRouter.HandlerFunc(http.MethodPost, "/logout", store(storeLogoutPost))
 
 	var storeSrv = ListenAndServe("tcp", "127.0.0.1:9001", sessionManager.LoadAndSave(storeRouter), stop)
@@ -1496,6 +1500,59 @@ func storeLoginPost(w http.ResponseWriter, r *http.Request) error {
 	}
 	loginStore(r.Context(), username)
 	http.Redirect(w, r, "/", http.StatusSeeOther)
+	return nil
+}
+
+func storeExport(w http.ResponseWriter, r *http.Request) error {
+
+	var rows [][]string
+
+	// archived collections only
+	collStubs, err := db.ReadColls(Archived)
+	if err != nil {
+		return err
+	}
+	slices.Reverse(collStubs)
+	for _, stub := range collStubs {
+		coll, err := db.ReadColl(stub.CollID)
+		if err != nil {
+			return err
+		}
+
+		var paydate string
+		for _, event := range coll.Log {
+			if event.NewState == Paid {
+				paydate = string(event.Date)
+				break
+			}
+		}
+		if paydate == "" {
+			rows = append(rows, []string{"# order " + coll.ID + " has no payments"})
+			continue // next collection
+		}
+
+		for _, task := range coll.Tasks {
+			rows = append(rows, []string{"# " + task.Merchant})
+			for _, article := range task.Articles {
+				var name = article.Link
+				if article.Properties != "" {
+					name = name + " (" + article.Properties + ")"
+				}
+				rows = append(rows, []string{paydate, coll.ID, "DE", fmt.Sprintf("%d x %s", article.Quantity, name), strconv.Itoa(article.Quantity * article.Price), "standard"})
+			}
+		}
+	}
+
+	var buf bytes.Buffer
+	out := csv.NewWriter(&buf)
+	out.Write([]string{"date", "purchase", "country", "name", "gross_sum", "vat_rate"})
+	for _, row := range rows {
+		out.Write(row)
+	}
+	out.Flush()
+	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+	w.Write(buf.Bytes())
+
 	return nil
 }
 

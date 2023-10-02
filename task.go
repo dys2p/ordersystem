@@ -58,7 +58,7 @@ type TaskData struct {
 
 type Article struct {
 	Link       string `json:"link"`
-	Price      int    `json:"price"`
+	Price      int    `json:"price"` // item price
 	Properties string `json:"properties"`
 	Quantity   int    `json:"quantity"`
 }
