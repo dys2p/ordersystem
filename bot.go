@@ -89,7 +89,7 @@ func (db *DB) BotFinalize(coll *Collection) error {
 	if !coll.BotCan("finalize") {
 		return nil
 	}
-	if coll.Due() != 0 {
+	if coll.Due() > 0 {
 		return nil
 	}
 	for _, task := range coll.Tasks {
