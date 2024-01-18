@@ -34,7 +34,7 @@ func initSessionManager() error {
 	sessionManager.Cookie.Persist = false
 	sessionManager.Cookie.SameSite = http.SameSiteLaxMode // prevent CSRF
 	sessionManager.Cookie.Secure = false
-	sessionManager.IdleTimeout = 3 * time.Hour
+	sessionManager.IdleTimeout = 8 * time.Hour
 	sessionManager.Lifetime = 60 * 24 * time.Hour // "absolute expiry which is set when the session is first created and does not change"
 	sessionManager.Store = sqlite3store.New(sessionDB)
 	return nil
