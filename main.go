@@ -1507,45 +1507,45 @@ func storeExport(w http.ResponseWriter, r *http.Request) error {
 
 	var rows [][]string
 
-	// archived collections only
-	collStubs, err := db.ReadColls(Archived)
-	if err != nil {
-		return err
-	}
-	slices.Reverse(collStubs)
-	for _, stub := range collStubs {
-		coll, err := db.ReadColl(stub.CollID)
+	for _, state := range []CollState{Accepted, Archived, Finalized, NeedsRevise, Paid, Submitted, Underpaid} {
+		collStubs, err := db.ReadColls(state)
 		if err != nil {
 			return err
 		}
-
-		var paydate string
-		for _, event := range coll.Log {
-			if event.NewState == Paid {
-				paydate = string(event.Date)
-				break
+		slices.Reverse(collStubs)
+		for _, stub := range collStubs {
+			coll, err := db.ReadColl(stub.CollID)
+			if err != nil {
+				return err
 			}
-		}
-		if paydate == "" {
-			rows = append(rows, []string{"# order " + coll.ID + " has no payments"})
-			continue // next collection
-		}
 
-		for _, task := range coll.Tasks {
-			rows = append(rows, []string{"# " + task.Merchant})
-			for _, article := range task.Articles {
-				var name = article.Link
-				if article.Properties != "" {
-					name = name + " (" + article.Properties + ")"
+			var paydate string
+			for _, event := range coll.Log {
+				if event.NewState == Paid {
+					paydate = string(event.Date)
+					break
 				}
-				rows = append(rows, []string{paydate, coll.ID, "DE", fmt.Sprintf("%d x %s", article.Quantity, name), strconv.Itoa(article.Quantity * article.Price), "standard"})
+			}
+			if paydate == "" {
+				continue // next collection
+			}
+
+			for _, task := range coll.Tasks {
+				rows = append(rows, []string{"# " + task.Merchant})
+				for _, article := range task.Articles {
+					var name = article.Link
+					if article.Properties != "" {
+						name = name + " (" + article.Properties + ")"
+					}
+					rows = append(rows, []string{paydate, coll.ID, fmt.Sprintf("%d x %s", article.Quantity, name), "DE", strconv.Itoa(article.Quantity * article.Price), "standard"})
+				}
 			}
 		}
 	}
 
 	var buf bytes.Buffer
 	out := csv.NewWriter(&buf)
-	out.Write([]string{"date", "purchase", "country", "name", "gross_sum", "vat_rate"})
+	out.Write([]string{"vat_date", "id", "name", "country", "gross", "vat_rate"})
 	for _, row := range rows {
 		out.Write(row)
 	}
