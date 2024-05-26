@@ -27,12 +27,12 @@ github.com/dchest/captcha v1.0.0/go.mod h1:7zoElIawLp7GUMLcj54K9kbw+jEyvz2K0FDdR
 github.com/decred/dcrd/lru v1.0.0/go.mod h1:mxKOwFd7lFjN2GZYsiz/ecgqR6kkYAl+0pz0tEMk218=
 github.com/dys2p/bitpay v0.1.5 h1:BNggMgrUV3t4yUQA7KFHHQHtJn/aXfsXLRWWRgmA1Sg=
 github.com/dys2p/bitpay v0.1.5/go.mod h1:P2KLNuDRHhaiVOhxqxFrmrFtdj6K/51ob+EE8Dt6Xy4=
-github.com/dys2p/btcpay v0.5.0 h1:37V0YtPbGZKMuDtbjL8DCKBW4rHR2Oqfxdalms3ZzTU=
-github.com/dys2p/btcpay v0.5.0/go.mod h1:PhoRfQYTu1hAThbCh0dutuUonLf0WPb72huHr19ujgU=
+github.com/dys2p/btcpay v0.6.0 h1:a5wsspF3JPZlj38lLs0yNGesrWG+W7nRoCqFJn+iNPY=
+github.com/dys2p/btcpay v0.6.0/go.mod h1:PhoRfQYTu1hAThbCh0dutuUonLf0WPb72huHr19ujgU=
 github.com/dys2p/digitalgoods v0.0.0-20221114093158-319682a0d18b h1:rfqt7Ka2t/pijYWAsnmgXwORks+ojk+Wkguc25OGkeY=
 github.com/dys2p/digitalgoods v0.0.0-20221114093158-319682a0d18b/go.mod h1:H1BzEMX7mU3JWdUocRxrpzMxTA81xmkapzjYxAeByJw=
-github.com/dys2p/eco v0.0.0-20231122212430-5257a603a473 h1:t8DOwfHv1ctt2MP4HL+I8cPCluNngCD02ODVjKCD/ZU=
-github.com/dys2p/eco v0.0.0-20231122212430-5257a603a473/go.mod h1:KPUcL62eLjV5iE1ze3l2rS4I15ashTFi/JsOe3yNOPQ=
+github.com/dys2p/eco v0.0.0-20240506171624-44301f2921ab h1:C7ZCf3DMXp6aTbuNiBCuJgvSYatDHipGJC5jC8hBrhI=
+github.com/dys2p/eco v0.0.0-20240506171624-44301f2921ab/go.mod h1:qnMdk1HU5tfljiMCmmeVNWzvDoSYnlsvhptww6x9N4g=
 github.com/dys2p/paypal v0.2.2 h1:EjtjRrtCAXcSZP/LYY7O2f5I99q8GglQg5fWhELtboA=
 github.com/dys2p/paypal v0.2.2/go.mod h1:hUXIstQ2+PjsoEC8jDDaaSwzMPn6dBCZv7uWBw7MG3Q=
 github.com/fsnotify/fsnotify v1.4.7/go.mod h1:jwhsz4b93w/PPRr/qN1Yymfu8t87LnFCMoQvtojpjFo=
@@ -100,8 +100,6 @@ golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9/go.mod h1:LzIPMQfyMNhhGPh
 golang.org/x/crypto v0.0.0-20210220033148-5ea612d1eb83/go.mod h1:jdWPYTVW3xRLrWPugEBEK3UY2ZEsg3UU495nc5E+M+I=
 golang.org/x/crypto v0.2.0 h1:BRXPfhNivWL5Yq0BGQ39a2sW6t44aODpfxkWjYdzewE=
 golang.org/x/crypto v0.2.0/go.mod h1:hebNnKkNXi2UzZN1eVRvBB7co0a+JxK6XbPiWVs/3J4=
-golang.org/x/exp v0.0.0-20230321023759-10a507213a29 h1:ooxPy7fPvB4kwsA2h+iBNHkAbp/4JxTSwCmvdjEYmug=
-golang.org/x/exp v0.0.0-20230321023759-10a507213a29/go.mod h1:CxIveKay+FTh1D0yPZemJVgC/95VzuuOLq5Qi4xnoYc=
 golang.org/x/mod v0.3.0/go.mod h1:s0Qsj1ACt9ePp/hMypM3fl4fZqREWJwdYDEqhRiZZUA=
 golang.org/x/net v0.0.0-20180719180050-a680a1efc54d/go.mod h1:mL1N/T3taQHkDXs73rZJwtUhF3w3ftmwwsq0BUmARs4=
 golang.org/x/net v0.0.0-20180906233101-161cd47e91fd/go.mod h1:mL1N/T3taQHkDXs73rZJwtUhF3w3ftmwwsq0BUmARs4=

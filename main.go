@@ -29,6 +29,7 @@ import (
 	"github.com/dys2p/digitalgoods/userdb"
 	"github.com/dys2p/eco/captcha"
 	"github.com/dys2p/eco/diceware"
+	"github.com/dys2p/eco/httputil"
 	"github.com/dys2p/eco/id"
 	"github.com/dys2p/ordersystem/html"
 	"github.com/dys2p/ordersystem/html/sites"
@@ -246,7 +247,8 @@ func main() {
 	clientRouter.HandlerFunc(http.MethodPost, "/logout", client(clientLogoutPost))
 	clientRouter.Handler("GET", "/captcha/:fn", captcha.Handler())
 
-	var clientSrv = ListenAndServe("tcp", ":9000", sessionManager.LoadAndSave(clientRouter), stop)
+	shutdownClientSrv := httputil.ListenAndServe("127.0.0.1:9000", sessionManager.LoadAndSave(clientRouter), stop)
+	defer shutdownClientSrv()
 
 	var storeRouter = httprouter.New()
 	storeRouter.ServeFiles("/static/*filepath", http.FS(substatic))
@@ -292,15 +294,12 @@ func main() {
 	storeRouter.HandlerFunc(http.MethodGet, "/export", auth(store(storeExport)))
 	storeRouter.HandlerFunc(http.MethodPost, "/logout", store(storeLogoutPost))
 
-	var storeSrv = ListenAndServe("tcp", "127.0.0.1:9001", sessionManager.LoadAndSave(storeRouter), stop)
-
-	// run until we receive an interrupt or any listener fails
+	shutdownStoreSrv := httputil.ListenAndServe("127.0.0.1:9001", sessionManager.LoadAndSave(storeRouter), stop)
+	defer shutdownStoreSrv()
 
 	log.Printf("listening to 127.0.0.1:9000 and 127.0.0.1:9001")
 	<-stop // blocks
 	log.Println("shutting down")
-	clientSrv.Shutdown()
-	storeSrv.Shutdown()
 	wg.Wait()
 }
 

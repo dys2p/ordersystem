@@ -1,14 +1,16 @@
 module github.com/dys2p/ordersystem
 
-go 1.21
+go 1.22
+
+toolchain go1.22.3
 
 require (
 	github.com/alexedwards/scs/sqlite3store v0.0.0-20220528130143-d93ace5be94b
 	github.com/alexedwards/scs/v2 v2.5.0
 	github.com/dys2p/bitpay v0.1.5
-	github.com/dys2p/btcpay v0.5.0
+	github.com/dys2p/btcpay v0.6.0
 	github.com/dys2p/digitalgoods v0.0.0-20221114093158-319682a0d18b
-	github.com/dys2p/eco v0.0.0-20231122212430-5257a603a473
+	github.com/dys2p/eco v0.0.0-20240506171624-44301f2921ab
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/mattn/go-sqlite3 v1.14.16
 	gitlab.com/golang-commonmark/markdown v0.0.0-20211110145824-bf3e522c626a
@@ -28,5 +30,4 @@ require (
 	gitlab.com/golang-commonmark/linkify v0.0.0-20200225224916-64bca66f6ad3 // indirect
 	gitlab.com/golang-commonmark/mdurl v0.0.0-20191124015652-932350d1cb84 // indirect
 	gitlab.com/golang-commonmark/puny v0.0.0-20191124015043-9f83538fa04f // indirect
-	golang.org/x/exp v0.0.0-20230321023759-10a507213a29 // indirect
 )
