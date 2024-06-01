@@ -10,7 +10,7 @@ require (
 	github.com/dys2p/bitpay v0.1.5
 	github.com/dys2p/btcpay v0.6.0
 	github.com/dys2p/digitalgoods v0.0.0-20221114093158-319682a0d18b
-	github.com/dys2p/eco v0.0.0-20240506171624-44301f2921ab
+	github.com/dys2p/eco v0.0.0-20240531101333-7db4ea04c930
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/mattn/go-sqlite3 v1.14.16
 	gitlab.com/golang-commonmark/markdown v0.0.0-20211110145824-bf3e522c626a

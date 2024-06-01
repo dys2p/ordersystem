@@ -1,0 +1,270 @@
+{
+    "language": "de-DE",
+    "messages": [
+        {
+            "id": "Monero or Bitcoin",
+            "message": "Monero or Bitcoin",
+            "translation": "Monero oder Bitcoin"
+        },
+        {
+            "id": "Cash in Foreign Currency",
+            "message": "Cash in Foreign Currency",
+            "translation": "Bargeld in Fremdwährung"
+        },
+        {
+            "id": "Cash",
+            "message": "Cash",
+            "translation": "Bargeld"
+        },
+        {
+            "id": "SEPA Bank Transfer",
+            "message": "SEPA Bank Transfer",
+            "translation": "SEPA-Banküberweisung"
+        },
+        {
+            "id": "Australian dollars",
+            "message": "Australian dollars",
+            "translation": "Australische Dollar"
+        },
+        {
+            "id": "Bulgarian lev",
+            "message": "Bulgarian lev",
+            "translation": "Bulgarische Lew"
+        },
+        {
+            "id": "Canadian dollars",
+            "message": "Canadian dollars",
+            "translation": "Kanadische Dollar"
+        },
+        {
+            "id": "Swiss francs",
+            "message": "Swiss francs",
+            "translation": "Schweizer Franken"
+        },
+        {
+            "id": "Chinese renminbi",
+            "message": "Chinese renminbi",
+            "translation": "Chinesische Renminbi"
+        },
+        {
+            "id": "Czech koruna",
+            "message": "Czech koruna",
+            "translation": "Tschechische Kronen"
+        },
+        {
+            "id": "Danish krone",
+            "message": "Danish krone",
+            "translation": "Dänische Kronen"
+        },
+        {
+            "id": "Pound sterling",
+            "message": "Pound sterling",
+            "translation": "Britische Pfund"
+        },
+        {
+            "id": "Icelandic króna",
+            "message": "Icelandic króna",
+            "translation": "Isländische Kronen"
+        },
+        {
+            "id": "Japanese yen",
+            "message": "Japanese yen",
+            "translation": "Japanische Yen"
+        },
+        {
+            "id": "New Israeli shekel (NIS)",
+            "message": "New Israeli shekel (NIS)",
+            "translation": "Neue israelische Schekel (NIS)"
+        },
+        {
+            "id": "Norwegian krone",
+            "message": "Norwegian krone",
+            "translation": "Norwegische Kronen"
+        },
+        {
+            "id": "New Zealand dollars",
+            "message": "New Zealand dollars",
+            "translation": "Neuseeland-Dollar"
+        },
+        {
+            "id": "Polish złoty",
+            "message": "Polish złoty",
+            "translation": "Polnische Złoty"
+        },
+        {
+            "id": "Romanian leu",
+            "message": "Romanian leu",
+            "translation": "Rumänische Leu"
+        },
+        {
+            "id": "Serbian dinar",
+            "message": "Serbian dinar",
+            "translation": "Serbische Dinar"
+        },
+        {
+            "id": "Swedish krona",
+            "message": "Swedish krona",
+            "translation": "Schwedische Kronen"
+        },
+        {
+            "id": "New Taiwan dollars",
+            "message": "New Taiwan dollars",
+            "translation": "Taiwan-Dollar"
+        },
+        {
+            "id": "United States dollars",
+            "message": "United States dollars",
+            "translation": "US-Dollar"
+        },
+        {
+            "id": "Delivery",
+            "message": "Delivery",
+            "translation": "Versand"
+        },
+        {
+            "id": "Pickup in our local store",
+            "message": "Pickup in our local store",
+            "translation": "Abholung im Ladengeschäft"
+        },
+        {
+            "id": "Pickup from locker in our local store",
+            "message": "Pickup from locker in our local store",
+            "translation": "Abholung aus Schließfach im Ladengeschäft"
+        },
+        {
+            "id": "DHL parcel, franked handwritten",
+            "message": "DHL parcel, franked handwritten",
+            "translation": "DHL-Paket handschriftlich frankiert"
+        },
+        {
+            "id": "DHL parcel, franked digitally",
+            "message": "DHL parcel, franked digitally",
+            "translation": "DHL-Paket digital frankiert"
+        },
+        {
+            "id": "Legal",
+            "message": "Legal",
+            "translation": "Rechtliches"
+        },
+        {
+            "id": "Terms and Conditions",
+            "message": "Terms and Conditions",
+            "translation": "AGB"
+        },
+        {
+            "id": "Privacy policy",
+            "message": "Privacy policy",
+            "translation": "Datenschutz"
+        },
+        {
+            "id": "Imprint",
+            "message": "Imprint",
+            "translation": "Impressum"
+        },
+        {
+            "id": "Cancellation Policy",
+            "message": "Cancellation Policy",
+            "translation": "Widerrufsbelehrung"
+        },
+        {
+            "id": "Battery Disposal",
+            "message": "Battery Disposal",
+            "translation": "Hinweise zur Batterieentsorgung"
+        },
+        {
+            "id": "Payment",
+            "message": "Payment",
+            "translation": "Bezahlung"
+        },
+        {
+            "id": "Cash payment in local store",
+            "message": "Cash payment in local store",
+            "translation": "Barzahlung im Ladengeschäft"
+        },
+        {
+            "id": "Cash by mail",
+            "message": "Cash by mail",
+            "translation": "Bargeld per Post"
+        },
+        {
+            "id": "Monero and Bitcoin",
+            "message": "Monero and Bitcoin",
+            "translation": "Monero und Bitcoin"
+        },
+        {
+            "id": "SEPA bank transfer",
+            "message": "SEPA bank transfer",
+            "translation": "SEPA-Überweisung"
+        },
+        {
+            "id": "All Services and Projects",
+            "message": "All Services and Projects",
+            "translation": "Alle Angebote und Projekte"
+        },
+        {
+            "id": "Why?",
+            "message": "Why?",
+            "translation": "Warum?"
+        },
+        {
+            "id": "Local Store",
+            "message": "Local Store",
+            "translation": "Ladengeschäft"
+        },
+        {
+            "id": "Digital Goods",
+            "message": "Digital Goods",
+            "translation": "Digitale Güter"
+        },
+        {
+            "id": "Online shop",
+            "message": "Online shop",
+            "translation": "Onlineshop"
+        },
+        {
+            "id": "Order Service",
+            "message": "Order Service",
+            "translation": "Bestellservice"
+        },
+        {
+            "id": "Online printing",
+            "message": "Online printing",
+            "translation": "Onlinedruckerei"
+        },
+        {
+            "id": "Contact \u0026 News",
+            "message": "Contact \u0026 News",
+            "translation": "Kontakt \u0026 News"
+        },
+        {
+            "id": "Contact us",
+            "message": "Contact us",
+            "translation": "Kontakt"
+        },
+        {
+            "id": "Germany",
+            "message": "Germany",
+            "translation": "Deutschland"
+        },
+        {
+            "id": "Mon+Thu 10am-6pm",
+            "message": "Mon+Thu 10am-6pm",
+            "translation": "Mo+Do 10-18 Uhr"
+        },
+        {
+            "id": "Tue+Wed+Fri+Sat 10am-2pm",
+            "message": "Tue+Wed+Fri+Sat 10am-2pm",
+            "translation": "Di+Mi+Fr+Sa 10-14 Uhr"
+        },
+        {
+            "id": "and by arrangement",
+            "message": "and by arrangement",
+            "translation": "und nach Vereinbarung"
+        },
+        {
+            "id": "Got an idea or found an error? Drop us a note!",
+            "message": "Got an idea or found an error? Drop us a note!",
+            "translation": "Fehler oder Hinweise? Schreib uns!"
+        }
+    ]
+}

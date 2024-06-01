@@ -8,14 +8,12 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"io"
 	"io/fs"
 	"log"
 	"math"
 	"net/http"
 	"os"
 	"os/signal"
-	"path"
 	"path/filepath"
 	"slices"
 	"strconv"
@@ -31,8 +29,9 @@ import (
 	"github.com/dys2p/eco/diceware"
 	"github.com/dys2p/eco/httputil"
 	"github.com/dys2p/eco/id"
+	"github.com/dys2p/eco/lang"
+	"github.com/dys2p/eco/ssg"
 	"github.com/dys2p/ordersystem/html"
-	"github.com/dys2p/ordersystem/html/sites"
 	"github.com/julienschmidt/httprouter"
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -47,9 +46,11 @@ const MaxDiscountCents = 10
 var bitpayClient *bitpay.Client
 var btcpayStore btcpay.Store
 var db *DB
+var langs lang.Languages
 var users userdb.Authenticator
 
 func main() {
+	langs = lang.MakeLanguages(nil, "de") // after catalog.go is loaded
 
 	log.SetFlags(0)
 
@@ -58,9 +59,25 @@ func main() {
 	var test = flag.Bool("test", false, "use btcpay dummy store")
 	flag.Parse()
 
+	// websites
+
+	siteFiles, err := fs.Sub(html.Files, "order.proxysto.re")
+	if err != nil {
+		log.Fatalf("error opening site dir: %v", err)
+	}
+	staticFiles, err := fs.Sub(html.Files, "order.proxysto.re/static") // for staff router
+	if err != nil {
+		log.Fatalf("error opening static dir: %v", err)
+	}
+
+	staticSites, err := ssg.MakeWebsite(siteFiles, html.Layout, langs)
+	if err != nil {
+		log.Fatalf("error making static sites: %v", err)
+	}
+
 	// SQL db
 
-	var sqlDB, err = sql.Open("sqlite3", filepath.Join(os.Getenv("STATE_DIRECTORY"), "ordersystem.sqlite3?_busy_timeout=10000&_journal=WAL&_sync=NORMAL&cache=shared"))
+	sqlDB, err := sql.Open("sqlite3", filepath.Join(os.Getenv("STATE_DIRECTORY"), "ordersystem.sqlite3?_busy_timeout=10000&_journal=WAL&_sync=NORMAL&cache=shared"))
 	if err != nil {
 		log.Printf("error opening database: %v", err)
 		return
@@ -208,10 +225,7 @@ func main() {
 	var stop = make(chan os.Signal, 1)
 	signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
 
-	var substatic, _ = fs.Sub(fs.FS(static), "static")
-
 	var clientRouter = httprouter.New()
-	clientRouter.ServeFiles("/static/*filepath", http.FS(substatic))
 	clientRouter.HandlerFunc(http.MethodGet, "/", client(clientHelloGet))
 	clientRouter.HandlerFunc(http.MethodGet, "/create", client(clientCreateGet))
 	clientRouter.HandlerFunc(http.MethodPost, "/create", client(clientCreatePost))
@@ -232,26 +246,23 @@ func main() {
 	clientRouter.HandlerFunc(http.MethodGet, "/collection/:collid/submit", clientWithCollection(clientCollSubmitGet))
 	clientRouter.HandlerFunc(http.MethodPost, "/collection/:collid/submit", clientWithCollection(clientCollSubmitPost))
 
-	clientRouter.HandlerFunc(http.MethodGet, "/de/cancellation-form.html", siteGet)
-	clientRouter.HandlerFunc(http.MethodGet, "/de/cancellation-policy.html", siteGet)
-	clientRouter.HandlerFunc(http.MethodGet, "/de/contact.html", siteGet)
-	clientRouter.HandlerFunc(http.MethodGet, "/de/delivery.html", siteGet)
-	clientRouter.HandlerFunc(http.MethodGet, "/de/imprint.html", siteGet)
-	clientRouter.HandlerFunc(http.MethodGet, "/de/payment.html", siteGet)
-	clientRouter.HandlerFunc(http.MethodGet, "/de/privacy.html", siteGet)
-	clientRouter.HandlerFunc(http.MethodGet, "/de/terms.html", siteGet)
-
 	clientRouter.HandlerFunc(http.MethodPost, "/rpc", rpc)
 	clientRouter.HandlerFunc(http.MethodGet, "/state", client(clientStateGet))
 	clientRouter.HandlerFunc(http.MethodPost, "/state", client(clientStatePost))
 	clientRouter.HandlerFunc(http.MethodPost, "/logout", client(clientLogoutPost))
 	clientRouter.Handler("GET", "/captcha/:fn", captcha.Handler())
+	clientRouter.NotFound = staticSites.Handler(func(r *http.Request, td ssg.TemplateData) any {
+		return html.TemplateData{
+			TemplateData:     ssg.MakeTemplateData(langs, r),
+			AuthorizedCollID: sessionCollID(r),
+		}
+	}, langs.RedirectHandler())
 
 	shutdownClientSrv := httputil.ListenAndServe("127.0.0.1:9000", sessionManager.LoadAndSave(clientRouter), stop)
 	defer shutdownClientSrv()
 
 	var storeRouter = httprouter.New()
-	storeRouter.ServeFiles("/static/*filepath", http.FS(substatic))
+	storeRouter.ServeFiles("/static/*filepath", http.FS(staticFiles))
 	storeRouter.HandlerFunc(http.MethodGet, "/login", store(storeLoginGet))
 	storeRouter.HandlerFunc(http.MethodPost, "/login", store(storeLoginPost))
 	// with authentication:
@@ -320,6 +331,7 @@ type clientHello struct {
 func clientHelloGet(w http.ResponseWriter, r *http.Request) error {
 	return html.ClientHello.Execute(w, clientHello{
 		TemplateData: html.TemplateData{
+			TemplateData:     ssg.MakeTemplateData(langs, r),
 			AuthorizedCollID: sessionCollID(r),
 		},
 		Notifications: notifications(r.Context()),
@@ -369,6 +381,7 @@ func clientCreateGet(w http.ResponseWriter, r *http.Request) error {
 	}
 	return html.ClientCreate.Execute(w, &clientCreate{
 		TemplateData: html.TemplateData{
+			TemplateData:     ssg.MakeTemplateData(langs, r),
 			AuthorizedCollID: sessionCollID(r),
 		},
 		CollID:   id.New(6, id.AlphanumCaseInsensitiveDigits),
@@ -383,6 +396,7 @@ func clientCreatePost(w http.ResponseWriter, r *http.Request) error {
 
 	var data = &clientCreate{
 		TemplateData: html.TemplateData{
+			TemplateData:     ssg.MakeTemplateData(langs, r),
 			AuthorizedCollID: sessionCollID(r),
 		},
 		CollID:           strings.TrimSpace(r.PostFormValue("collection-id")),
@@ -464,6 +478,7 @@ func clientCollCurrentGet(w http.ResponseWriter, r *http.Request) error {
 func clientCollLoginGet(w http.ResponseWriter, r *http.Request) error {
 	return html.ClientCollLogin.Execute(w, &clientLogin{
 		TemplateData: html.TemplateData{
+			TemplateData:     ssg.MakeTemplateData(langs, r),
 			AuthorizedCollID: sessionCollID(r),
 		},
 	})
@@ -473,6 +488,7 @@ func clientCollLoginPost(w http.ResponseWriter, r *http.Request) error {
 	var id = strings.TrimSpace(r.FormValue("collection-id"))
 	var data = &clientLogin{
 		TemplateData: html.TemplateData{
+			TemplateData:     ssg.MakeTemplateData(langs, r),
 			AuthorizedCollID: sessionCollID(r),
 		},
 		CollID: id,
@@ -656,7 +672,9 @@ func clientCollMessageGet(w http.ResponseWriter, r *http.Request, coll *Collecti
 		html.TemplateData
 		*Collection
 	}{
-		html.TemplateData{},
+		html.TemplateData{
+			TemplateData: ssg.MakeTemplateData(langs, r),
+		},
 		coll,
 	})
 }
@@ -710,31 +728,6 @@ func (data *clientState) Valid() bool {
 		data.CollIDErr = true
 	}
 	return !data.Captcha.Err && !data.CollIDErr
-}
-
-func siteGet(w http.ResponseWriter, r *http.Request) {
-	name := strings.TrimSuffix(path.Base(r.URL.Path), ".html")
-
-	file, err := sites.Files.Open(filepath.Join( /*langstr, */ name + ".md"))
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	content, err := io.ReadAll(file)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	err = html.ClientSite.Execute(w, struct {
-		html.TemplateData
-		Content string
-	}{
-		html.TemplateData{},
-		string(content),
-	})
-	if err != nil {
-		log.Println(err)
-	}
 }
 
 func rpc(w http.ResponseWriter, r *http.Request) {
@@ -922,6 +915,7 @@ func invoiceSettled(coll *Collection, invoice *bitpay.Invoice) error {
 func clientStateGet(w http.ResponseWriter, r *http.Request) error {
 	return html.ClientStateGet.Execute(w, clientState{
 		TemplateData: html.TemplateData{
+			TemplateData:     ssg.MakeTemplateData(langs, r),
 			AuthorizedCollID: sessionCollID(r),
 		},
 		Captcha: captcha.TemplateData{
@@ -935,6 +929,7 @@ func clientStatePost(w http.ResponseWriter, r *http.Request) error {
 
 	var data = &clientState{
 		TemplateData: html.TemplateData{
+			TemplateData:     ssg.MakeTemplateData(langs, r),
 			AuthorizedCollID: sessionCollID(r),
 		},
 		CollID: strings.TrimSpace(r.PostFormValue("collection-id")),
@@ -976,7 +971,9 @@ func storeIndexGet(w http.ResponseWriter, r *http.Request) error {
 		*DB
 		Notifications []string
 	}{
-		html.TemplateData{},
+		html.TemplateData{
+			TemplateData: ssg.MakeTemplateData(langs, r),
+		},
 		db,
 		notifications(r.Context()),
 	})
@@ -999,7 +996,9 @@ func storeCollAcceptGet(w http.ResponseWriter, r *http.Request, coll *Collection
 		html.TemplateData
 		*Collection
 	}{
-		html.TemplateData{},
+		html.TemplateData{
+			TemplateData: ssg.MakeTemplateData(langs, r),
+		},
 		coll,
 	})
 }
@@ -1171,7 +1170,9 @@ func storeCollConfirmPickupGet(w http.ResponseWriter, r *http.Request, coll *Col
 		html.TemplateData
 		*Collection
 	}{
-		html.TemplateData{},
+		html.TemplateData{
+			TemplateData: ssg.MakeTemplateData(langs, r),
+		},
 		coll,
 	})
 }
@@ -1213,7 +1214,9 @@ func storeCollConfirmReshippedGet(w http.ResponseWriter, r *http.Request, coll *
 		html.TemplateData
 		*Collection
 	}{
-		html.TemplateData{},
+		html.TemplateData{
+			TemplateData: ssg.MakeTemplateData(langs, r),
+		},
 		coll,
 	})
 }
@@ -1337,7 +1340,9 @@ func storeCollMessageGet(w http.ResponseWriter, r *http.Request, coll *Collectio
 		html.TemplateData
 		*Collection
 	}{
-		html.TemplateData{},
+		html.TemplateData{
+			TemplateData: ssg.MakeTemplateData(langs, r),
+		},
 		coll,
 	})
 }
@@ -1360,7 +1365,9 @@ func storeCollPriceRisedGet(w http.ResponseWriter, r *http.Request, coll *Collec
 		html.TemplateData
 		*Collection
 	}{
-		html.TemplateData{},
+		html.TemplateData{
+			TemplateData: ssg.MakeTemplateData(langs, r),
+		},
 		coll,
 	})
 }
@@ -1384,7 +1391,9 @@ func storeCollReturnGet(w http.ResponseWriter, r *http.Request, coll *Collection
 		html.TemplateData
 		*Collection
 	}{
-		html.TemplateData{},
+		html.TemplateData{
+			TemplateData: ssg.MakeTemplateData(langs, r),
+		},
 		coll,
 	})
 }
@@ -1488,7 +1497,9 @@ func storeCollMarkSpamPost(w http.ResponseWriter, r *http.Request, coll *Collect
 }
 
 func storeLoginGet(w http.ResponseWriter, r *http.Request) error {
-	return html.StoreLogin.Execute(w, html.TemplateData{})
+	return html.StoreLogin.Execute(w, html.TemplateData{
+		TemplateData: ssg.MakeTemplateData(langs, r),
+	})
 }
 
 func storeLoginPost(w http.ResponseWriter, r *http.Request) error {
