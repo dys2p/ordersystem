@@ -247,19 +247,24 @@
             "translation": "Deutschland"
         },
         {
-            "id": "Mon+Thu 10am-6pm",
-            "message": "Mon+Thu 10am-6pm",
-            "translation": "Mo+Do 10-18 Uhr"
+            "id": "Closed: June 8 – June 16, 2024",
+            "message": "Closed: June 8 – June 16, 2024",
+            "translation": "Geschlossen: 8.-16. Juni 2024"
+        },
+        {
+            "id": "New opening hours!",
+            "message": "New opening hours!",
+            "translation": "Neue Öffnungszeiten!"
+        },
+        {
+            "id": "Mon+Thu 2pm-6pm",
+            "message": "Mon+Thu 2pm-6pm",
+            "translation": "Mo+Do 14-18 Uhr"
         },
         {
             "id": "Tue+Wed+Fri+Sat 10am-2pm",
             "message": "Tue+Wed+Fri+Sat 10am-2pm",
             "translation": "Di+Mi+Fr+Sa 10-14 Uhr"
-        },
-        {
-            "id": "and by arrangement",
-            "message": "and by arrangement",
-            "translation": "und nach Vereinbarung"
         },
         {
             "id": "Got an idea or found an error? Drop us a note!",

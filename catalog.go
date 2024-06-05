@@ -49,6 +49,7 @@ var messageKeyToIndex = map[string]int{
 	"Cash in Foreign Currency":        1,
 	"Cash payment in local store":     35,
 	"Chinese renminbi":                8,
+	"Closed: June 8 – June 16, 2024":  49,
 	"Contact & News":                  46,
 	"Contact us":                      47,
 	"Czech koruna":                    9,
@@ -58,18 +59,19 @@ var messageKeyToIndex = map[string]int{
 	"Delivery":                        23,
 	"Digital Goods":                   42,
 	"Germany":                         48,
-	"Got an idea or found an error? Drop us a note!": 52,
+	"Got an idea or found an error? Drop us a note!": 53,
 	"Icelandic króna":                       12,
 	"Imprint":                               31,
 	"Japanese yen":                          13,
 	"Legal":                                 28,
 	"Local Store":                           41,
-	"Mon+Thu 10am-6pm":                      49,
+	"Mon+Thu 2pm-6pm":                       51,
 	"Monero and Bitcoin":                    37,
 	"Monero or Bitcoin":                     0,
 	"New Israeli shekel (NIS)":              14,
 	"New Taiwan dollars":                    21,
 	"New Zealand dollars":                   16,
+	"New opening hours!":                    50,
 	"Norwegian krone":                       15,
 	"Online printing":                       45,
 	"Online shop":                           43,
@@ -87,13 +89,12 @@ var messageKeyToIndex = map[string]int{
 	"Swedish krona":                         20,
 	"Swiss francs":                          7,
 	"Terms and Conditions":                  29,
-	"Tue+Wed+Fri+Sat 10am-2pm":              50,
+	"Tue+Wed+Fri+Sat 10am-2pm":              52,
 	"United States dollars":                 22,
 	"Why?":                                  40,
-	"and by arrangement":                    51,
 }
 
-var de_DEIndex = []uint32{ // 54 elements
+var de_DEIndex = []uint32{ // 55 elements
 	// Entry 0 - 1F
 	0x00000000, 0x00000014, 0x0000002d, 0x00000035,
 	0x0000004b, 0x0000005f, 0x0000006f, 0x00000081,
@@ -108,11 +109,11 @@ var de_DEIndex = []uint32{ // 54 elements
 	0x000002af, 0x000002c0, 0x000002d3, 0x000002e5,
 	0x00000300, 0x00000307, 0x00000316, 0x00000326,
 	0x00000331, 0x00000340, 0x00000350, 0x0000035f,
-	0x00000367, 0x00000373, 0x00000383, 0x00000399,
-	0x000003af, 0x000003d2,
-} // Size: 240 bytes
+	0x00000367, 0x00000373, 0x00000391, 0x000003a7,
+	0x000003b7, 0x000003cd, 0x000003f0,
+} // Size: 244 bytes
 
-const de_DEData string = "" + // Size: 978 bytes
+const de_DEData string = "" + // Size: 1008 bytes
 	"\x02Monero oder Bitcoin\x02Bargeld in Fremdwährung\x02Bargeld\x02SEPA-Ba" +
 	"nküberweisung\x02Australische Dollar\x02Bulgarische Lew\x02Kanadische Do" +
 	"llar\x02Schweizer Franken\x02Chinesische Renminbi\x02Tschechische Kronen" +
@@ -127,7 +128,8 @@ const de_DEData string = "" + // Size: 978 bytes
 	"geld per Post\x02Monero und Bitcoin\x02SEPA-Überweisung\x02Alle Angebote" +
 	" und Projekte\x02Warum?\x02Ladengeschäft\x02Digitale Güter\x02Onlineshop" +
 	"\x02Bestellservice\x02Onlinedruckerei\x02Kontakt & News\x02Kontakt\x02De" +
-	"utschland\x02Mo+Do 10-18 Uhr\x02Di+Mi+Fr+Sa 10-14 Uhr\x02und nach Verein" +
-	"barung\x02Fehler oder Hinweise? Schreib uns!"
+	"utschland\x02Geschlossen: 8.-16. Juni 2024\x02Neue Öffnungszeiten!\x02Mo" +
+	"+Do 14-18 Uhr\x02Di+Mi+Fr+Sa 10-14 Uhr\x02Fehler oder Hinweise? Schreib " +
+	"uns!"
 
-	// Total table size 1218 bytes (1KiB); checksum: 289FDB9F
+	// Total table size 1252 bytes (1KiB); checksum: 2E26D472
