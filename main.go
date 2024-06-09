@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"database/sql"
-	"embed"
 	"encoding/csv"
 	"errors"
 	"flag"
@@ -32,12 +31,10 @@ import (
 	"github.com/dys2p/eco/lang"
 	"github.com/dys2p/eco/ssg"
 	"github.com/dys2p/ordersystem/html"
+	"github.com/dys2p/ordersystem/html/scripts"
 	"github.com/julienschmidt/httprouter"
 	_ "github.com/mattn/go-sqlite3"
 )
-
-//go:embed static
-var static embed.FS
 
 var ErrNotFound = errors.New("not found")
 
@@ -70,7 +67,7 @@ func main() {
 		log.Fatalf("error opening static dir: %v", err)
 	}
 
-	staticSites, err := ssg.MakeWebsite(siteFiles, html.Layout, langs)
+	staticSites, err := ssg.MakeWebsite(siteFiles, html.ClientSite, langs)
 	if err != nil {
 		log.Fatalf("error making static sites: %v", err)
 	}
@@ -251,6 +248,7 @@ func main() {
 	clientRouter.HandlerFunc(http.MethodPost, "/state", client(clientStatePost))
 	clientRouter.HandlerFunc(http.MethodPost, "/logout", client(clientLogoutPost))
 	clientRouter.Handler("GET", "/captcha/:fn", captcha.Handler())
+	clientRouter.ServeFiles("/scripts/*filepath", http.FS(scripts.Files))
 	clientRouter.NotFound = staticSites.Handler(func(r *http.Request, td ssg.TemplateData) any {
 		return html.TemplateData{
 			TemplateData:     ssg.MakeTemplateData(langs, r),
@@ -304,6 +302,7 @@ func main() {
 	storeRouter.HandlerFunc(http.MethodPost, "/collection/:collid/mark-failed/:taskid", auth(storeWithTask(storeTaskMarkFailedPost)))
 	storeRouter.HandlerFunc(http.MethodGet, "/export", auth(store(storeExport)))
 	storeRouter.HandlerFunc(http.MethodPost, "/logout", store(storeLogoutPost))
+	storeRouter.ServeFiles("/scripts/*filepath", http.FS(scripts.Files))
 
 	shutdownStoreSrv := httputil.ListenAndServe("127.0.0.1:9001", sessionManager.LoadAndSave(storeRouter), stop)
 	defer shutdownStoreSrv()
@@ -438,6 +437,10 @@ func clientCollEditGet(w http.ResponseWriter, r *http.Request, coll *Collection)
 		return ErrNotFound
 	}
 	return html.ClientCollEdit.Execute(w, collView{
+		TemplateData: html.TemplateData{
+			TemplateData:     ssg.MakeTemplateData(langs, r),
+			AuthorizedCollID: sessionCollID(r),
+		},
 		Actor:      Client,
 		Collection: coll,
 		ShowHints:  true,
@@ -511,6 +514,10 @@ func clientCollLoginPost(w http.ResponseWriter, r *http.Request) error {
 
 func clientCollViewGet(w http.ResponseWriter, r *http.Request, coll *Collection) error {
 	return html.ClientCollView.Execute(w, collView{
+		TemplateData: html.TemplateData{
+			TemplateData:     ssg.MakeTemplateData(langs, r),
+			AuthorizedCollID: sessionCollID(r),
+		},
 		Actor:         Client,
 		Collection:    coll,
 		ReadOnly:      true,
@@ -528,7 +535,13 @@ func clientCollCancelGet(w http.ResponseWriter, r *http.Request, coll *Collectio
 	if !coll.ClientCan("cancel") {
 		return ErrNotFound
 	}
-	return html.ClientCollCancel.Execute(w, &clientCollCancel{Collection: coll})
+	return html.ClientCollCancel.Execute(w, &clientCollCancel{
+		TemplateData: html.TemplateData{
+			TemplateData:     ssg.MakeTemplateData(langs, r),
+			AuthorizedCollID: sessionCollID(r),
+		},
+		Collection: coll,
+	})
 }
 
 func clientCollCancelPost(w http.ResponseWriter, r *http.Request, coll *Collection) error {
@@ -537,6 +550,10 @@ func clientCollCancelPost(w http.ResponseWriter, r *http.Request, coll *Collecti
 	}
 	if r.PostFormValue("confirm-cancel") == "" {
 		return html.ClientCollCancel.Execute(w, &clientCollCancel{
+			TemplateData: html.TemplateData{
+				TemplateData:     ssg.MakeTemplateData(langs, r),
+				AuthorizedCollID: sessionCollID(r),
+			},
 			Collection: coll,
 			Err:        true,
 		})
@@ -561,6 +578,10 @@ func clientCollDeleteGet(w http.ResponseWriter, r *http.Request, coll *Collectio
 		return ErrNotFound
 	}
 	return html.ClientCollDelete.Execute(w, &collDelete{
+		TemplateData: html.TemplateData{
+			TemplateData:     ssg.MakeTemplateData(langs, r),
+			AuthorizedCollID: sessionCollID(r),
+		},
 		Collection: coll,
 	})
 }
@@ -571,6 +592,10 @@ func clientCollDeletePost(w http.ResponseWriter, r *http.Request, coll *Collecti
 	}
 	if r.PostFormValue("confirm-delete") == "" {
 		return html.ClientCollDelete.Execute(w, &collDelete{
+			TemplateData: html.TemplateData{
+				TemplateData:     ssg.MakeTemplateData(langs, r),
+				AuthorizedCollID: sessionCollID(r),
+			},
 			Collection: coll,
 			Err:        true,
 		})
@@ -595,6 +620,10 @@ func clientCollPayBTCPayGet(w http.ResponseWriter, r *http.Request, coll *Collec
 		return ErrNotFound
 	}
 	return html.ClientCollPayBTCPay.Execute(w, &clientCollPayBTCPay{
+		TemplateData: html.TemplateData{
+			TemplateData:     ssg.MakeTemplateData(langs, r),
+			AuthorizedCollID: sessionCollID(r),
+		},
 		Collection: coll,
 		Captcha: captcha.TemplateData{
 			ID: captcha.New(),
@@ -609,6 +638,10 @@ func clientCollPayBTCPayPost(w http.ResponseWriter, r *http.Request, coll *Colle
 	}
 	if !captcha.Verify(r.PostFormValue("captcha-id"), r.PostFormValue("captcha-answer")) {
 		return html.ClientCollPayBTCPay.Execute(w, &clientCollPayBTCPay{
+			TemplateData: html.TemplateData{
+				TemplateData:     ssg.MakeTemplateData(langs, r),
+				AuthorizedCollID: sessionCollID(r),
+			},
 			Collection: coll,
 			Captcha: captcha.TemplateData{
 				ID:  captcha.New(),
@@ -672,10 +705,11 @@ func clientCollMessageGet(w http.ResponseWriter, r *http.Request, coll *Collecti
 		html.TemplateData
 		*Collection
 	}{
-		html.TemplateData{
-			TemplateData: ssg.MakeTemplateData(langs, r),
+		TemplateData: html.TemplateData{
+			TemplateData:     ssg.MakeTemplateData(langs, r),
+			AuthorizedCollID: sessionCollID(r),
 		},
-		coll,
+		Collection: coll,
 	})
 }
 
@@ -696,6 +730,10 @@ func clientCollSubmitGet(w http.ResponseWriter, r *http.Request, coll *Collectio
 		return ErrNotFound
 	}
 	return html.ClientCollSubmit.Execute(w, collView{
+		TemplateData: html.TemplateData{
+			TemplateData:     ssg.MakeTemplateData(langs, r),
+			AuthorizedCollID: sessionCollID(r),
+		},
 		Actor:      Client,
 		Collection: coll,
 		ReadOnly:   true,
@@ -971,16 +1009,19 @@ func storeIndexGet(w http.ResponseWriter, r *http.Request) error {
 		*DB
 		Notifications []string
 	}{
-		html.TemplateData{
+		TemplateData: html.TemplateData{
 			TemplateData: ssg.MakeTemplateData(langs, r),
 		},
-		db,
-		notifications(r.Context()),
+		DB:            db,
+		Notifications: notifications(r.Context()),
 	})
 }
 
 func storeCollViewGet(w http.ResponseWriter, r *http.Request, coll *Collection) error {
 	return html.StoreCollView.Execute(w, collView{
+		TemplateData: html.TemplateData{
+			TemplateData: ssg.MakeTemplateData(langs, r),
+		},
 		Actor:         Store,
 		Collection:    coll,
 		ReadOnly:      true,
@@ -996,10 +1037,10 @@ func storeCollAcceptGet(w http.ResponseWriter, r *http.Request, coll *Collection
 		html.TemplateData
 		*Collection
 	}{
-		html.TemplateData{
+		TemplateData: html.TemplateData{
 			TemplateData: ssg.MakeTemplateData(langs, r),
 		},
-		coll,
+		Collection: coll,
 	})
 }
 

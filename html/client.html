@@ -1,0 +1,23 @@
+{{define "main"}}
+	<nav class="navbar navbar-expand-sm navbar-light bg-light">
+		<div class="container">
+			<a class="navbar-brand" href="/">
+				{{block "brand" .}}
+					Bestellservice
+				{{end}}
+			</a>
+			{{block "menu" .}}{{end}}
+			<div>
+				{{with .AuthorizedCollID}}
+					<form class="mb-0" action="/logout" method="post">
+						<a class="btn btn-secondary btn-sm" href="/collection/{{.}}">Angemeldet als {{.}}</a>
+						<button class="btn btn-secondary btn-sm" type="submit" name="logout">Abmelden</a>
+					</form>
+				{{end}}
+			</div>
+		</div>
+	</nav>
+	<div class="container mt-3">
+		{{template "content" .}}
+	</div>
+{{end}}

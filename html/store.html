@@ -1,19 +1,32 @@
-{{define "content"}}
-	<nav class="navbar navbar-expand-sm navbar-dark bg-dark">
-		<div class="container-fluid">
-			<div class="col">
-				{{block "brand" .}}{{end}}
+{{define "html" -}}
+<!DOCTYPE html>
+<html lang="de">
+	<head>
+		<meta charset="utf-8">
+		<meta name="referrer" content="no-referrer">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="/static/bootstrap.min.css">
+		<link rel="stylesheet" href="/static/style.css">
+		{{block "head" .}}{{end}}
+	</head>
+	<body>
+		<nav class="navbar navbar-expand-sm">
+			<div class="container-fluid">
+				<div class="col">
+					{{block "brand" .}}{{end}}
+				</div>
+				<div class="col navbar-nav justify-content-center">
+					<a class="btn btn-secondary btn-sm mx-1" href="/">Übersicht</a>
+					<form class="mb-0 mx-1" action="/logout" method="post">
+						<button class="btn btn-secondary btn-sm" type="submit" name="logout">Abmelden</a>
+					</form>
+				</div>
+				<div class="col"><!-- centers navbar-nav --></div>
 			</div>
-			<div class="col navbar-nav justify-content-center">
-				<a class="btn btn-secondary btn-sm mx-1" href="/">Übersicht</a>
-				<form class="mb-0 mx-1" action="/logout" method="post">
-					<button class="btn btn-secondary btn-sm" type="submit" name="logout">Abmelden</a>
-				</form>
-			</div>
-			<div class="col"><!-- centers navbar-nav --></div>
+		</nav>
+		<div class="container mt-3">
+			{{template "store" .}}
 		</div>
-	</nav>
-	<div class="container mt-3">
-		{{template "store" .}}
-	</div>
+	</body>
+</html>
 {{end}}
