@@ -1005,13 +1005,9 @@ func clientLogoutPost(w http.ResponseWriter, r *http.Request) error {
 
 func storeIndexGet(w http.ResponseWriter, r *http.Request) error {
 	return html.StoreIndex.Execute(w, struct {
-		html.TemplateData
 		*DB
 		Notifications []string
 	}{
-		TemplateData: html.TemplateData{
-			TemplateData: ssg.MakeTemplateData(langs, r),
-		},
 		DB:            db,
 		Notifications: notifications(r.Context()),
 	})
@@ -1019,9 +1015,6 @@ func storeIndexGet(w http.ResponseWriter, r *http.Request) error {
 
 func storeCollViewGet(w http.ResponseWriter, r *http.Request, coll *Collection) error {
 	return html.StoreCollView.Execute(w, collView{
-		TemplateData: html.TemplateData{
-			TemplateData: ssg.MakeTemplateData(langs, r),
-		},
 		Actor:         Store,
 		Collection:    coll,
 		ReadOnly:      true,
@@ -1033,15 +1026,7 @@ func storeCollAcceptGet(w http.ResponseWriter, r *http.Request, coll *Collection
 	if !coll.StoreCan("accept") {
 		return ErrNotFound
 	}
-	return html.StoreCollAccept.Execute(w, struct {
-		html.TemplateData
-		*Collection
-	}{
-		TemplateData: html.TemplateData{
-			TemplateData: ssg.MakeTemplateData(langs, r),
-		},
-		Collection: coll,
-	})
+	return html.StoreCollAccept.Execute(w, coll)
 }
 
 func storeCollAcceptPost(w http.ResponseWriter, r *http.Request, coll *Collection) error {
@@ -1207,15 +1192,7 @@ func storeCollConfirmPickupGet(w http.ResponseWriter, r *http.Request, coll *Col
 	if !coll.StoreCan("confirm-pickup") {
 		return ErrNotFound
 	}
-	return html.StoreCollConfirmPickup.Execute(w, struct {
-		html.TemplateData
-		*Collection
-	}{
-		html.TemplateData{
-			TemplateData: ssg.MakeTemplateData(langs, r),
-		},
-		coll,
-	})
+	return html.StoreCollConfirmPickup.Execute(w, coll)
 }
 
 func storeCollConfirmPickupPost(w http.ResponseWriter, r *http.Request, coll *Collection) error {
@@ -1251,15 +1228,7 @@ func storeCollConfirmReshippedGet(w http.ResponseWriter, r *http.Request, coll *
 	if !coll.StoreCan("confirm-reshipped") {
 		return ErrNotFound
 	}
-	return html.StoreCollConfirmReshipped.Execute(w, struct {
-		html.TemplateData
-		*Collection
-	}{
-		html.TemplateData{
-			TemplateData: ssg.MakeTemplateData(langs, r),
-		},
-		coll,
-	})
+	return html.StoreCollConfirmReshipped.Execute(w, coll)
 }
 
 func storeCollConfirmReshippedPost(w http.ResponseWriter, r *http.Request, coll *Collection) error {
@@ -1377,15 +1346,7 @@ func storeCollMessageGet(w http.ResponseWriter, r *http.Request, coll *Collectio
 	if !coll.StoreCan("message") {
 		return ErrNotFound
 	}
-	return html.StoreCollMessage.Execute(w, struct {
-		html.TemplateData
-		*Collection
-	}{
-		html.TemplateData{
-			TemplateData: ssg.MakeTemplateData(langs, r),
-		},
-		coll,
-	})
+	return html.StoreCollMessage.Execute(w, coll)
 }
 
 func storeCollMessagePost(w http.ResponseWriter, r *http.Request, coll *Collection) error {
@@ -1402,15 +1363,7 @@ func storeCollPriceRisedGet(w http.ResponseWriter, r *http.Request, coll *Collec
 	if !coll.StoreCan("price-rised") {
 		return ErrNotFound
 	}
-	return html.StoreCollPriceRised.Execute(w, struct {
-		html.TemplateData
-		*Collection
-	}{
-		html.TemplateData{
-			TemplateData: ssg.MakeTemplateData(langs, r),
-		},
-		coll,
-	})
+	return html.StoreCollPriceRised.Execute(w, coll)
 }
 
 func storeCollPriceRisedPost(w http.ResponseWriter, r *http.Request, coll *Collection) error {
@@ -1428,15 +1381,7 @@ func storeCollReturnGet(w http.ResponseWriter, r *http.Request, coll *Collection
 	if !coll.StoreCan("return") {
 		return ErrNotFound
 	}
-	return html.StoreCollReturn.Execute(w, struct {
-		html.TemplateData
-		*Collection
-	}{
-		html.TemplateData{
-			TemplateData: ssg.MakeTemplateData(langs, r),
-		},
-		coll,
-	})
+	return html.StoreCollReturn.Execute(w, coll)
 }
 
 func storeCollReturnPost(w http.ResponseWriter, r *http.Request, coll *Collection) error {
@@ -1538,9 +1483,7 @@ func storeCollMarkSpamPost(w http.ResponseWriter, r *http.Request, coll *Collect
 }
 
 func storeLoginGet(w http.ResponseWriter, r *http.Request) error {
-	return html.StoreLogin.Execute(w, html.TemplateData{
-		TemplateData: ssg.MakeTemplateData(langs, r),
-	})
+	return html.StoreLogin.Execute(w, nil)
 }
 
 func storeLoginPost(w http.ResponseWriter, r *http.Request) error {
