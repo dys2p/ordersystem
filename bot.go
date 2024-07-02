@@ -59,7 +59,7 @@ func (db *DB) BotArchive(coll *Collection) error {
 	if err != nil {
 		return err
 	}
-	if since > 2*7*24*time.Hour { // more than two weeks
+	if since > 2*7*24*time.Hour && coll.Due() == 0 { // more than two weeks and we're even
 		coll.ClientInput = ClientInput{} // clear data
 		if err := db.UpdateCollAndTasks(coll); err != nil {
 			return err
