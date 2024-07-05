@@ -27,6 +27,10 @@ func (coll *Collection) AuthorizedCollID() string {
 	return coll.ID
 }
 
+func (coll *Collection) Balance() int {
+	return coll.Paid() - coll.Sum()
+}
+
 func (coll *Collection) BotCan(action string) bool {
 	return db.CollFSM.CanAction(Bot, State(coll.State), action)
 }
@@ -70,6 +74,14 @@ func (coll *Collection) LatestEventSince() (time.Duration, error) {
 // Link returns an absolute URL without host, like "/collection/ABCDEFGHKL"
 func (coll *Collection) Link() string {
 	return fmt.Sprintf("/collection/%s", coll.ID)
+}
+
+func (coll *Collection) MaxDate() string {
+	var date string
+	for _, event := range coll.Log {
+		date = max(date, string(event.Date))
+	}
+	return date
 }
 
 // MergeJSON unmarshals JSON data and calls Merge.
@@ -124,6 +136,20 @@ func (coll *Collection) Merge(actor Actor, untrustedColl *Collection) error {
 	}
 
 	return nil
+}
+
+func (coll *Collection) NumTasks() int {
+	return len(coll.Tasks)
+}
+
+func (coll *Collection) NumTasksAt(state TaskState) int {
+	var num = 0
+	for _, task := range coll.Tasks {
+		if task.State == state {
+			num++
+		}
+	}
+	return num
 }
 
 func (coll *Collection) Due() int {

@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"strings"
-	"time"
 )
 
 type DB struct {
@@ -82,29 +81,7 @@ func NewDB(sqlDB *sql.DB, collFSM, taskFSM *FSM) (*DB, error) {
 		return nil, err
 	}
 
-	db.readColls, err = db.sqlDB.Prepare(`
-		select
-			coll.id,
-			max(event.date),
-			(
-				select count(1)
-				from task
-				where collid = coll.id and task.state = ?
-			) as numFilteredTasks,
-			(
-				select count(1)
-				from task
-				where collid = coll.id
-			) AS numTasks
-		from coll
-		left join event on coll.id = event.collid -- left join: get collections without event
-		where coll.state = ?
-		group by coll.id               -- group by: is required for having
-			having coll.id is not null -- having: sort out the (null, null) row if there are no collections found
-		order by
-			max(event.date) desc,
-			(numFilteredTasks < numTasks) asc
-	`)
+	db.readColls, err = db.sqlDB.Prepare("select id from coll where coll.state = ?")
 	if err != nil {
 		return nil, err
 	}
@@ -296,43 +273,22 @@ func (db *DB) ReadCollPass(id, pass string) (*Collection, error) {
 	return coll, nil
 }
 
-type CollStub struct {
-	CollID           string
-	MaxDate          string
-	NumFilteredTasks int
-	NumTasks         int
-}
-
 // task count is currently filtered with NotOrderedYet
-func (db *DB) ReadColls(state CollState) ([]CollStub, error) {
-
-	rows, err := db.readColls.Query(NotOrderedYet, state)
+func (db *DB) ReadColls(state CollState) ([]string, error) {
+	rows, err := db.readColls.Query(state)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-
-	var items = []CollStub{}
-
+	var ids []string
 	for rows.Next() {
-		var item = CollStub{}
-		var maxDate sql.NullString
-		if err := rows.Scan(&item.CollID, &maxDate, &item.NumFilteredTasks, &item.NumTasks); err != nil {
+		var id string
+		if err := rows.Scan(&id); err != nil {
 			return nil, err
 		}
-		if maxDate.Valid {
-			maxDateValue, _ := maxDate.Value()
-			if maxDateStr, ok := maxDateValue.(string); ok {
-				if t, err := time.Parse("2006-01-02", maxDateStr); err == nil { // YYYY-MM-DD
-					maxDateStr = t.Format("02.01.2006")
-				}
-				item.MaxDate = maxDateStr
-			}
-		}
-		items = append(items, item)
+		ids = append(ids, id)
 	}
-
-	return items, nil
+	return ids, nil
 }
 
 func (db *DB) ReadState(id string) (CollState, error) {

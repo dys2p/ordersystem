@@ -1502,13 +1502,13 @@ func storeExport(w http.ResponseWriter, r *http.Request) error {
 	var rows [][]string
 
 	for _, state := range []CollState{Accepted, Archived, Finalized, NeedsRevise, Paid, Submitted, Underpaid} {
-		collStubs, err := db.ReadColls(state)
+		collIDs, err := db.ReadColls(state)
 		if err != nil {
 			return err
 		}
-		slices.Reverse(collStubs)
-		for _, stub := range collStubs {
-			coll, err := db.ReadColl(stub.CollID)
+		slices.Reverse(collIDs)
+		for _, collID := range collIDs {
+			coll, err := db.ReadColl(collID)
 			if err != nil {
 				return err
 			}

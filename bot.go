@@ -23,13 +23,13 @@ func bot() {
 	fmt.Println("running bot")
 	// get pre-transition states where actor is Bot, so we don't have to try each state
 	for _, from := range db.CollFSM.From(Bot) {
-		collItems, err := db.ReadColls(CollState(from))
+		collIDs, err := db.ReadColls(CollState(from))
 		if err != nil {
 			log.Printf("bot: error reading %s collections: %v", from, err)
 			continue
 		}
-		for _, collItem := range collItems {
-			botColl(collItem.CollID)
+		for _, collID := range collIDs {
+			botColl(collID)
 		}
 	}
 }

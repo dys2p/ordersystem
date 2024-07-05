@@ -14,10 +14,12 @@
 			</thead>
 			<tbody>
 				{{range .}}
-					<tr>
-						<td><a href="/collection/{{.CollID}}">{{.CollID}}</a></td>
-						<td>{{.MaxDate}}</td>
-					</tr>
+					{{with $.DB.ReadColl .}}
+						<tr>
+							<td><a href="/collection/{{.ID}}">{{.ID}}</a></td>
+							<td>{{.MaxDate}}</td>
+						</tr>
+					{{end}}
 				{{end}}
 			</tbody>
 		</table>
@@ -36,10 +38,12 @@
 			</thead>
 			<tbody>
 				{{range .}}
-					<tr>
-						<td><a href="/collection/{{.CollID}}">{{.CollID}}</a></td>
-						<td>{{.MaxDate}}</td>
-					</tr>
+					{{with $.DB.ReadColl .}}
+						<tr>
+							<td><a href="/collection/{{.CollID}}">{{.CollID}}</a></td>
+							<td>{{.MaxDate}}</td>
+						</tr>
+					{{end}}
 				{{end}}
 			</tbody>
 		</table>
@@ -58,10 +62,12 @@
 			</thead>
 			<tbody>
 				{{range .}}
-					<tr>
-						<td><a href="/collection/{{.CollID}}">{{.CollID}}</a></td>
-						<td>{{.MaxDate}}</td>
-					</tr>
+					{{with $.DB.ReadColl .}}
+						<tr>
+							<td><a href="/collection/{{.CollID}}">{{.CollID}}</a></td>
+							<td>{{.MaxDate}}</td>
+						</tr>
+					{{end}}
 				{{end}}
 			</tbody>
 		</table>
@@ -78,16 +84,20 @@
 					<th>Einzelaufträge</th>
 					<th>Davon noch nicht bestellt</th>
 					<th>Letztes Event</th>
+					<th>Saldo</th>
 				</tr>
 			</thead>
 			<tbody>
 				{{range .}}
-					<tr>
-						<td><a href="/collection/{{.CollID}}">{{.CollID}}</a></td>
-						<td>{{.NumTasks}}</td>
-						<td>{{if .NumFilteredTasks}}{{.NumFilteredTasks}}{{end}}</td>
-						<td>{{.MaxDate}}</td>
-					</tr>
+					{{with $.DB.ReadColl .}}
+						<tr>
+							<td><a href="/collection/{{.ID}}">{{.ID}}</a></td>
+							<td>{{.NumTasks}}</td>
+							<td>{{with .NumTasksAt "not-ordered-yet"}}{{.}}{{end}}</td>
+							<td>{{.MaxDate}}</td>
+							<td class="{{if gt .Balance 0}}text-success{{else}}text-danger{{end}}">{{FmtHuman .Balance}}</td>
+						</tr>
+					{{end}}
 				{{end}}
 			</tbody>
 		</table>
@@ -102,14 +112,18 @@
 				<tr>
 					<th>Bestellnummer</th>
 					<th>Letztes Event</th>
+					<th>Saldo</th>
 				</tr>
 			</thead>
 			<tbody>
 				{{range .}}
-					<tr>
-						<td><a href="/collection/{{.CollID}}">{{.CollID}}</a></td>
-						<td>{{.MaxDate}}</td>
-					</tr>
+					{{with $.DB.ReadColl .}}
+						<tr>
+							<td><a href="/collection/{{.CollID}}">{{.CollID}}</a></td>
+							<td>{{.MaxDate}}</td>
+							<td class="{{if gt .Balance 0}}text-success{{else}}text-danger{{end}}">{{FmtHuman .Balance}}</td>
+						</tr>
+					{{end}}
 				{{end}}
 			</tbody>
 		</table>
