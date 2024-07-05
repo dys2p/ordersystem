@@ -40,7 +40,7 @@
 				{{range .}}
 					{{with $.DB.ReadColl .}}
 						<tr>
-							<td><a href="/collection/{{.CollID}}">{{.CollID}}</a></td>
+							<td><a href="/collection/{{.ID}}">{{.ID}}</a></td>
 							<td>{{.MaxDate}}</td>
 						</tr>
 					{{end}}
@@ -64,7 +64,7 @@
 				{{range .}}
 					{{with $.DB.ReadColl .}}
 						<tr>
-							<td><a href="/collection/{{.CollID}}">{{.CollID}}</a></td>
+							<td><a href="/collection/{{.ID}}">{{.ID}}</a></td>
 							<td>{{.MaxDate}}</td>
 						</tr>
 					{{end}}
@@ -95,7 +95,7 @@
 							<td>{{.NumTasks}}</td>
 							<td>{{with .NumTasksAt "not-ordered-yet"}}{{.}}{{end}}</td>
 							<td>{{.MaxDate}}</td>
-							<td class="{{if gt .Balance 0}}text-success{{else}}text-danger{{end}}">{{FmtHuman .Balance}}</td>
+							<td class="{{if lt .Balance 0}}text-danger{{else}}text-success{{end}}">{{FmtHuman .Balance}}</td>
 						</tr>
 					{{end}}
 				{{end}}
@@ -119,9 +119,9 @@
 				{{range .}}
 					{{with $.DB.ReadColl .}}
 						<tr>
-							<td><a href="/collection/{{.CollID}}">{{.CollID}}</a></td>
+							<td><a href="/collection/{{.ID}}">{{.ID}}</a></td>
 							<td>{{.MaxDate}}</td>
-							<td class="{{if gt .Balance 0}}text-success{{else}}text-danger{{end}}">{{FmtHuman .Balance}}</td>
+							<td class="{{if lt .Balance 0}}text-danger{{else}}text-success{{end}}">{{FmtHuman .Balance}}</td>
 						</tr>
 					{{end}}
 				{{end}}
