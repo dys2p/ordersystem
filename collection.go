@@ -120,6 +120,11 @@ func (coll *Collection) Merge(actor Actor, untrustedColl *Collection) error {
 	for _, task := range untrustedColl.Tasks {
 		if strings.TrimSpace(task.ID) == "" {
 			task.ID = id.New(10, id.AlphanumCaseInsensitiveDigits)
+		} else {
+			// restore task.State
+			if existingTask, ok := coll.GetTask(task.ID); ok {
+				task.State = existingTask.State
+			}
 		}
 	}
 
@@ -345,5 +350,6 @@ func (tl *TaskList) Insert(task *Task) {
 			return // not necessarily an error, the task might just be read-only
 		}
 	}
+
 	*tl = append(*tl, task)
 }
