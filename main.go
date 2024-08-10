@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"database/sql"
 	"encoding/csv"
 	"errors"
@@ -1499,7 +1498,9 @@ func storeLoginPost(w http.ResponseWriter, r *http.Request) error {
 
 func storeExport(w http.ResponseWriter, r *http.Request) error {
 
-	var rows [][]string
+	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+	out := csv.NewWriter(w)
+	out.Write([]string{"vat_date", "id", "country", "gross", "vat_rate", "name"})
 
 	for _, state := range []CollState{Accepted, Archived, Finalized, NeedsRevise, Paid, Submitted, Underpaid} {
 		collIDs, err := db.ReadColls(state)
@@ -1525,28 +1526,20 @@ func storeExport(w http.ResponseWriter, r *http.Request) error {
 			}
 
 			for _, task := range coll.Tasks {
-				rows = append(rows, []string{"# " + task.Merchant})
+				out.Flush() // before writing to w directly
+				w.Write([]byte("# " + task.Merchant + "\n"))
 				for _, article := range task.Articles {
 					var name = article.Link
 					if article.Properties != "" {
 						name = name + " (" + article.Properties + ")"
 					}
-					rows = append(rows, []string{paydate, coll.ID, fmt.Sprintf("%d x %s", article.Quantity, name), "DE", strconv.Itoa(article.Quantity * article.Price), "standard"})
+					out.Write([]string{paydate, coll.ID, "DE", strconv.Itoa(article.Quantity * article.Price), "standard", fmt.Sprintf("%d x %s", article.Quantity, name)})
 				}
 			}
 		}
 	}
 
-	var buf bytes.Buffer
-	out := csv.NewWriter(&buf)
-	out.Write([]string{"vat_date", "id", "name", "country", "gross", "vat_rate"})
-	for _, row := range rows {
-		out.Write(row)
-	}
 	out.Flush()
-	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-	w.Write(buf.Bytes())
-
 	return nil
 }
 
