@@ -13,7 +13,7 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
-	"slices"
+	"sort"
 	"strconv"
 	"strings"
 	"sync"
@@ -1496,18 +1496,23 @@ func storeLoginPost(w http.ResponseWriter, r *http.Request) error {
 	return nil
 }
 
+type collWithPayDate struct {
+	*Collection
+	payDate string
+}
+
 func storeExport(w http.ResponseWriter, r *http.Request) error {
 
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	out := csv.NewWriter(w)
 	out.Write([]string{"vat_date", "id", "country", "gross", "vat_rate", "name"})
 
+	var colls []collWithPayDate
 	for _, state := range []CollState{Accepted, Archived, Finalized, NeedsRevise, Paid, Submitted, Underpaid} {
 		collIDs, err := db.ReadColls(state)
 		if err != nil {
 			return err
 		}
-		slices.Reverse(collIDs)
 		for _, collID := range collIDs {
 			coll, err := db.ReadColl(collID)
 			if err != nil {
@@ -1525,16 +1530,27 @@ func storeExport(w http.ResponseWriter, r *http.Request) error {
 				continue // next collection
 			}
 
-			for _, task := range coll.Tasks {
-				out.Flush() // before writing to w directly
-				w.Write([]byte("# " + task.Merchant + "\n"))
-				for _, article := range task.Articles {
-					var name = article.Link
-					if article.Properties != "" {
-						name = name + " (" + article.Properties + ")"
-					}
-					out.Write([]string{paydate, coll.ID, "DE", strconv.Itoa(article.Quantity * article.Price), "standard", fmt.Sprintf("%d x %s", article.Quantity, name)})
+			colls = append(colls, collWithPayDate{
+				Collection: coll,
+				payDate:    paydate,
+			})
+		}
+	}
+
+	sort.Slice(colls, func(i, j int) bool {
+		return colls[i].payDate < colls[j].payDate
+	})
+
+	for _, coll := range colls {
+		for _, task := range coll.Tasks {
+			out.Flush() // before writing to w directly
+			w.Write([]byte("# " + task.Merchant + "\n"))
+			for _, article := range task.Articles {
+				var name = article.Link
+				if article.Properties != "" {
+					name = name + " (" + article.Properties + ")"
 				}
+				out.Write([]string{coll.payDate, coll.ID, "DE", strconv.Itoa(article.Quantity * article.Price), "standard", fmt.Sprintf("%d x %s", article.Quantity, name)})
 			}
 		}
 	}
