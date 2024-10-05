@@ -171,9 +171,9 @@ function newTask(readOnly = false, showHints = true, header = "") {
 	${header ? header : ''}
 
 	<div class="mb-3">
+		${showHints ? '<p>Bitte lege für jede Verkäufer/-in einen separaten Einzelauftrag an. Das betrifft insbesondere Käufe auf Marktplätzen/Plattformen wie amazon oder eBay.</p>' : ''}
 		<label class="form-label">Link zum Versandhändler bzw. Anbieter</label>
 		<input class="form-control" type="text" name="merchant" onchange="updateView()" ${readOnly ? 'readonly' : ''}>
-		${showHints ? '<small class="form-text text-muted">Um Waren von verschiedenen Versandhändlern zu bestellen, füge bitte einen weiteren Einzelauftrag hinzu.</small>' : ''}
 	</div>
 
 	<table class="table">
