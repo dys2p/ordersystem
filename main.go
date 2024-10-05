@@ -222,6 +222,7 @@ func main() {
 	signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
 
 	var clientRouter = httprouter.New()
+	clientRouter.ServeFiles("/static/*filepath", http.FS(httputil.ModTimeFS{staticFiles, time.Now()}))
 	clientRouter.HandlerFunc(http.MethodGet, "/", client(clientHelloGet))
 	clientRouter.HandlerFunc(http.MethodGet, "/create", client(clientCreateGet))
 	clientRouter.HandlerFunc(http.MethodPost, "/create", client(clientCreatePost))
@@ -259,7 +260,7 @@ func main() {
 	defer shutdownClientSrv()
 
 	var storeRouter = httprouter.New()
-	storeRouter.ServeFiles("/static/*filepath", http.FS(staticFiles))
+	storeRouter.ServeFiles("/static/*filepath", http.FS(httputil.ModTimeFS{staticFiles, time.Now()}))
 	storeRouter.HandlerFunc(http.MethodGet, "/login", store(storeLoginGet))
 	storeRouter.HandlerFunc(http.MethodPost, "/login", store(storeLoginPost))
 	// with authentication:
