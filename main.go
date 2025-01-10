@@ -1539,7 +1539,10 @@ func storeExport(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	sort.Slice(colls, func(i, j int) bool {
-		return colls[i].payDate < colls[j].payDate
+		if colls[i].payDate != colls[j].payDate {
+			return colls[i].payDate < colls[j].payDate
+		}
+		return colls[i].ID < colls[j].ID
 	})
 
 	for _, coll := range colls {
