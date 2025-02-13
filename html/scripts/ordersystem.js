@@ -179,7 +179,7 @@ function newTask(readOnly = false, showHints = true, header = "") {
 	<table class="table">
 		<thead>
 			<tr>
-				<th>Link oder Artikelnummer</th>
+				<th>Link</th>
 				<th>Eigenschaften</th>
 				<th>Menge</th>
 				<th>Einzelpreis</th>
