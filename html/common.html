@@ -1,9 +1,16 @@
 {{define "head"}}
 	<link rel="icon" type="image/png" href="/static/favicon-96.png" sizes="96x96">
-	<meta name="description" content="Datensparsamer Bestellshop">
 	<meta name="author" content="ProxyStore">
-	<title>Order Service – ProxyStore</title>
+	<meta name="description" content="Datensparsamer Bestellservice: Anonyme Onlinebestellungen">
 	<script src="/scripts/ordersystem.js"></script>
+	<script type="application/ld+json">
+	{
+		"@context" : "https://schema.org",
+		"@type" : "WebSite",
+		"name" : "ProxyStore",
+		"url" : "https://order.proxysto.re/"
+	}
+	</script>
 	<style>
 		a {
 			text-decoration: none;
@@ -24,6 +31,7 @@
 			margin-bottom: 0 !important;
 		}
 	</style>
+	<title>Order Service – ProxyStore</title>
 {{end}}
 
 {{define "log"}}
