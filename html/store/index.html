@@ -84,6 +84,7 @@
 					<th>Einzelaufträge</th>
 					<th>Davon noch nicht bestellt</th>
 					<th>Letztes Event</th>
+					<th>Summe</th>
 					<th>Saldo</th>
 				</tr>
 			</thead>
@@ -95,6 +96,7 @@
 							<td>{{.NumTasks}}</td>
 							<td>{{with .NumTasksAt "not-ordered-yet"}}{{.}}{{end}}</td>
 							<td>{{.MaxDate}}</td>
+							<td>{{FmtHuman .Sum}}</td>
 							<td class="{{if lt .Balance 0}}text-danger{{else}}text-success{{end}}">{{FmtHuman .Balance}}</td>
 						</tr>
 					{{end}}
