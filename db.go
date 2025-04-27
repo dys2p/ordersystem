@@ -1,4 +1,4 @@
-package main
+package ordersystem
 
 import (
 	"database/sql"
@@ -8,11 +8,10 @@ import (
 	"strings"
 )
 
+var ErrNotFound = errors.New("not found")
+
 type DB struct {
 	sqlDB *sql.DB
-
-	CollFSM *FSM
-	TaskFSM *FSM
 
 	// collection
 	createColl      *sql.Stmt
@@ -35,12 +34,10 @@ type DB struct {
 	deleteTasks     *sql.Stmt
 }
 
-func NewDB(sqlDB *sql.DB, collFSM, taskFSM *FSM) (*DB, error) {
+func NewDB(sqlDB *sql.DB) (*DB, error) {
 
 	var db = &DB{
-		sqlDB:   sqlDB,
-		CollFSM: collFSM,
-		TaskFSM: taskFSM,
+		sqlDB: sqlDB,
 	}
 
 	_, err := sqlDB.Exec(`
@@ -188,7 +185,7 @@ func (db *DB) CreateEvent(actor Actor, coll *Collection, paid int, message strin
 
 func (db *DB) Delete(actor Actor, coll *Collection) error {
 
-	if !db.CollFSM.Can(actor, State(coll.State), State(Deleted)) {
+	if !CollFSM.Can(actor, State(coll.State), State(Deleted)) {
 		return errors.New("not allowed to delete collection") // deletion is important, so we must state clearly if it fails (and not just return ErrNotFound)
 	}
 
@@ -299,7 +296,7 @@ func (db *DB) ReadState(id string) (CollState, error) {
 // coll must contain the old state
 func (db *DB) UpdateCollState(actor Actor, coll *Collection, newState CollState, paidAmount int, message string) error {
 
-	if !db.CollFSM.Can(actor, State(coll.State), State(newState)) {
+	if !CollFSM.Can(actor, State(coll.State), State(newState)) {
 		return ErrNotFound
 	}
 
@@ -370,7 +367,7 @@ func (db *DB) UpdateCollAndTasks(coll *Collection) error {
 
 // task must contain the old state
 func (db *DB) UpdateTaskState(actor Actor, task *Task, newState TaskState) error {
-	if !db.TaskFSM.Can(actor, State(task.State), State(newState)) {
+	if !TaskFSM.Can(actor, State(task.State), State(newState)) {
 		return ErrNotFound
 	}
 	if _, err := db.updateTaskState.Exec(newState, task.ID); err != nil {

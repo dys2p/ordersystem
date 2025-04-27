@@ -1,4 +1,4 @@
-package main
+package ordersystem
 
 type Actor string
 

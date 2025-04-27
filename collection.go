@@ -1,4 +1,4 @@
-package main
+package ordersystem
 
 import (
 	"encoding/json"
@@ -32,11 +32,11 @@ func (coll *Collection) Balance() int {
 }
 
 func (coll *Collection) BotCan(action string) bool {
-	return db.CollFSM.CanAction(Bot, State(coll.State), action)
+	return CollFSM.CanAction(Bot, State(coll.State), action)
 }
 
 func (coll *Collection) ClientCan(action string) bool {
-	return db.CollFSM.CanAction(Client, State(coll.State), action)
+	return CollFSM.CanAction(Client, State(coll.State), action)
 }
 
 func HashPassword(password string) ([]byte, error) {
@@ -199,13 +199,13 @@ func (coll *Collection) Sum() int {
 }
 
 func (coll *Collection) StoreCan(action string) bool {
-	return db.CollFSM.CanAction(Store, State(coll.State), action)
+	return CollFSM.CanAction(Store, State(coll.State), action)
 }
 
 func (coll *Collection) StoreCanTask(action string, task *Task) bool {
 	if coll.State == Paid || coll.State == Underpaid {
 		// if underpaid, store must assess the risk
-		return db.TaskFSM.CanAction(Store, State(task.State), action)
+		return TaskFSM.CanAction(Store, State(task.State), action)
 	}
 	return false
 }

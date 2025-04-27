@@ -29,6 +29,7 @@ import (
 	"github.com/dys2p/eco/id"
 	"github.com/dys2p/eco/lang"
 	"github.com/dys2p/eco/ssg"
+	"github.com/dys2p/ordersystem"
 	"github.com/dys2p/ordersystem/html"
 	"github.com/dys2p/ordersystem/html/scripts"
 	"github.com/julienschmidt/httprouter"
@@ -39,14 +40,8 @@ var ErrNotFound = errors.New("not found")
 
 const MaxDiscountCents = 10
 
-var bitpayClient *bitpay.Client
-var btcpayStore btcpay.Store
-var db *DB
-var langs lang.Languages
-var users userdb.Authenticator
-
 func main() {
-	langs = lang.MakeLanguages(nil, "de") // after catalog.go is loaded
+	langs := lang.MakeLanguages(nil, "de") // after catalog.go is loaded
 
 	log.SetFlags(0)
 
@@ -85,7 +80,7 @@ func main() {
 
 	// userdb
 
-	users, err = userdb.Open(filepath.Join(os.Getenv("CONFIGURATION_DIRECTORY"), "users.json"))
+	users, err := userdb.Open(filepath.Join(os.Getenv("CONFIGURATION_DIRECTORY"), "users.json"))
 	if err != nil {
 		log.Printf("error opening userdb: %v", err)
 		return
@@ -93,7 +88,7 @@ func main() {
 
 	// bitpay
 
-	bitpayClient, err = bitpay.LoadClient(filepath.Join(os.Getenv("CONFIGURATION_DIRECTORY"), "bitpay.json"))
+	bitpayClient, err := bitpay.LoadClient(filepath.Join(os.Getenv("CONFIGURATION_DIRECTORY"), "bitpay.json"))
 	if err != nil {
 		log.Printf("error creating bitpay API client: %v", err)
 		if !*test {
@@ -105,6 +100,7 @@ func main() {
 
 	// btcpay
 
+	var btcpayStore btcpay.Store
 	if *test {
 		btcpayStore = btcpay.NewDummyStore()
 		log.Println("\033[33m" + "warning: using btcpay dummy store" + "\033[0m")
@@ -122,76 +118,29 @@ func main() {
 
 	// session db
 
-	if err := initSessionManager(); err != nil {
+	sessions, err := initSessionManager()
+	if err != nil {
 		log.Printf("error initializing session manager: %v", err)
 		return
 	}
 
 	// db
 
-	db, err = NewDB(
-		sqlDB,
-		&FSM{
-			Transition{State(Accepted), Bot, "confirm-payment", State(Paid)},
-			Transition{State(Accepted), Bot, "confirm-payment", State(Underpaid)},
-			Transition{State(Accepted), Bot, "delete", State(Deleted)},
-			Transition{State(Accepted), Client, "cancel", State(Cancelled)},
-			Transition{State(Accepted), Client, "pay", State(Accepted)},             // becomes Paid if payment arrives
-			Transition{State(Accepted), Store, "confirm-payment", State(Paid)},      // client pays enough
-			Transition{State(Accepted), Store, "confirm-payment", State(Underpaid)}, // client pays, but not enough
-			Transition{State(Accepted), Store, "delete", State(Deleted)},
-			Transition{State(Accepted), Store, "edit", State(Accepted)},
-			Transition{State(Accepted), Store, "return", State(NeedsRevise)},
-			Transition{State(Draft), Bot, "delete", State(Deleted)},
-			Transition{State(Draft), Client, "delete", State(Deleted)},
-			Transition{State(Draft), Client, "edit", State(Draft)},
-			Transition{State(Draft), Client, "submit", State(Submitted)},
-			Transition{State(Draft), Store, "submit", State(Submitted)},
-			Transition{State(Finalized), Store, "message", State(Finalized)}, // "Hi, we just shipped your order."
-			Transition{State(Finalized), Bot, "archive", State(Archived)},
-			Transition{State(NeedsRevise), Client, "cancel", State(Cancelled)},
-			Transition{State(NeedsRevise), Client, "edit", State(NeedsRevise)},
-			Transition{State(NeedsRevise), Client, "submit", State(Submitted)},
-			Transition{State(Paid), Bot, "confirm-payment", State(Paid)},
-			Transition{State(Paid), Bot, "finalize", State(Finalized)},
-			Transition{State(Paid), Store, "confirm-payment", State(Accepted)}, // all tasks failed
-			Transition{State(Paid), Store, "confirm-payment", State(Paid)},     // refund overpaid amount
-			Transition{State(Paid), Store, "confirm-pickup", State(Paid)},
-			Transition{State(Paid), Store, "confirm-reshipped", State(Paid)},
-			Transition{State(Paid), Store, "edit", State(Paid)}, // price or availability changed after payment
-			Transition{State(Paid), Store, "message", State(Paid)},
-			Transition{State(Paid), Store, "price-rised", State(Underpaid)},
-			Transition{State(Spam), Bot, "delete", State(Deleted)},
-			Transition{State(Submitted), Client, "cancel", State(Cancelled)},
-			Transition{State(Submitted), Store, "accept", State(Accepted)},
-			Transition{State(Submitted), Store, "edit", State(Submitted)},
-			Transition{State(Submitted), Store, "mark-spam", State(Spam)},
-			Transition{State(Submitted), Store, "reject", State(Rejected)},
-			Transition{State(Submitted), Store, "return", State(NeedsRevise)},
-			Transition{State(Underpaid), Bot, "confirm-payment", State(Paid)},
-			Transition{State(Underpaid), Bot, "confirm-payment", State(Underpaid)},
-			Transition{State(Underpaid), Client, "message", State(Underpaid)},
-			Transition{State(Underpaid), Client, "pay", State(Underpaid)},            // becomes Paid if payment arrives
-			Transition{State(Underpaid), Store, "confirm-payment", State(Accepted)},  // store refunds whole amount
-			Transition{State(Underpaid), Store, "confirm-payment", State(Paid)},      // client pays missing amount
-			Transition{State(Underpaid), Store, "confirm-payment", State(Underpaid)}, // client pays a part of the missing amount
-			Transition{State(Underpaid), Store, "edit", State(Paid)},                 // store modifies the collection, the sum drops, paid sum is now enough
-			Transition{State(Underpaid), Store, "edit", State(Underpaid)},            // store modifies the collection, but it is still underpaid
-			Transition{State(Underpaid), Store, "message", State(Underpaid)},
-		},
-		&FSM{
-			Transition{State(NotOrderedYet), Store, "confirm-ordered", State(Ordered)},
-			Transition{State(NotOrderedYet), Store, "mark-failed", State(Failed)},
-			Transition{State(Ordered), Store, "confirm-arrived", State(Ready)},
-			Transition{State(Ordered), Store, "mark-failed", State(Failed)},
-			Transition{State(Ready), Bot, "pickup-expired", State(Unfetched)}, // TODO
-			Transition{State(Ready), Store, "confirm-pickup", State(Fetched)},
-			Transition{State(Ready), Store, "confirm-reshipped", State(Reshipped)},
-		},
-	)
+	db, err := ordersystem.NewDB(sqlDB)
 	if err != nil {
 		log.Printf("error creating database: %v", err)
 		return
+	}
+
+	// server
+
+	srv := &Server{
+		BitpayClient: bitpayClient,
+		BtcPayStore:  btcpayStore,
+		DB:           db,
+		Langs:        langs,
+		Sessions:     sessions,
+		Users:        users,
 	}
 
 	// bot
@@ -204,17 +153,17 @@ func main() {
 			select {
 			case <-ticker.C:
 				wg.Add(1)
-				bot()
+				srv.Bot()
 				wg.Done()
 			case id := <-botCollIDs:
 				wg.Add(1)
-				botColl(id)
+				srv.BotColl(id)
 				wg.Done()
 			}
 		}
 	}()
 
-	bot() // run now
+	srv.Bot() // run now
 
 	// http handlers
 
@@ -223,88 +172,88 @@ func main() {
 
 	var clientRouter = httprouter.New()
 	clientRouter.ServeFiles("/static/*filepath", http.FS(httputil.ModTimeFS{staticFiles, time.Now()}))
-	clientRouter.HandlerFunc(http.MethodGet, "/", client(clientHelloGet))
-	clientRouter.HandlerFunc(http.MethodGet, "/create", client(clientCreateGet))
-	clientRouter.HandlerFunc(http.MethodPost, "/create", client(clientCreatePost))
-	clientRouter.HandlerFunc(http.MethodGet, "/current", client(clientCollCurrentGet))
-	clientRouter.HandlerFunc(http.MethodGet, "/collection", client(clientCollLoginGet))
-	clientRouter.HandlerFunc(http.MethodPost, "/collection", client(clientCollLoginPost))
-	clientRouter.HandlerFunc(http.MethodGet, "/collection/:collid", clientWithCollection(clientCollViewGet))
-	clientRouter.HandlerFunc(http.MethodGet, "/collection/:collid/cancel", clientWithCollection(clientCollCancelGet))
-	clientRouter.HandlerFunc(http.MethodPost, "/collection/:collid/cancel", clientWithCollection(clientCollCancelPost))
-	clientRouter.HandlerFunc(http.MethodGet, "/collection/:collid/delete", clientWithCollection(clientCollDeleteGet))
-	clientRouter.HandlerFunc(http.MethodPost, "/collection/:collid/delete", clientWithCollection(clientCollDeletePost))
-	clientRouter.HandlerFunc(http.MethodGet, "/collection/:collid/edit", clientWithCollection(clientCollEditGet))
-	clientRouter.HandlerFunc(http.MethodPost, "/collection/:collid/edit", clientWithCollection(clientCollEditPost))
-	clientRouter.HandlerFunc(http.MethodGet, "/collection/:collid/message", clientWithCollection(clientCollMessageGet))
-	clientRouter.HandlerFunc(http.MethodPost, "/collection/:collid/message", clientWithCollection(clientCollMessagePost))
-	clientRouter.HandlerFunc(http.MethodGet, "/collection/:collid/pay-btcpay", clientWithCollection(clientCollPayBTCPayGet))
-	clientRouter.HandlerFunc(http.MethodPost, "/collection/:collid/pay-btcpay", clientWithCollection(clientCollPayBTCPayPost))
-	clientRouter.HandlerFunc(http.MethodGet, "/collection/:collid/submit", clientWithCollection(clientCollSubmitGet))
-	clientRouter.HandlerFunc(http.MethodPost, "/collection/:collid/submit", clientWithCollection(clientCollSubmitPost))
+	clientRouter.HandlerFunc(http.MethodGet, "/", srv.client(srv.clientHelloGet))
+	clientRouter.HandlerFunc(http.MethodGet, "/create", srv.client(srv.clientCreateGet))
+	clientRouter.HandlerFunc(http.MethodPost, "/create", srv.client(srv.clientCreatePost))
+	clientRouter.HandlerFunc(http.MethodGet, "/current", srv.client(srv.clientCollCurrentGet))
+	clientRouter.HandlerFunc(http.MethodGet, "/collection", srv.client(srv.clientCollLoginGet))
+	clientRouter.HandlerFunc(http.MethodPost, "/collection", srv.client(srv.clientCollLoginPost))
+	clientRouter.HandlerFunc(http.MethodGet, "/collection/:collid", srv.clientWithCollection(srv.clientCollViewGet))
+	clientRouter.HandlerFunc(http.MethodGet, "/collection/:collid/cancel", srv.clientWithCollection(srv.clientCollCancelGet))
+	clientRouter.HandlerFunc(http.MethodPost, "/collection/:collid/cancel", srv.clientWithCollection(srv.clientCollCancelPost))
+	clientRouter.HandlerFunc(http.MethodGet, "/collection/:collid/delete", srv.clientWithCollection(srv.clientCollDeleteGet))
+	clientRouter.HandlerFunc(http.MethodPost, "/collection/:collid/delete", srv.clientWithCollection(srv.clientCollDeletePost))
+	clientRouter.HandlerFunc(http.MethodGet, "/collection/:collid/edit", srv.clientWithCollection(srv.clientCollEditGet))
+	clientRouter.HandlerFunc(http.MethodPost, "/collection/:collid/edit", srv.clientWithCollection(srv.clientCollEditPost))
+	clientRouter.HandlerFunc(http.MethodGet, "/collection/:collid/message", srv.clientWithCollection(srv.clientCollMessageGet))
+	clientRouter.HandlerFunc(http.MethodPost, "/collection/:collid/message", srv.clientWithCollection(srv.clientCollMessagePost))
+	clientRouter.HandlerFunc(http.MethodGet, "/collection/:collid/pay-btcpay", srv.clientWithCollection(srv.clientCollPayBTCPayGet))
+	clientRouter.HandlerFunc(http.MethodPost, "/collection/:collid/pay-btcpay", srv.clientWithCollection(srv.clientCollPayBTCPayPost))
+	clientRouter.HandlerFunc(http.MethodGet, "/collection/:collid/submit", srv.clientWithCollection(srv.clientCollSubmitGet))
+	clientRouter.HandlerFunc(http.MethodPost, "/collection/:collid/submit", srv.clientWithCollection(srv.clientCollSubmitPost))
 
-	clientRouter.HandlerFunc(http.MethodPost, "/rpc", rpc)
-	clientRouter.HandlerFunc(http.MethodGet, "/state", client(clientStateGet))
-	clientRouter.HandlerFunc(http.MethodPost, "/state", client(clientStatePost))
-	clientRouter.HandlerFunc(http.MethodPost, "/logout", client(clientLogoutPost))
+	clientRouter.HandlerFunc(http.MethodPost, "/rpc", srv.rpc)
+	clientRouter.HandlerFunc(http.MethodGet, "/state", srv.client(srv.clientStateGet))
+	clientRouter.HandlerFunc(http.MethodPost, "/state", srv.client(srv.clientStatePost))
+	clientRouter.HandlerFunc(http.MethodPost, "/logout", srv.client(srv.clientLogoutPost))
 	clientRouter.Handler("GET", "/captcha/:fn", captcha.Handler())
 	clientRouter.ServeFiles("/scripts/*filepath", http.FS(scripts.Files))
 	clientRouter.NotFound = staticSites.Handler(func(r *http.Request, td ssg.TemplateData) any {
 		return html.TemplateData{
-			TemplateData:     ssg.MakeTemplateData(langs, r),
-			AuthorizedCollID: sessionCollID(r),
+			TemplateData:     ssg.MakeTemplateData(srv.Langs, r),
+			AuthorizedCollID: srv.sessionCollID(r),
 		}
 	}, langs.RedirectHandler())
 
-	shutdownClientSrv := httputil.ListenAndServe("127.0.0.1:9000", sessionManager.LoadAndSave(clientRouter), stop)
+	shutdownClientSrv := httputil.ListenAndServe("127.0.0.1:9000", srv.Sessions.LoadAndSave(clientRouter), stop)
 	defer shutdownClientSrv()
 
 	var storeRouter = httprouter.New()
 	storeRouter.ServeFiles("/static/*filepath", http.FS(httputil.ModTimeFS{staticFiles, time.Now()}))
-	storeRouter.HandlerFunc(http.MethodGet, "/login", store(storeLoginGet))
-	storeRouter.HandlerFunc(http.MethodPost, "/login", store(storeLoginPost))
+	storeRouter.HandlerFunc(http.MethodGet, "/login", store(srv.storeLoginGet))
+	storeRouter.HandlerFunc(http.MethodPost, "/login", store(srv.storeLoginPost))
 	// with authentication:
-	storeRouter.HandlerFunc(http.MethodGet, "/", auth(store(storeIndexGet)))
-	storeRouter.HandlerFunc(http.MethodGet, "/collection/:collid", auth(storeWithCollection(storeCollViewGet)))
-	storeRouter.HandlerFunc(http.MethodGet, "/collection/:collid/accept", auth(storeWithCollection(storeCollAcceptGet)))
-	storeRouter.HandlerFunc(http.MethodPost, "/collection/:collid/accept", auth(storeWithCollection(storeCollAcceptPost)))
-	storeRouter.HandlerFunc(http.MethodGet, "/collection/:collid/confirm-payment", auth(storeWithCollection(storeCollConfirmPaymentGet)))
-	storeRouter.HandlerFunc(http.MethodPost, "/collection/:collid/confirm-payment", auth(storeWithCollection(storeCollConfirmPaymentPost)))
-	storeRouter.HandlerFunc(http.MethodGet, "/collection/:collid/confirm-pickup", auth(storeWithCollection(storeCollConfirmPickupGet)))
-	storeRouter.HandlerFunc(http.MethodPost, "/collection/:collid/confirm-pickup", auth(storeWithCollection(storeCollConfirmPickupPost)))
-	storeRouter.HandlerFunc(http.MethodGet, "/collection/:collid/confirm-pickup/:taskid", auth(storeWithTask(storeTaskConfirmPickupGet)))
-	storeRouter.HandlerFunc(http.MethodPost, "/collection/:collid/confirm-pickup/:taskid", auth(storeWithTask(storeTaskConfirmPickupPost)))
-	storeRouter.HandlerFunc(http.MethodGet, "/collection/:collid/confirm-reshipped", auth(storeWithCollection(storeCollConfirmReshippedGet)))
-	storeRouter.HandlerFunc(http.MethodPost, "/collection/:collid/confirm-reshipped", auth(storeWithCollection(storeCollConfirmReshippedPost)))
-	storeRouter.HandlerFunc(http.MethodGet, "/collection/:collid/confirm-reshipped/:taskid", auth(storeWithTask(storeTaskConfirmReshippedGet)))
-	storeRouter.HandlerFunc(http.MethodPost, "/collection/:collid/confirm-reshipped/:taskid", auth(storeWithTask(storeTaskConfirmReshippedPost)))
-	storeRouter.HandlerFunc(http.MethodGet, "/collection/:collid/delete", auth(storeWithCollection(storeCollDeleteGet)))
-	storeRouter.HandlerFunc(http.MethodPost, "/collection/:collid/delete", auth(storeWithCollection(storeCollDeletePost)))
-	storeRouter.HandlerFunc(http.MethodGet, "/collection/:collid/edit", auth(storeWithCollection(storeCollEditGet)))
-	storeRouter.HandlerFunc(http.MethodPost, "/collection/:collid/edit", auth(storeWithCollection(storeCollEditPost)))
-	storeRouter.HandlerFunc(http.MethodGet, "/collection/:collid/mark-spam", auth(storeWithCollection(storeCollMarkSpamGet)))
-	storeRouter.HandlerFunc(http.MethodPost, "/collection/:collid/mark-spam", auth(storeWithCollection(storeCollMarkSpamPost)))
-	storeRouter.HandlerFunc(http.MethodGet, "/collection/:collid/message", auth(storeWithCollection(storeCollMessageGet)))
-	storeRouter.HandlerFunc(http.MethodPost, "/collection/:collid/message", auth(storeWithCollection(storeCollMessagePost)))
-	storeRouter.HandlerFunc(http.MethodGet, "/collection/:collid/price-rised", auth(storeWithCollection(storeCollPriceRisedGet)))
-	storeRouter.HandlerFunc(http.MethodPost, "/collection/:collid/price-rised", auth(storeWithCollection(storeCollPriceRisedPost)))
-	storeRouter.HandlerFunc(http.MethodGet, "/collection/:collid/return", auth(storeWithCollection(storeCollReturnGet)))
-	storeRouter.HandlerFunc(http.MethodPost, "/collection/:collid/return", auth(storeWithCollection(storeCollReturnPost)))
-	storeRouter.HandlerFunc(http.MethodGet, "/collection/:collid/reject", auth(storeWithCollection(storeCollRejectGet)))
-	storeRouter.HandlerFunc(http.MethodPost, "/collection/:collid/reject", auth(storeWithCollection(storeCollRejectPost)))
-	storeRouter.HandlerFunc(http.MethodGet, "/collection/:collid/submit", auth(storeWithCollection(storeCollSubmitGet)))
-	storeRouter.HandlerFunc(http.MethodPost, "/collection/:collid/submit", auth(storeWithCollection(storeCollSubmitPost)))
-	storeRouter.HandlerFunc(http.MethodGet, "/collection/:collid/confirm-arrived/:taskid", auth(storeWithTask(storeTaskConfirmArrivedGet)))
-	storeRouter.HandlerFunc(http.MethodPost, "/collection/:collid/confirm-arrived/:taskid", auth(storeWithTask(storeTaskConfirmArrivedPost)))
-	storeRouter.HandlerFunc(http.MethodGet, "/collection/:collid/confirm-ordered/:taskid", auth(storeWithTask(storeTaskConfirmOrderedGet)))
-	storeRouter.HandlerFunc(http.MethodPost, "/collection/:collid/confirm-ordered/:taskid", auth(storeWithTask(storeTaskConfirmOrderedPost)))
-	storeRouter.HandlerFunc(http.MethodGet, "/collection/:collid/mark-failed/:taskid", auth(storeWithTask(storeTaskMarkFailedGet)))
-	storeRouter.HandlerFunc(http.MethodPost, "/collection/:collid/mark-failed/:taskid", auth(storeWithTask(storeTaskMarkFailedPost)))
-	storeRouter.HandlerFunc(http.MethodGet, "/export", auth(store(storeExport)))
-	storeRouter.HandlerFunc(http.MethodPost, "/logout", store(storeLogoutPost))
+	storeRouter.HandlerFunc(http.MethodGet, "/", srv.auth(store(srv.storeIndexGet)))
+	storeRouter.HandlerFunc(http.MethodGet, "/collection/:collid", srv.auth(srv.storeWithCollection(srv.storeCollViewGet)))
+	storeRouter.HandlerFunc(http.MethodGet, "/collection/:collid/accept", srv.auth(srv.storeWithCollection(srv.storeCollAcceptGet)))
+	storeRouter.HandlerFunc(http.MethodPost, "/collection/:collid/accept", srv.auth(srv.storeWithCollection(srv.storeCollAcceptPost)))
+	storeRouter.HandlerFunc(http.MethodGet, "/collection/:collid/confirm-payment", srv.auth(srv.storeWithCollection(srv.storeCollConfirmPaymentGet)))
+	storeRouter.HandlerFunc(http.MethodPost, "/collection/:collid/confirm-payment", srv.auth(srv.storeWithCollection(srv.storeCollConfirmPaymentPost)))
+	storeRouter.HandlerFunc(http.MethodGet, "/collection/:collid/confirm-pickup", srv.auth(srv.storeWithCollection(srv.storeCollConfirmPickupGet)))
+	storeRouter.HandlerFunc(http.MethodPost, "/collection/:collid/confirm-pickup", srv.auth(srv.storeWithCollection(srv.storeCollConfirmPickupPost)))
+	storeRouter.HandlerFunc(http.MethodGet, "/collection/:collid/confirm-pickup/:taskid", srv.auth(srv.storeWithTask(srv.storeTaskConfirmPickupGet)))
+	storeRouter.HandlerFunc(http.MethodPost, "/collection/:collid/confirm-pickup/:taskid", srv.auth(srv.storeWithTask(srv.storeTaskConfirmPickupPost)))
+	storeRouter.HandlerFunc(http.MethodGet, "/collection/:collid/confirm-reshipped", srv.auth(srv.storeWithCollection(srv.storeCollConfirmReshippedGet)))
+	storeRouter.HandlerFunc(http.MethodPost, "/collection/:collid/confirm-reshipped", srv.auth(srv.storeWithCollection(srv.storeCollConfirmReshippedPost)))
+	storeRouter.HandlerFunc(http.MethodGet, "/collection/:collid/confirm-reshipped/:taskid", srv.auth(srv.storeWithTask(srv.storeTaskConfirmReshippedGet)))
+	storeRouter.HandlerFunc(http.MethodPost, "/collection/:collid/confirm-reshipped/:taskid", srv.auth(srv.storeWithTask(srv.storeTaskConfirmReshippedPost)))
+	storeRouter.HandlerFunc(http.MethodGet, "/collection/:collid/delete", srv.auth(srv.storeWithCollection(srv.storeCollDeleteGet)))
+	storeRouter.HandlerFunc(http.MethodPost, "/collection/:collid/delete", srv.auth(srv.storeWithCollection(srv.storeCollDeletePost)))
+	storeRouter.HandlerFunc(http.MethodGet, "/collection/:collid/edit", srv.auth(srv.storeWithCollection(srv.storeCollEditGet)))
+	storeRouter.HandlerFunc(http.MethodPost, "/collection/:collid/edit", srv.auth(srv.storeWithCollection(srv.storeCollEditPost)))
+	storeRouter.HandlerFunc(http.MethodGet, "/collection/:collid/mark-spam", srv.auth(srv.storeWithCollection(srv.storeCollMarkSpamGet)))
+	storeRouter.HandlerFunc(http.MethodPost, "/collection/:collid/mark-spam", srv.auth(srv.storeWithCollection(srv.storeCollMarkSpamPost)))
+	storeRouter.HandlerFunc(http.MethodGet, "/collection/:collid/message", srv.auth(srv.storeWithCollection(srv.storeCollMessageGet)))
+	storeRouter.HandlerFunc(http.MethodPost, "/collection/:collid/message", srv.auth(srv.storeWithCollection(srv.storeCollMessagePost)))
+	storeRouter.HandlerFunc(http.MethodGet, "/collection/:collid/price-rised", srv.auth(srv.storeWithCollection(srv.storeCollPriceRisedGet)))
+	storeRouter.HandlerFunc(http.MethodPost, "/collection/:collid/price-rised", srv.auth(srv.storeWithCollection(srv.storeCollPriceRisedPost)))
+	storeRouter.HandlerFunc(http.MethodGet, "/collection/:collid/return", srv.auth(srv.storeWithCollection(srv.storeCollReturnGet)))
+	storeRouter.HandlerFunc(http.MethodPost, "/collection/:collid/return", srv.auth(srv.storeWithCollection(srv.storeCollReturnPost)))
+	storeRouter.HandlerFunc(http.MethodGet, "/collection/:collid/reject", srv.auth(srv.storeWithCollection(srv.storeCollRejectGet)))
+	storeRouter.HandlerFunc(http.MethodPost, "/collection/:collid/reject", srv.auth(srv.storeWithCollection(srv.storeCollRejectPost)))
+	storeRouter.HandlerFunc(http.MethodGet, "/collection/:collid/submit", srv.auth(srv.storeWithCollection(srv.storeCollSubmitGet)))
+	storeRouter.HandlerFunc(http.MethodPost, "/collection/:collid/submit", srv.auth(srv.storeWithCollection(srv.storeCollSubmitPost)))
+	storeRouter.HandlerFunc(http.MethodGet, "/collection/:collid/confirm-arrived/:taskid", srv.auth(srv.storeWithTask(srv.storeTaskConfirmArrivedGet)))
+	storeRouter.HandlerFunc(http.MethodPost, "/collection/:collid/confirm-arrived/:taskid", srv.auth(srv.storeWithTask(srv.storeTaskConfirmArrivedPost)))
+	storeRouter.HandlerFunc(http.MethodGet, "/collection/:collid/confirm-ordered/:taskid", srv.auth(srv.storeWithTask(srv.storeTaskConfirmOrderedGet)))
+	storeRouter.HandlerFunc(http.MethodPost, "/collection/:collid/confirm-ordered/:taskid", srv.auth(srv.storeWithTask(srv.storeTaskConfirmOrderedPost)))
+	storeRouter.HandlerFunc(http.MethodGet, "/collection/:collid/mark-failed/:taskid", srv.auth(srv.storeWithTask(srv.storeTaskMarkFailedGet)))
+	storeRouter.HandlerFunc(http.MethodPost, "/collection/:collid/mark-failed/:taskid", srv.auth(srv.storeWithTask(srv.storeTaskMarkFailedPost)))
+	storeRouter.HandlerFunc(http.MethodGet, "/export", srv.auth(store(srv.storeExport)))
+	storeRouter.HandlerFunc(http.MethodPost, "/logout", store(srv.storeLogoutPost))
 	storeRouter.ServeFiles("/scripts/*filepath", http.FS(scripts.Files))
 
-	shutdownStoreSrv := httputil.ListenAndServe("127.0.0.1:9001", sessionManager.LoadAndSave(storeRouter), stop)
+	shutdownStoreSrv := httputil.ListenAndServe("127.0.0.1:9001", srv.Sessions.LoadAndSave(storeRouter), stop)
 	defer shutdownStoreSrv()
 
 	log.Printf("listening to 127.0.0.1:9000 and 127.0.0.1:9001")
@@ -315,8 +264,8 @@ func main() {
 
 type collView struct {
 	html.TemplateData
-	*Collection
-	Actor         Actor
+	*ordersystem.Collection
+	Actor         ordersystem.Actor
 	ReadOnly      bool
 	ShowHints     bool
 	Notifications []string
@@ -327,13 +276,13 @@ type clientHello struct {
 	Notifications []string
 }
 
-func clientHelloGet(w http.ResponseWriter, r *http.Request) error {
+func (srv *Server) clientHelloGet(w http.ResponseWriter, r *http.Request) error {
 	return html.ClientHello.Execute(w, clientHello{
 		TemplateData: html.TemplateData{
-			TemplateData:     ssg.MakeTemplateData(langs, r),
-			AuthorizedCollID: sessionCollID(r),
+			TemplateData:     ssg.MakeTemplateData(srv.Langs, r),
+			AuthorizedCollID: srv.sessionCollID(r),
 		},
-		Notifications: notifications(r.Context()),
+		Notifications: srv.notifications(r.Context()),
 	})
 }
 
@@ -373,15 +322,15 @@ func (data *clientCreate) Valid() bool {
 	return !data.CollIDErr && !data.CollPassErr && !data.Captcha.Err && !data.CheckWrittenDownErr
 }
 
-func clientCreateGet(w http.ResponseWriter, r *http.Request) error {
+func (srv *Server) clientCreateGet(w http.ResponseWriter, r *http.Request) error {
 	collPass, err := diceware.Length(5, diceware.German)
 	if err != nil {
 		return err
 	}
 	return html.ClientCreate.Execute(w, &clientCreate{
 		TemplateData: html.TemplateData{
-			TemplateData:     ssg.MakeTemplateData(langs, r),
-			AuthorizedCollID: sessionCollID(r),
+			TemplateData:     ssg.MakeTemplateData(srv.Langs, r),
+			AuthorizedCollID: srv.sessionCollID(r),
 		},
 		CollID:   id.New(6, id.AlphanumCaseInsensitiveDigits),
 		CollPass: collPass,
@@ -391,12 +340,12 @@ func clientCreateGet(w http.ResponseWriter, r *http.Request) error {
 	})
 }
 
-func clientCreatePost(w http.ResponseWriter, r *http.Request) error {
+func (srv *Server) clientCreatePost(w http.ResponseWriter, r *http.Request) error {
 
 	var data = &clientCreate{
 		TemplateData: html.TemplateData{
-			TemplateData:     ssg.MakeTemplateData(langs, r),
-			AuthorizedCollID: sessionCollID(r),
+			TemplateData:     ssg.MakeTemplateData(srv.Langs, r),
+			AuthorizedCollID: srv.sessionCollID(r),
 		},
 		CollID:           strings.TrimSpace(r.PostFormValue("collection-id")),
 		CollPass:         strings.TrimSpace(r.PostFormValue("collection-passphrase")),
@@ -412,49 +361,49 @@ func clientCreatePost(w http.ResponseWriter, r *http.Request) error {
 		return html.ClientCreate.Execute(w, data)
 	}
 
-	var coll = &Collection{
+	var coll = &ordersystem.Collection{
 		ID:    data.CollID,
-		State: Draft,
+		State: ordersystem.Draft,
 	}
 
-	if hash, err := HashPassword(data.CollPass); err == nil {
+	if hash, err := ordersystem.HashPassword(data.CollPass); err == nil {
 		coll.Pass = string(hash)
 	} else {
 		return err
 	}
 
-	if err := db.CreateCollection(coll); err != nil {
+	if err := srv.DB.CreateCollection(coll); err != nil {
 		return err
 	}
 
-	loginClient(r.Context(), coll.ID)
+	srv.loginClient(r.Context(), coll.ID)
 	http.Redirect(w, r, fmt.Sprintf("/collection/%s/edit", coll.ID), http.StatusSeeOther)
 	return nil
 }
 
-func clientCollEditGet(w http.ResponseWriter, r *http.Request, coll *Collection) error {
+func (srv *Server) clientCollEditGet(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection) error {
 	if !coll.ClientCan("edit") {
 		return ErrNotFound
 	}
 	return html.ClientCollEdit.Execute(w, collView{
 		TemplateData: html.TemplateData{
-			TemplateData:     ssg.MakeTemplateData(langs, r),
-			AuthorizedCollID: sessionCollID(r),
+			TemplateData:     ssg.MakeTemplateData(srv.Langs, r),
+			AuthorizedCollID: srv.sessionCollID(r),
 		},
-		Actor:      Client,
+		Actor:      ordersystem.Client,
 		Collection: coll,
 		ShowHints:  true,
 	})
 }
 
-func clientCollEditPost(w http.ResponseWriter, r *http.Request, coll *Collection) error {
+func (srv *Server) clientCollEditPost(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection) error {
 	if !coll.ClientCan("edit") {
 		return ErrNotFound
 	}
-	if err := coll.MergeJSON(Client, r.PostFormValue("data")); err != nil {
+	if err := coll.MergeJSON(ordersystem.Client, r.PostFormValue("data")); err != nil {
 		return err
 	}
-	if err := db.UpdateCollAndTasks(coll); err != nil {
+	if err := srv.DB.UpdateCollAndTasks(coll); err != nil {
 		return err
 	}
 	http.Redirect(w, r, coll.Link(), http.StatusSeeOther)
@@ -469,8 +418,8 @@ type clientLogin struct {
 }
 
 // success and error url for payment providers, so we don't reveal the collection ID to them
-func clientCollCurrentGet(w http.ResponseWriter, r *http.Request) error {
-	if collID := sessionCollID(r); collID != "" {
+func (srv *Server) clientCollCurrentGet(w http.ResponseWriter, r *http.Request) error {
+	if collID := srv.sessionCollID(r); collID != "" {
 		http.Redirect(w, r, fmt.Sprintf("/collection/%s", collID), http.StatusSeeOther)
 	} else {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -478,21 +427,21 @@ func clientCollCurrentGet(w http.ResponseWriter, r *http.Request) error {
 	return nil
 }
 
-func clientCollLoginGet(w http.ResponseWriter, r *http.Request) error {
+func (srv *Server) clientCollLoginGet(w http.ResponseWriter, r *http.Request) error {
 	return html.ClientCollLogin.Execute(w, &clientLogin{
 		TemplateData: html.TemplateData{
-			TemplateData:     ssg.MakeTemplateData(langs, r),
-			AuthorizedCollID: sessionCollID(r),
+			TemplateData:     ssg.MakeTemplateData(srv.Langs, r),
+			AuthorizedCollID: srv.sessionCollID(r),
 		},
 	})
 }
 
-func clientCollLoginPost(w http.ResponseWriter, r *http.Request) error {
+func (srv *Server) clientCollLoginPost(w http.ResponseWriter, r *http.Request) error {
 	var id = strings.TrimSpace(r.FormValue("collection-id"))
 	var data = &clientLogin{
 		TemplateData: html.TemplateData{
-			TemplateData:     ssg.MakeTemplateData(langs, r),
-			AuthorizedCollID: sessionCollID(r),
+			TemplateData:     ssg.MakeTemplateData(srv.Langs, r),
+			AuthorizedCollID: srv.sessionCollID(r),
 		},
 		CollID: id,
 	}
@@ -501,64 +450,64 @@ func clientCollLoginPost(w http.ResponseWriter, r *http.Request) error {
 		return html.ClientCollLogin.Execute(w, data)
 	}
 	var pass = strings.TrimSpace(r.PostFormValue("collection-passphrase"))
-	var coll, err = db.ReadCollPass(id, pass)
+	var coll, err = srv.DB.ReadCollPass(id, pass)
 	if err != nil {
 		data.CollPassErr = true
 		return html.ClientCollLogin.Execute(w, data)
 	}
 
-	loginClient(r.Context(), coll.ID)
+	srv.loginClient(r.Context(), coll.ID)
 	http.Redirect(w, r, coll.Link(), http.StatusSeeOther)
 	return nil
 }
 
-func clientCollViewGet(w http.ResponseWriter, r *http.Request, coll *Collection) error {
+func (srv *Server) clientCollViewGet(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection) error {
 	return html.ClientCollView.Execute(w, collView{
 		TemplateData: html.TemplateData{
-			TemplateData:     ssg.MakeTemplateData(langs, r),
-			AuthorizedCollID: sessionCollID(r),
+			TemplateData:     ssg.MakeTemplateData(srv.Langs, r),
+			AuthorizedCollID: srv.sessionCollID(r),
 		},
-		Actor:         Client,
+		Actor:         ordersystem.Client,
 		Collection:    coll,
 		ReadOnly:      true,
-		Notifications: notifications(r.Context()),
+		Notifications: srv.notifications(r.Context()),
 	})
 }
 
 type clientCollCancel struct {
 	html.TemplateData
-	*Collection
+	*ordersystem.Collection
 	Err bool
 }
 
-func clientCollCancelGet(w http.ResponseWriter, r *http.Request, coll *Collection) error {
+func (srv *Server) clientCollCancelGet(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection) error {
 	if !coll.ClientCan("cancel") {
 		return ErrNotFound
 	}
 	return html.ClientCollCancel.Execute(w, &clientCollCancel{
 		TemplateData: html.TemplateData{
-			TemplateData:     ssg.MakeTemplateData(langs, r),
-			AuthorizedCollID: sessionCollID(r),
+			TemplateData:     ssg.MakeTemplateData(srv.Langs, r),
+			AuthorizedCollID: srv.sessionCollID(r),
 		},
 		Collection: coll,
 	})
 }
 
-func clientCollCancelPost(w http.ResponseWriter, r *http.Request, coll *Collection) error {
+func (srv *Server) clientCollCancelPost(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection) error {
 	if !coll.ClientCan("cancel") {
 		return ErrNotFound
 	}
 	if r.PostFormValue("confirm-cancel") == "" {
 		return html.ClientCollCancel.Execute(w, &clientCollCancel{
 			TemplateData: html.TemplateData{
-				TemplateData:     ssg.MakeTemplateData(langs, r),
-				AuthorizedCollID: sessionCollID(r),
+				TemplateData:     ssg.MakeTemplateData(srv.Langs, r),
+				AuthorizedCollID: srv.sessionCollID(r),
 			},
 			Collection: coll,
 			Err:        true,
 		})
 	}
-	if err := db.UpdateCollState(Client, coll, Cancelled, 0, ""); err != nil {
+	if err := srv.DB.UpdateCollState(ordersystem.Client, coll, ordersystem.Cancelled, 0, ""); err != nil {
 		return err
 	}
 
@@ -569,60 +518,60 @@ func clientCollCancelPost(w http.ResponseWriter, r *http.Request, coll *Collecti
 // used by client and store
 type collDelete struct {
 	html.TemplateData
-	*Collection
+	*ordersystem.Collection
 	Err bool
 }
 
-func clientCollDeleteGet(w http.ResponseWriter, r *http.Request, coll *Collection) error {
+func (srv *Server) clientCollDeleteGet(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection) error {
 	if !coll.ClientCan("delete") {
 		return ErrNotFound
 	}
 	return html.ClientCollDelete.Execute(w, &collDelete{
 		TemplateData: html.TemplateData{
-			TemplateData:     ssg.MakeTemplateData(langs, r),
-			AuthorizedCollID: sessionCollID(r),
+			TemplateData:     ssg.MakeTemplateData(srv.Langs, r),
+			AuthorizedCollID: srv.sessionCollID(r),
 		},
 		Collection: coll,
 	})
 }
 
-func clientCollDeletePost(w http.ResponseWriter, r *http.Request, coll *Collection) error {
+func (srv *Server) clientCollDeletePost(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection) error {
 	if !coll.ClientCan("delete") {
 		return ErrNotFound
 	}
 	if r.PostFormValue("confirm-delete") == "" {
 		return html.ClientCollDelete.Execute(w, &collDelete{
 			TemplateData: html.TemplateData{
-				TemplateData:     ssg.MakeTemplateData(langs, r),
-				AuthorizedCollID: sessionCollID(r),
+				TemplateData:     ssg.MakeTemplateData(srv.Langs, r),
+				AuthorizedCollID: srv.sessionCollID(r),
 			},
 			Collection: coll,
 			Err:        true,
 		})
 	}
-	if err := db.Delete(Client, coll); err != nil {
+	if err := srv.DB.Delete(ordersystem.Client, coll); err != nil {
 		return err
 	}
 
-	logout(r.Context())
+	srv.logout(r.Context())
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 	return nil
 }
 
 type clientCollPayBTCPay struct {
 	html.TemplateData
-	*Collection
+	*ordersystem.Collection
 	Captcha captcha.TemplateData
 }
 
-func clientCollPayBTCPayGet(w http.ResponseWriter, r *http.Request, coll *Collection) error {
+func (srv *Server) clientCollPayBTCPayGet(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection) error {
 	if !coll.ClientCan("pay") {
 		return ErrNotFound
 	}
 	return html.ClientCollPayBTCPay.Execute(w, &clientCollPayBTCPay{
 		TemplateData: html.TemplateData{
-			TemplateData:     ssg.MakeTemplateData(langs, r),
-			AuthorizedCollID: sessionCollID(r),
+			TemplateData:     ssg.MakeTemplateData(srv.Langs, r),
+			AuthorizedCollID: srv.sessionCollID(r),
 		},
 		Collection: coll,
 		Captcha: captcha.TemplateData{
@@ -631,7 +580,7 @@ func clientCollPayBTCPayGet(w http.ResponseWriter, r *http.Request, coll *Collec
 	})
 }
 
-func clientCollPayBTCPayPost(w http.ResponseWriter, r *http.Request, coll *Collection) error {
+func (srv *Server) clientCollPayBTCPayPost(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection) error {
 
 	if !coll.ClientCan("pay") {
 		return ErrNotFound
@@ -639,8 +588,8 @@ func clientCollPayBTCPayPost(w http.ResponseWriter, r *http.Request, coll *Colle
 	if !captcha.Verify(r.PostFormValue("captcha-id"), r.PostFormValue("captcha-answer")) {
 		return html.ClientCollPayBTCPay.Execute(w, &clientCollPayBTCPay{
 			TemplateData: html.TemplateData{
-				TemplateData:     ssg.MakeTemplateData(langs, r),
-				AuthorizedCollID: sessionCollID(r),
+				TemplateData:     ssg.MakeTemplateData(srv.Langs, r),
+				AuthorizedCollID: srv.sessionCollID(r),
 			},
 			Collection: coll,
 			Captcha: captcha.TemplateData{
@@ -668,7 +617,7 @@ func clientCollPayBTCPayPost(w http.ResponseWriter, r *http.Request, coll *Colle
 
 	// create invoice
 
-	inv, err := btcpayStore.CreateInvoice(&btcpay.InvoiceRequest{
+	inv, err := srv.BtcPayStore.CreateInvoice(&btcpay.InvoiceRequest{
 		Amount:   float64(coll.Due()) / 100.0,
 		Currency: "EUR",
 		InvoiceMetadata: btcpay.InvoiceMetadata{
@@ -687,7 +636,7 @@ func clientCollPayBTCPayPost(w http.ResponseWriter, r *http.Request, coll *Colle
 
 	// add event
 
-	if err := db.CreateEvent(Client, coll, 0, fmt.Sprintf("Rechnung für Kryptowährungen erzeugt: [%s](%s)", inv.ID, inv.CheckoutLink)); err != nil {
+	if err := srv.DB.CreateEvent(ordersystem.Client, coll, 0, fmt.Sprintf("Rechnung für Kryptowährungen erzeugt: [%s](%s)", inv.ID, inv.CheckoutLink)); err != nil {
 		return err
 	}
 
@@ -697,27 +646,27 @@ func clientCollPayBTCPayPost(w http.ResponseWriter, r *http.Request, coll *Colle
 	return nil
 }
 
-func clientCollMessageGet(w http.ResponseWriter, r *http.Request, coll *Collection) error {
+func (srv *Server) clientCollMessageGet(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection) error {
 	if !coll.ClientCan("message") {
 		return ErrNotFound
 	}
 	return html.ClientCollMessage.Execute(w, struct {
 		html.TemplateData
-		*Collection
+		*ordersystem.Collection
 	}{
 		TemplateData: html.TemplateData{
-			TemplateData:     ssg.MakeTemplateData(langs, r),
-			AuthorizedCollID: sessionCollID(r),
+			TemplateData:     ssg.MakeTemplateData(srv.Langs, r),
+			AuthorizedCollID: srv.sessionCollID(r),
 		},
 		Collection: coll,
 	})
 }
 
-func clientCollMessagePost(w http.ResponseWriter, r *http.Request, coll *Collection) error {
+func (srv *Server) clientCollMessagePost(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection) error {
 	if !coll.ClientCan("message") {
 		return ErrNotFound
 	}
-	if err := db.CreateEvent(Client, coll, 0, r.PostFormValue("message")); err != nil {
+	if err := srv.DB.CreateEvent(ordersystem.Client, coll, 0, r.PostFormValue("message")); err != nil {
 		return err
 	}
 
@@ -725,29 +674,29 @@ func clientCollMessagePost(w http.ResponseWriter, r *http.Request, coll *Collect
 	return nil
 }
 
-func clientCollSubmitGet(w http.ResponseWriter, r *http.Request, coll *Collection) error {
+func (srv *Server) clientCollSubmitGet(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection) error {
 	if !coll.ClientCan("submit") {
 		return ErrNotFound
 	}
 	return html.ClientCollSubmit.Execute(w, collView{
 		TemplateData: html.TemplateData{
-			TemplateData:     ssg.MakeTemplateData(langs, r),
-			AuthorizedCollID: sessionCollID(r),
+			TemplateData:     ssg.MakeTemplateData(srv.Langs, r),
+			AuthorizedCollID: srv.sessionCollID(r),
 		},
-		Actor:      Client,
+		Actor:      ordersystem.Client,
 		Collection: coll,
 		ReadOnly:   true,
 	})
 }
 
-func clientCollSubmitPost(w http.ResponseWriter, r *http.Request, coll *Collection) error {
+func (srv *Server) clientCollSubmitPost(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection) error {
 	if !coll.ClientCan("submit") {
 		return ErrNotFound
 	}
-	if err := db.UpdateCollState(Client, coll, Submitted, 0, r.PostFormValue("submit-message")); err != nil {
+	if err := srv.DB.UpdateCollState(ordersystem.Client, coll, ordersystem.Submitted, 0, r.PostFormValue("submit-message")); err != nil {
 		return err
 	}
-	notify(r.Context(), "Du hast den Auftrag %s eingereicht.", coll.ID)
+	srv.notify(r.Context(), "Du hast den Auftrag %s eingereicht.", coll.ID)
 	http.Redirect(w, r, coll.Link(), http.StatusSeeOther)
 	return nil
 }
@@ -758,7 +707,7 @@ type clientState struct {
 	Captcha   captcha.TemplateData
 	CollID    string
 	CollIDErr bool
-	State     CollState
+	State     ordersystem.CollState
 }
 
 func (data *clientState) Valid() bool {
@@ -768,12 +717,12 @@ func (data *clientState) Valid() bool {
 	return !data.Captcha.Err && !data.CollIDErr
 }
 
-func rpc(w http.ResponseWriter, r *http.Request) {
+func (srv *Server) rpc(w http.ResponseWriter, r *http.Request) {
 
 	// do verbose logging with webhook stuff
 	log.Println("rpc")
 
-	var event, err = btcpayStore.ProcessWebhook(r)
+	var event, err = srv.BtcPayStore.ProcessWebhook(r)
 	if err != nil {
 		log.Printf("error processing webhook: %v", err)
 		return
@@ -784,7 +733,7 @@ func rpc(w http.ResponseWriter, r *http.Request) {
 
 	// get invoice via bitpay-API, so we know the collection ID, the invoice amount and the rate at the time of payment creation
 
-	invoice, err := bitpayClient.GetInvoice(event.InvoiceID)
+	invoice, err := srv.BitpayClient.GetInvoice(event.InvoiceID)
 	if err != nil {
 		log.Printf("error getting invoice: %v", err)
 		return
@@ -794,7 +743,7 @@ func rpc(w http.ResponseWriter, r *http.Request) {
 
 	// read collection
 
-	coll, err := db.ReadColl(invoice.OrderID)
+	coll, err := srv.DB.ReadColl(invoice.OrderID)
 	if err != nil {
 		log.Printf("error reading collection %s: %v", invoice.OrderID, err)
 		return
@@ -821,7 +770,7 @@ func rpc(w http.ResponseWriter, r *http.Request) {
 		// The "ExpirationMinutes" limit refers to this.
 		//
 		// Let's notify the user that her payment has been seen.
-		if err := invoiceReceivedPayment(event, coll, invoice); err != nil {
+		if err := srv.invoiceReceivedPayment(event, coll, invoice); err != nil {
 			log.Printf("  %v", err)
 		}
 	case btcpay.EventInvoiceSettled:
@@ -840,7 +789,7 @@ func rpc(w http.ResponseWriter, r *http.Request) {
 		// Risk: the hook arrives late or is redelivered manually, and late payments are added to the booking sum.
 		//
 		// We assume that "invoice settled" happens after "payment received" hooks.
-		if err := invoiceSettled(coll, invoice); err != nil {
+		if err := srv.invoiceSettled(coll, invoice); err != nil {
 			log.Printf("  %v", err)
 		}
 	default:
@@ -849,7 +798,7 @@ func rpc(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func invoiceReceivedPayment(event *btcpay.InvoiceEvent, coll *Collection, invoice *bitpay.Invoice) error {
+func (srv *Server) invoiceReceivedPayment(event *btcpay.InvoiceEvent, coll *ordersystem.Collection, invoice *bitpay.Invoice) error {
 
 	// calculate fiat amount
 
@@ -876,19 +825,19 @@ func invoiceReceivedPayment(event *btcpay.InvoiceEvent, coll *Collection, invoic
 	}
 
 	// first and foremost, write modified ReceivedInTimePayments and ReceivedLatePayments to database
-	if err := db.UpdateCollAndTasks(coll); err != nil {
+	if err := srv.DB.UpdateCollAndTasks(coll); err != nil {
 		return fmt.Errorf("error updating collection: %v", err)
 	}
 
 	if paidCentsInTime > 0 {
-		if err := db.CreateEvent(Bot, coll, 0, fmt.Sprintf("Rechnung [%s](%s): Vorläufiger Zahlungseingang: %s. Die Zahlung wird verbucht, sobald das Netzwerk die Transaktion bestätigt.", invoice.ID, bitpayClient.InvoiceURL(invoice), html.FmtHuman(paidCentsInTime))); err != nil {
+		if err := srv.DB.CreateEvent(ordersystem.Bot, coll, 0, fmt.Sprintf("Rechnung [%s](%s): Vorläufiger Zahlungseingang: %s. Die Zahlung wird verbucht, sobald das Netzwerk die Transaktion bestätigt.", invoice.ID, srv.BitpayClient.InvoiceURL(invoice), html.FmtHuman(paidCentsInTime))); err != nil {
 			return fmt.Errorf("error updating collection log: %v", err)
 		}
 	}
 
 	for _, pl := range paidLate {
 		// TODO notify store
-		if err := db.CreateEvent(Bot, coll, 0, fmt.Sprintf("Rechnung [%s](%s): Verspäterer vorläufiger Zahlungseingang: %f %s. Da wir den Umrechnungskurs nicht mehr garantieren können, werden wir die Transaktion manuell prüfen.", invoice.ID, bitpayClient.InvoiceURL(invoice), pl.Amount, pl.Currency)); err != nil {
+		if err := srv.DB.CreateEvent(ordersystem.Bot, coll, 0, fmt.Sprintf("Rechnung [%s](%s): Verspäterer vorläufiger Zahlungseingang: %f %s. Da wir den Umrechnungskurs nicht mehr garantieren können, werden wir die Transaktion manuell prüfen.", invoice.ID, srv.BitpayClient.InvoiceURL(invoice), pl.Amount, pl.Currency)); err != nil {
 			return fmt.Errorf("error updating collection state: %v", err)
 		}
 	}
@@ -896,7 +845,7 @@ func invoiceReceivedPayment(event *btcpay.InvoiceEvent, coll *Collection, invoic
 	return nil
 }
 
-func invoiceSettled(coll *Collection, invoice *bitpay.Invoice) error {
+func (srv *Server) invoiceSettled(coll *ordersystem.Collection, invoice *bitpay.Invoice) error {
 
 	if coll.InvoiceHasBeenBooked(invoice.ID) {
 		return fmt.Errorf("invoice %s has already been booked", invoice.ID)
@@ -935,26 +884,26 @@ func invoiceSettled(coll *Collection, invoice *bitpay.Invoice) error {
 	coll.BookedInvoices = append(coll.BookedInvoices, invoice.ID)
 
 	// first and foremost, write modified BookedInvoices to database
-	if err := db.UpdateCollAndTasks(coll); err != nil {
+	if err := srv.DB.UpdateCollAndTasks(coll); err != nil {
 		return fmt.Errorf("error updating collection: %v", err)
 	}
 
-	var newState CollState
+	var newState ordersystem.CollState
 	if paidCentsInTime+MaxDiscountCents >= coll.Due() {
-		newState = Paid
+		newState = ordersystem.Paid
 	} else {
-		newState = Underpaid
+		newState = ordersystem.Underpaid
 	}
 
-	return db.UpdateCollState(Bot, coll, newState, paidCentsInTime, fmt.Sprintf("Rechnung [%s](%s): Zahlungseingang wurde bestätigt: %s.", invoice.ID, bitpayClient.InvoiceURL(invoice), html.FmtHuman(paidCentsInTime)))
+	return srv.DB.UpdateCollState(ordersystem.Bot, coll, newState, paidCentsInTime, fmt.Sprintf("Rechnung [%s](%s): Zahlungseingang wurde bestätigt: %s.", invoice.ID, srv.BitpayClient.InvoiceURL(invoice), html.FmtHuman(paidCentsInTime)))
 }
 
 // no Collection instances involved
-func clientStateGet(w http.ResponseWriter, r *http.Request) error {
+func (srv *Server) clientStateGet(w http.ResponseWriter, r *http.Request) error {
 	return html.ClientStateGet.Execute(w, clientState{
 		TemplateData: html.TemplateData{
-			TemplateData:     ssg.MakeTemplateData(langs, r),
-			AuthorizedCollID: sessionCollID(r),
+			TemplateData:     ssg.MakeTemplateData(srv.Langs, r),
+			AuthorizedCollID: srv.sessionCollID(r),
 		},
 		Captcha: captcha.TemplateData{
 			ID: captcha.New(),
@@ -963,12 +912,12 @@ func clientStateGet(w http.ResponseWriter, r *http.Request) error {
 }
 
 // no Collection instances involved
-func clientStatePost(w http.ResponseWriter, r *http.Request) error {
+func (srv *Server) clientStatePost(w http.ResponseWriter, r *http.Request) error {
 
 	var data = &clientState{
 		TemplateData: html.TemplateData{
-			TemplateData:     ssg.MakeTemplateData(langs, r),
-			AuthorizedCollID: sessionCollID(r),
+			TemplateData:     ssg.MakeTemplateData(srv.Langs, r),
+			AuthorizedCollID: srv.sessionCollID(r),
 		},
 		CollID: strings.TrimSpace(r.PostFormValue("collection-id")),
 	}
@@ -988,7 +937,7 @@ func clientStatePost(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	var err error
-	data.State, err = db.ReadState(data.CollID)
+	data.State, err = srv.DB.ReadState(data.CollID)
 	if err != nil {
 		return err
 	}
@@ -997,58 +946,58 @@ func clientStatePost(w http.ResponseWriter, r *http.Request) error {
 }
 
 // HTTP POST (not GET) for CSRF protection
-func clientLogoutPost(w http.ResponseWriter, r *http.Request) error {
-	logout(r.Context())
+func (srv *Server) clientLogoutPost(w http.ResponseWriter, r *http.Request) error {
+	srv.logout(r.Context())
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 	return nil
 }
 
-func storeIndexGet(w http.ResponseWriter, r *http.Request) error {
+func (srv *Server) storeIndexGet(w http.ResponseWriter, r *http.Request) error {
 	return html.StoreIndex.Execute(w, struct {
-		*DB
+		*ordersystem.DB
 		Notifications []string
 	}{
-		DB:            db,
-		Notifications: notifications(r.Context()),
+		DB:            srv.DB,
+		Notifications: srv.notifications(r.Context()),
 	})
 }
 
-func storeCollViewGet(w http.ResponseWriter, r *http.Request, coll *Collection) error {
+func (srv *Server) storeCollViewGet(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection) error {
 	return html.StoreCollView.Execute(w, collView{
-		Actor:         Store,
+		Actor:         ordersystem.Store,
 		Collection:    coll,
 		ReadOnly:      true,
-		Notifications: notifications(r.Context()),
+		Notifications: srv.notifications(r.Context()),
 	})
 }
 
-func storeCollAcceptGet(w http.ResponseWriter, r *http.Request, coll *Collection) error {
+func (srv *Server) storeCollAcceptGet(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection) error {
 	if !coll.StoreCan("accept") {
 		return ErrNotFound
 	}
 	return html.StoreCollAccept.Execute(w, coll)
 }
 
-func storeCollAcceptPost(w http.ResponseWriter, r *http.Request, coll *Collection) error {
+func (srv *Server) storeCollAcceptPost(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection) error {
 	if !coll.StoreCan("accept") {
 		return ErrNotFound
 	}
-	if err := db.UpdateCollState(Store, coll, Accepted, 0, r.PostFormValue("accept-message")); err != nil {
+	if err := srv.DB.UpdateCollState(ordersystem.Store, coll, ordersystem.Accepted, 0, r.PostFormValue("accept-message")); err != nil {
 		return err
 	}
-	notify(r.Context(), "Der Auftrag %s wurde akzeptiert.", coll.ID)
+	srv.notify(r.Context(), "Der Auftrag %s wurde akzeptiert.", coll.ID)
 	http.Redirect(w, r, coll.Link(), http.StatusSeeOther)
 	return nil
 }
 
-func storeCollDeleteGet(w http.ResponseWriter, r *http.Request, coll *Collection) error {
+func (srv *Server) storeCollDeleteGet(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection) error {
 	if !coll.StoreCan("delete") {
 		return ErrNotFound
 	}
 	return html.StoreCollDelete.Execute(w, &collDelete{Collection: coll})
 }
 
-func storeCollDeletePost(w http.ResponseWriter, r *http.Request, coll *Collection) error {
+func (srv *Server) storeCollDeletePost(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection) error {
 	if !coll.StoreCan("delete") {
 		return ErrNotFound
 	}
@@ -1058,7 +1007,7 @@ func storeCollDeletePost(w http.ResponseWriter, r *http.Request, coll *Collectio
 			Err:        true,
 		})
 	}
-	if err := db.Delete(Store, coll); err != nil {
+	if err := srv.DB.Delete(ordersystem.Store, coll); err != nil {
 		return err
 	}
 	http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -1067,11 +1016,11 @@ func storeCollDeletePost(w http.ResponseWriter, r *http.Request, coll *Collectio
 
 type taskView struct {
 	html.TemplateData
-	*Task
+	*ordersystem.Task
 	CollLink string
 }
 
-func storeTaskConfirmArrivedGet(w http.ResponseWriter, r *http.Request, coll *Collection, task *Task) error {
+func (srv *Server) storeTaskConfirmArrivedGet(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection, task *ordersystem.Task) error {
 	if !coll.StoreCanTask("confirm-arrived", task) {
 		return ErrNotFound
 	}
@@ -1081,18 +1030,18 @@ func storeTaskConfirmArrivedGet(w http.ResponseWriter, r *http.Request, coll *Co
 	})
 }
 
-func storeTaskConfirmArrivedPost(w http.ResponseWriter, r *http.Request, coll *Collection, task *Task) error {
+func (srv *Server) storeTaskConfirmArrivedPost(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection, task *ordersystem.Task) error {
 	if !coll.StoreCanTask("confirm-arrived", task) {
 		return ErrNotFound
 	}
-	if err := db.UpdateTaskState(Store, task, Ready); err != nil {
+	if err := srv.DB.UpdateTaskState(ordersystem.Store, task, ordersystem.Ready); err != nil {
 		return err
 	}
 	http.Redirect(w, r, coll.Link(), http.StatusSeeOther)
 	return nil
 }
 
-func storeTaskConfirmOrderedGet(w http.ResponseWriter, r *http.Request, coll *Collection, task *Task) error {
+func (srv *Server) storeTaskConfirmOrderedGet(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection, task *ordersystem.Task) error {
 	if !coll.StoreCanTask("confirm-ordered", task) {
 		return ErrNotFound
 	}
@@ -1102,18 +1051,18 @@ func storeTaskConfirmOrderedGet(w http.ResponseWriter, r *http.Request, coll *Co
 	})
 }
 
-func storeTaskConfirmOrderedPost(w http.ResponseWriter, r *http.Request, coll *Collection, task *Task) error {
+func (srv *Server) storeTaskConfirmOrderedPost(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection, task *ordersystem.Task) error {
 	if !coll.StoreCanTask("confirm-ordered", task) {
 		return ErrNotFound
 	}
-	if err := db.UpdateTaskState(Store, task, Ordered); err != nil {
+	if err := srv.DB.UpdateTaskState(ordersystem.Store, task, ordersystem.Ordered); err != nil {
 		return err
 	}
 	http.Redirect(w, r, coll.Link(), http.StatusSeeOther)
 	return nil
 }
 
-func storeTaskMarkFailedGet(w http.ResponseWriter, r *http.Request, coll *Collection, task *Task) error {
+func (srv *Server) storeTaskMarkFailedGet(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection, task *ordersystem.Task) error {
 	if !coll.StoreCanTask("mark-failed", task) {
 		return ErrNotFound
 	}
@@ -1123,14 +1072,14 @@ func storeTaskMarkFailedGet(w http.ResponseWriter, r *http.Request, coll *Collec
 	})
 }
 
-func storeTaskMarkFailedPost(w http.ResponseWriter, r *http.Request, coll *Collection, task *Task) error {
+func (srv *Server) storeTaskMarkFailedPost(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection, task *ordersystem.Task) error {
 	if !coll.StoreCanTask("mark-failed", task) {
 		return ErrNotFound
 	}
-	if err := db.UpdateTaskState(Store, task, Failed); err != nil {
+	if err := srv.DB.UpdateTaskState(ordersystem.Store, task, ordersystem.Failed); err != nil {
 		return err
 	}
-	if err := db.CreateEvent(Store, coll, 0, r.PostFormValue("mark-failed-message")); err != nil {
+	if err := srv.DB.CreateEvent(ordersystem.Store, coll, 0, r.PostFormValue("mark-failed-message")); err != nil {
 		return err
 	}
 	http.Redirect(w, r, coll.Link(), http.StatusSeeOther)
@@ -1139,18 +1088,18 @@ func storeTaskMarkFailedPost(w http.ResponseWriter, r *http.Request, coll *Colle
 
 type storeCollConfirmPayment struct {
 	html.TemplateData
-	Coll *Collection
+	Coll *ordersystem.Collection
 	Err  bool
 }
 
-func storeCollConfirmPaymentGet(w http.ResponseWriter, r *http.Request, coll *Collection) error {
+func (srv *Server) storeCollConfirmPaymentGet(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection) error {
 	if !coll.StoreCan("confirm-payment") {
 		return ErrNotFound
 	}
 	return html.StoreCollConfirmPayment.Execute(w, storeCollConfirmPayment{Coll: coll})
 }
 
-func storeCollConfirmPaymentPost(w http.ResponseWriter, r *http.Request, coll *Collection) error {
+func (srv *Server) storeCollConfirmPaymentPost(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection) error {
 
 	if !coll.StoreCan("confirm-payment") {
 		return ErrNotFound
@@ -1168,17 +1117,17 @@ func storeCollConfirmPaymentPost(w http.ResponseWriter, r *http.Request, coll *C
 
 	// set to underpaid or paid
 
-	var newState CollState
+	var newState ordersystem.CollState
 	switch {
 	case paidAmount == -1*coll.Paid():
-		newState = Accepted
+		newState = ordersystem.Accepted
 	case paidAmount >= coll.Due():
-		newState = Paid
+		newState = ordersystem.Paid
 	default:
-		newState = Underpaid
+		newState = ordersystem.Underpaid
 	}
 
-	if err := db.UpdateCollState(Store, coll, newState, paidAmount, r.PostFormValue("confirm-payment-message")); err != nil {
+	if err := srv.DB.UpdateCollState(ordersystem.Store, coll, newState, paidAmount, r.PostFormValue("confirm-payment-message")); err != nil {
 		return err
 	}
 
@@ -1188,14 +1137,14 @@ func storeCollConfirmPaymentPost(w http.ResponseWriter, r *http.Request, coll *C
 	return nil
 }
 
-func storeCollConfirmPickupGet(w http.ResponseWriter, r *http.Request, coll *Collection) error {
+func (srv *Server) storeCollConfirmPickupGet(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection) error {
 	if !coll.StoreCan("confirm-pickup") {
 		return ErrNotFound
 	}
 	return html.StoreCollConfirmPickup.Execute(w, coll)
 }
 
-func storeCollConfirmPickupPost(w http.ResponseWriter, r *http.Request, coll *Collection) error {
+func (srv *Server) storeCollConfirmPickupPost(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection) error {
 
 	if !coll.StoreCan("confirm-pickup") {
 		return ErrNotFound
@@ -1211,8 +1160,8 @@ func storeCollConfirmPickupPost(w http.ResponseWriter, r *http.Request, coll *Co
 		if !coll.StoreCanTask("confirm-pickup", task) {
 			continue
 		}
-		if err := db.UpdateTaskState(Store, task, Fetched); err == nil {
-			notify(r.Context(), "Einzelbestellung %s wurde als abgeholt markiert", task.ID)
+		if err := srv.DB.UpdateTaskState(ordersystem.Store, task, ordersystem.Fetched); err == nil {
+			srv.notify(r.Context(), "Einzelbestellung %s wurde als abgeholt markiert", task.ID)
 		} else {
 			return err
 		}
@@ -1224,14 +1173,14 @@ func storeCollConfirmPickupPost(w http.ResponseWriter, r *http.Request, coll *Co
 	return nil
 }
 
-func storeCollConfirmReshippedGet(w http.ResponseWriter, r *http.Request, coll *Collection) error {
+func (srv *Server) storeCollConfirmReshippedGet(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection) error {
 	if !coll.StoreCan("confirm-reshipped") {
 		return ErrNotFound
 	}
 	return html.StoreCollConfirmReshipped.Execute(w, coll)
 }
 
-func storeCollConfirmReshippedPost(w http.ResponseWriter, r *http.Request, coll *Collection) error {
+func (srv *Server) storeCollConfirmReshippedPost(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection) error {
 
 	if !coll.StoreCan("confirm-reshipped") {
 		return ErrNotFound
@@ -1247,8 +1196,8 @@ func storeCollConfirmReshippedPost(w http.ResponseWriter, r *http.Request, coll 
 		if !coll.StoreCanTask("confirm-reshipped", task) {
 			continue
 		}
-		if err := db.UpdateTaskState(Store, task, Reshipped); err == nil {
-			notify(r.Context(), "Einzelbestellung %s wurde als abgeholt markiert", task.ID)
+		if err := srv.DB.UpdateTaskState(ordersystem.Store, task, ordersystem.Reshipped); err == nil {
+			srv.notify(r.Context(), "Einzelbestellung %s wurde als abgeholt markiert", task.ID)
 		} else {
 			return err
 		}
@@ -1260,7 +1209,7 @@ func storeCollConfirmReshippedPost(w http.ResponseWriter, r *http.Request, coll 
 	return nil
 }
 
-func storeTaskConfirmPickupGet(w http.ResponseWriter, r *http.Request, coll *Collection, task *Task) error {
+func (srv *Server) storeTaskConfirmPickupGet(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection, task *ordersystem.Task) error {
 	if !coll.StoreCanTask("confirm-pickup", task) {
 		return ErrNotFound
 	}
@@ -1270,14 +1219,14 @@ func storeTaskConfirmPickupGet(w http.ResponseWriter, r *http.Request, coll *Col
 	})
 }
 
-func storeTaskConfirmPickupPost(w http.ResponseWriter, r *http.Request, coll *Collection, task *Task) error {
+func (srv *Server) storeTaskConfirmPickupPost(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection, task *ordersystem.Task) error {
 	if !coll.StoreCanTask("confirm-pickup", task) {
 		return ErrNotFound
 	}
-	if err := db.UpdateTaskState(Store, task, Fetched); err != nil {
+	if err := srv.DB.UpdateTaskState(ordersystem.Store, task, ordersystem.Fetched); err != nil {
 		return err
 	}
-	notify(r.Context(), "Einzelbestellung %s wurde als abgeholt markiert", task.ID)
+	srv.notify(r.Context(), "Einzelbestellung %s wurde als abgeholt markiert", task.ID)
 
 	botCollIDs <- coll.ID
 
@@ -1285,7 +1234,7 @@ func storeTaskConfirmPickupPost(w http.ResponseWriter, r *http.Request, coll *Co
 	return nil
 }
 
-func storeTaskConfirmReshippedGet(w http.ResponseWriter, r *http.Request, coll *Collection, task *Task) error {
+func (srv *Server) storeTaskConfirmReshippedGet(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection, task *ordersystem.Task) error {
 	if !coll.StoreCanTask("confirm-reshipped", task) {
 		return ErrNotFound
 	}
@@ -1295,14 +1244,14 @@ func storeTaskConfirmReshippedGet(w http.ResponseWriter, r *http.Request, coll *
 	})
 }
 
-func storeTaskConfirmReshippedPost(w http.ResponseWriter, r *http.Request, coll *Collection, task *Task) error {
+func (srv *Server) storeTaskConfirmReshippedPost(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection, task *ordersystem.Task) error {
 	if !coll.StoreCanTask("confirm-reshipped", task) {
 		return ErrNotFound
 	}
-	if err := db.UpdateTaskState(Store, task, Reshipped); err != nil {
+	if err := srv.DB.UpdateTaskState(ordersystem.Store, task, ordersystem.Reshipped); err != nil {
 		return err
 	}
-	notify(r.Context(), "Einzelbestellung %s wurde als weiterverschickt markiert", task.ID)
+	srv.notify(r.Context(), "Einzelbestellung %s wurde als weiterverschickt markiert", task.ID)
 
 	botCollIDs <- coll.ID
 
@@ -1310,106 +1259,106 @@ func storeTaskConfirmReshippedPost(w http.ResponseWriter, r *http.Request, coll 
 	return nil
 }
 
-func storeCollEditGet(w http.ResponseWriter, r *http.Request, coll *Collection) error {
+func (srv *Server) storeCollEditGet(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection) error {
 	if !coll.StoreCan("edit") {
 		return ErrNotFound
 	}
 	return html.StoreCollEdit.Execute(w, collView{
-		Actor:      Store,
+		Actor:      ordersystem.Store,
 		Collection: coll,
 	})
 }
 
-func storeCollEditPost(w http.ResponseWriter, r *http.Request, coll *Collection) error {
+func (srv *Server) storeCollEditPost(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection) error {
 	if !coll.StoreCan("edit") {
 		return ErrNotFound
 	}
-	if err := coll.MergeJSON(Store, r.PostFormValue("data")); err != nil {
+	if err := coll.MergeJSON(ordersystem.Store, r.PostFormValue("data")); err != nil {
 		return err
 	}
 
 	// if the sum dropped, underpaid collection becomes paid
-	if coll.State == Underpaid && coll.Due() <= 0 {
-		coll.State = Paid
+	if coll.State == ordersystem.Underpaid && coll.Due() <= 0 {
+		coll.State = ordersystem.Paid
 	}
 
-	if err := db.UpdateCollAndTasks(coll); err != nil {
+	if err := srv.DB.UpdateCollAndTasks(coll); err != nil {
 		return err
 	}
 
-	notify(r.Context(), "Deine Änderungen am Auftrag %s wurden gespeichert.", coll.ID)
+	srv.notify(r.Context(), "Deine Änderungen am Auftrag %s wurden gespeichert.", coll.ID)
 	http.Redirect(w, r, coll.Link(), http.StatusSeeOther)
 	return nil
 }
 
-func storeCollMessageGet(w http.ResponseWriter, r *http.Request, coll *Collection) error {
+func (srv *Server) storeCollMessageGet(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection) error {
 	if !coll.StoreCan("message") {
 		return ErrNotFound
 	}
 	return html.StoreCollMessage.Execute(w, coll)
 }
 
-func storeCollMessagePost(w http.ResponseWriter, r *http.Request, coll *Collection) error {
+func (srv *Server) storeCollMessagePost(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection) error {
 	if !coll.StoreCan("message") {
 		return ErrNotFound
 	}
-	if err := db.CreateEvent(Store, coll, 0, r.PostFormValue("message")); err != nil {
+	if err := srv.DB.CreateEvent(ordersystem.Store, coll, 0, r.PostFormValue("message")); err != nil {
 		return err
 	}
 	http.Redirect(w, r, coll.Link(), http.StatusSeeOther)
 	return nil
 }
-func storeCollPriceRisedGet(w http.ResponseWriter, r *http.Request, coll *Collection) error {
+func (srv *Server) storeCollPriceRisedGet(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection) error {
 	if !coll.StoreCan("price-rised") {
 		return ErrNotFound
 	}
 	return html.StoreCollPriceRised.Execute(w, coll)
 }
 
-func storeCollPriceRisedPost(w http.ResponseWriter, r *http.Request, coll *Collection) error {
+func (srv *Server) storeCollPriceRisedPost(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection) error {
 	if !coll.StoreCan("price-rised") {
 		return ErrNotFound
 	}
-	if err := db.UpdateCollState(Store, coll, Underpaid, 0, r.PostFormValue("price-rised-message")); err != nil {
+	if err := srv.DB.UpdateCollState(ordersystem.Store, coll, ordersystem.Underpaid, 0, r.PostFormValue("price-rised-message")); err != nil {
 		return err
 	}
 	http.Redirect(w, r, coll.Link(), http.StatusSeeOther)
 	return nil
 }
 
-func storeCollReturnGet(w http.ResponseWriter, r *http.Request, coll *Collection) error {
+func (srv *Server) storeCollReturnGet(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection) error {
 	if !coll.StoreCan("return") {
 		return ErrNotFound
 	}
 	return html.StoreCollReturn.Execute(w, coll)
 }
 
-func storeCollReturnPost(w http.ResponseWriter, r *http.Request, coll *Collection) error {
+func (srv *Server) storeCollReturnPost(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection) error {
 	if !coll.StoreCan("return") {
 		return ErrNotFound
 	}
-	if err := db.UpdateCollState(Store, coll, NeedsRevise, 0, r.PostFormValue("return-message")); err != nil {
+	if err := srv.DB.UpdateCollState(ordersystem.Store, coll, ordersystem.NeedsRevise, 0, r.PostFormValue("return-message")); err != nil {
 		return err
 	}
-	notify(r.Context(), "Der Auftrag %s wurde zur Bearbeitung zurückgegeben.", coll.ID)
+	srv.notify(r.Context(), "Der Auftrag %s wurde zur Bearbeitung zurückgegeben.", coll.ID)
 	http.Redirect(w, r, coll.Link(), http.StatusSeeOther)
 	return nil
 }
 
 type storeCollReject struct {
 	html.TemplateData
-	Coll *Collection
+	Coll *ordersystem.Collection
 	Err  bool
 }
 
-func storeCollRejectGet(w http.ResponseWriter, r *http.Request, coll *Collection) error {
+func (srv *Server) storeCollRejectGet(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection) error {
 	if !coll.StoreCan("reject") {
 		return ErrNotFound
 	}
 	return html.StoreCollReject.Execute(w, storeCollReject{Coll: coll})
 }
 
-func storeCollRejectPost(w http.ResponseWriter, r *http.Request, coll *Collection) error {
+func (srv *Server) storeCollRejectPost(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection) error {
 	if !coll.StoreCan("reject") {
 		return ErrNotFound
 	}
@@ -1419,52 +1368,52 @@ func storeCollRejectPost(w http.ResponseWriter, r *http.Request, coll *Collectio
 			Err:  true,
 		})
 	}
-	if err := db.UpdateCollState(Store, coll, Rejected, 0, r.PostFormValue("reject-message")); err != nil {
+	if err := srv.DB.UpdateCollState(ordersystem.Store, coll, ordersystem.Rejected, 0, r.PostFormValue("reject-message")); err != nil {
 		return err
 	}
-	notify(r.Context(), "Der Auftrag %s wurde abgelehnt.", coll.ID)
+	srv.notify(r.Context(), "Der Auftrag %s wurde abgelehnt.", coll.ID)
 	http.Redirect(w, r, coll.Link(), http.StatusSeeOther)
 	return nil
 }
 
 type storeCollSubmit struct {
 	html.TemplateData
-	Coll *Collection
+	Coll *ordersystem.Collection
 }
 
-func storeCollSubmitGet(w http.ResponseWriter, r *http.Request, coll *Collection) error {
+func (srv *Server) storeCollSubmitGet(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection) error {
 	if !coll.StoreCan("submit") {
 		return ErrNotFound
 	}
 	return html.StoreCollSubmit.Execute(w, storeCollSubmit{Coll: coll})
 }
 
-func storeCollSubmitPost(w http.ResponseWriter, r *http.Request, coll *Collection) error {
+func (srv *Server) storeCollSubmitPost(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection) error {
 	if !coll.StoreCan("submit") {
 		return ErrNotFound
 	}
-	if err := db.UpdateCollState(Store, coll, Submitted, 0, r.PostFormValue("submit-message")); err != nil {
+	if err := srv.DB.UpdateCollState(ordersystem.Store, coll, ordersystem.Submitted, 0, r.PostFormValue("submit-message")); err != nil {
 		return err
 	}
-	notify(r.Context(), "Der Auftrag %s wurde eingereicht.", coll.ID)
+	srv.notify(r.Context(), "Der Auftrag %s wurde eingereicht.", coll.ID)
 	http.Redirect(w, r, coll.Link(), http.StatusSeeOther)
 	return nil
 }
 
 type storeCollMarkSpam struct {
 	html.TemplateData
-	Coll *Collection
+	Coll *ordersystem.Collection
 	Err  bool
 }
 
-func storeCollMarkSpamGet(w http.ResponseWriter, r *http.Request, coll *Collection) error {
+func (srv *Server) storeCollMarkSpamGet(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection) error {
 	if !coll.StoreCan("mark-spam") {
 		return ErrNotFound
 	}
 	return html.StoreCollMarkSpam.Execute(w, storeCollMarkSpam{Coll: coll})
 }
 
-func storeCollMarkSpamPost(w http.ResponseWriter, r *http.Request, coll *Collection) error {
+func (srv *Server) storeCollMarkSpamPost(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection) error {
 	if !coll.StoreCan("mark-spam") {
 		return ErrNotFound
 	}
@@ -1474,55 +1423,55 @@ func storeCollMarkSpamPost(w http.ResponseWriter, r *http.Request, coll *Collect
 			Err:  true,
 		})
 	}
-	if err := db.UpdateCollState(Store, coll, Spam, 0, "Dein Antrag wurde als Spam markiert."); err != nil {
+	if err := srv.DB.UpdateCollState(ordersystem.Store, coll, ordersystem.Spam, 0, "Dein Antrag wurde als Spam markiert."); err != nil {
 		return err
 	}
-	notify(r.Context(), "Der Auftrag %s wurde als Spam markiert.", coll.ID)
+	srv.notify(r.Context(), "Der Auftrag %s wurde als Spam markiert.", coll.ID)
 	http.Redirect(w, r, coll.Link(), http.StatusSeeOther)
 	return nil
 }
 
-func storeLoginGet(w http.ResponseWriter, r *http.Request) error {
+func (srv *Server) storeLoginGet(w http.ResponseWriter, r *http.Request) error {
 	return html.StoreLogin.Execute(w, nil)
 }
 
-func storeLoginPost(w http.ResponseWriter, r *http.Request) error {
+func (srv *Server) storeLoginPost(w http.ResponseWriter, r *http.Request) error {
 	username := r.PostFormValue("username")
 	password := r.PostFormValue("password")
-	if err := users.Authenticate(username, password); err != nil {
+	if err := srv.Users.Authenticate(username, password); err != nil {
 		return err
 	}
-	loginStore(r.Context(), username)
+	srv.loginStore(r.Context(), username)
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 	return nil
 }
 
 type collWithPayDate struct {
-	*Collection
+	*ordersystem.Collection
 	payDate string
 }
 
-func storeExport(w http.ResponseWriter, r *http.Request) error {
+func (srv *Server) storeExport(w http.ResponseWriter, r *http.Request) error {
 
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	out := csv.NewWriter(w)
 	out.Write([]string{"vat_date", "id", "country", "gross", "vat_rate", "name"})
 
 	var colls []collWithPayDate
-	for _, state := range []CollState{Accepted, Archived, Finalized, NeedsRevise, Paid, Submitted, Underpaid} {
-		collIDs, err := db.ReadColls(state)
+	for _, state := range []ordersystem.CollState{ordersystem.Accepted, ordersystem.Archived, ordersystem.Finalized, ordersystem.NeedsRevise, ordersystem.Paid, ordersystem.Submitted, ordersystem.Underpaid} {
+		collIDs, err := srv.DB.ReadColls(state)
 		if err != nil {
 			return err
 		}
 		for _, collID := range collIDs {
-			coll, err := db.ReadColl(collID)
+			coll, err := srv.DB.ReadColl(collID)
 			if err != nil {
 				return err
 			}
 
 			var paydate string
 			for _, event := range coll.Log {
-				if event.NewState == Paid {
+				if event.NewState == ordersystem.Paid {
 					paydate = string(event.Date)
 					break
 				}
@@ -1563,8 +1512,8 @@ func storeExport(w http.ResponseWriter, r *http.Request) error {
 	return nil
 }
 
-func storeLogoutPost(w http.ResponseWriter, r *http.Request) error {
-	logout(r.Context())
+func (srv *Server) storeLogoutPost(w http.ResponseWriter, r *http.Request) error {
+	srv.logout(r.Context())
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 	return nil
 }

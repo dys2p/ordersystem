@@ -1,38 +1,9 @@
-package main
+package ordersystem
 
 import (
-	"fmt"
 	"log"
 	"time"
 )
-
-// collection ids to be processed by the bot
-var botCollIDs = make(chan string, 100)
-
-func botColl(id string) {
-	coll, err := db.ReadColl(id)
-	if err != nil {
-		log.Printf("bot: error reading %s: %v", id, err)
-	}
-	if err := db.Bot(coll); err != nil {
-		log.Printf("bot: error: %s: %v", coll.ID, err)
-	}
-}
-
-func bot() {
-	fmt.Println("running bot")
-	// get pre-transition states where actor is Bot, so we don't have to try each state
-	for _, from := range db.CollFSM.From(Bot) {
-		collIDs, err := db.ReadColls(CollState(from))
-		if err != nil {
-			log.Printf("bot: error reading %s collections: %v", from, err)
-			continue
-		}
-		for _, collID := range collIDs {
-			botColl(collID)
-		}
-	}
-}
 
 // Bot runs some automatic transitions.
 // In order to avoid loops, it must be triggered by the ui only.

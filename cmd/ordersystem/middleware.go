@@ -4,15 +4,16 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/dys2p/ordersystem"
 	"github.com/dys2p/ordersystem/html"
 	"github.com/julienschmidt/httprouter"
 )
 
 type HandlerErrFunc func(http.ResponseWriter, *http.Request) error
 
-func auth(f http.HandlerFunc) http.HandlerFunc {
+func (srv *Server) auth(f http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if sessionManager.Exists(r.Context(), "username") {
+		if srv.Sessions.Exists(r.Context(), "username") {
 			f(w, r)
 		} else {
 			http.Redirect(w, r, "/login", http.StatusSeeOther)
@@ -20,7 +21,7 @@ func auth(f http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-func client(f HandlerErrFunc) http.HandlerFunc {
+func (srv *Server) client(f HandlerErrFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if err := f(w, r); err != nil {
 			var msg string
@@ -33,7 +34,7 @@ func client(f HandlerErrFunc) http.HandlerFunc {
 				AuthorizedCollID string
 				Msg              string
 			}{
-				sessionCollID(r),
+				srv.sessionCollID(r),
 				msg,
 			})
 		}
@@ -41,17 +42,17 @@ func client(f HandlerErrFunc) http.HandlerFunc {
 }
 
 // requires authentication
-func clientWithCollection(f func(w http.ResponseWriter, r *http.Request, coll *Collection) error) http.HandlerFunc {
-	return client(
+func (srv *Server) clientWithCollection(f func(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection) error) http.HandlerFunc {
+	return srv.client(
 		func(w http.ResponseWriter, r *http.Request) error {
 			var collID = httprouter.ParamsFromContext(r.Context()).ByName("collid")
 			if len(collID) > 10 {
 				collID = collID[:10]
 			}
-			if sessionManager.GetString(r.Context(), "coll-id") != collID {
+			if srv.Sessions.GetString(r.Context(), "coll-id") != collID {
 				return ErrNotFound // not logged in, or into another collection
 			}
-			var coll, err = db.ReadColl(collID)
+			var coll, err = srv.DB.ReadColl(collID)
 			if err != nil {
 				return err
 			}
@@ -68,14 +69,14 @@ func store(f HandlerErrFunc) http.HandlerFunc {
 	}
 }
 
-func storeWithCollection(f func(w http.ResponseWriter, r *http.Request, coll *Collection) error) http.HandlerFunc {
+func (srv *Server) storeWithCollection(f func(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection) error) http.HandlerFunc {
 	return store(
 		func(w http.ResponseWriter, r *http.Request) error {
 			var collID = httprouter.ParamsFromContext(r.Context()).ByName("collid")
 			if len(collID) > 10 {
 				collID = collID[:10]
 			}
-			var coll, err = db.ReadColl(collID)
+			var coll, err = srv.DB.ReadColl(collID)
 			if err != nil {
 				return err
 			}
@@ -84,9 +85,9 @@ func storeWithCollection(f func(w http.ResponseWriter, r *http.Request, coll *Co
 	)
 }
 
-func storeWithTask(f func(w http.ResponseWriter, r *http.Request, coll *Collection, task *Task) error) http.HandlerFunc {
-	return storeWithCollection(
-		func(w http.ResponseWriter, r *http.Request, coll *Collection) error {
+func (srv *Server) storeWithTask(f func(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection, task *ordersystem.Task) error) http.HandlerFunc {
+	return srv.storeWithCollection(
+		func(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection) error {
 			// select task from collection, don't get it from the database (then we had to verifiy that it belongs to the given collection)
 			var taskID = httprouter.ParamsFromContext(r.Context()).ByName("taskid")
 			for _, t := range coll.Tasks {
