@@ -830,7 +830,7 @@ func (srv *Server) invoiceReceivedPayment(event *btcpay.InvoiceEvent, coll *orde
 	}
 
 	if paidCentsInTime > 0 {
-		if err := srv.DB.CreateEvent(ordersystem.Bot, coll, 0, fmt.Sprintf("Rechnung [%s](%s): Vorläufiger Zahlungseingang: %s. Die Zahlung wird verbucht, sobald das Netzwerk die Transaktion bestätigt.", invoice.ID, srv.BitpayClient.InvoiceURL(invoice), html.FmtHuman(paidCentsInTime))); err != nil {
+		if err := srv.DB.CreateEvent(ordersystem.Bot, coll, 0, fmt.Sprintf("Rechnung [%s](%s): Vorläufiger Zahlungseingang: %s. Die Zahlung wird verbucht, sobald das Netzwerk die Transaktion bestätigt.", invoice.ID, srv.BitpayClient.InvoiceURL(invoice), html.FmtEuro(paidCentsInTime))); err != nil {
 			return fmt.Errorf("error updating collection log: %v", err)
 		}
 	}
@@ -895,7 +895,7 @@ func (srv *Server) invoiceSettled(coll *ordersystem.Collection, invoice *bitpay.
 		newState = ordersystem.Underpaid
 	}
 
-	return srv.DB.UpdateCollState(ordersystem.Bot, coll, newState, paidCentsInTime, fmt.Sprintf("Rechnung [%s](%s): Zahlungseingang wurde bestätigt: %s.", invoice.ID, srv.BitpayClient.InvoiceURL(invoice), html.FmtHuman(paidCentsInTime)))
+	return srv.DB.UpdateCollState(ordersystem.Bot, coll, newState, paidCentsInTime, fmt.Sprintf("Rechnung [%s](%s): Zahlungseingang wurde bestätigt: %s.", invoice.ID, srv.BitpayClient.InvoiceURL(invoice), html.FmtEuro(paidCentsInTime)))
 }
 
 // no Collection instances involved

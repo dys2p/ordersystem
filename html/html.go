@@ -28,7 +28,7 @@ func centsToFloat(cents int) float64 {
 	return math.Round(float64(cents)) / 100.0
 }
 
-func FmtHuman(cents int) string {
+func FmtEuro(cents int) string {
 	return strings.Replace(fmt.Sprintf("%.2f Euro", centsToFloat(cents)), ".", ",", 1)
 }
 
@@ -38,7 +38,7 @@ func FmtMachine(cents int) string {
 
 func parse(fn ...string) *template.Template {
 	t := template.New("html").Funcs(template.FuncMap{
-		"FmtHuman":   FmtHuman,
+		"FmtEuro":    FmtEuro,
 		"FmtMachine": FmtMachine,
 		"Markdown": func(input string) template.HTML {
 			return template.HTML(md.RenderToString([]byte(input)))

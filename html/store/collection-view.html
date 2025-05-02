@@ -4,7 +4,7 @@
 		<div class="alert alert-success mt-3" role="alert">{{.}}</div>
 	{{end}}
 	<p><strong>Status:</strong> {{.State.Description}}</p>
-	<p><strong>Summe:</strong> {{FmtHuman .Sum}}</p>
+	<p><strong>Summe:</strong> {{FmtEuro .Sum}}</p>
 	<p>
 		{{if .StoreCan "accept"}}
 			<a class="btn btn-success" href="/collection/{{$.ID}}/accept">Bestellauftrag akzeptieren</a>

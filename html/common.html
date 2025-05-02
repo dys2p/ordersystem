@@ -47,13 +47,13 @@
 			<td>{{.Date.Format}}</td>
 			<td>{{.NewState.Name}}</td>
 			<td>{{.TextHTML}}</td>
-			<td>{{if .Paid}}{{FmtHuman .Paid}}{{end}}</td>
+			<td>{{if .Paid}}{{FmtEuro .Paid}}{{end}}</td>
 		</tr>
 	{{end}}
 	{{if .Paid}}
 		<tr>
 			<td class="text-end" colspan="3">Summe</td>
-			<td>{{FmtHuman .Paid}}</td>
+			<td>{{FmtEuro .Paid}}</td>
 		</tr>
 	{{end}}
 </table>

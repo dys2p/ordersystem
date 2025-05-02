@@ -1,6 +1,6 @@
 {{define "content"}}
 <h1>Mit Bitcoin oder Monero bezahlen</h1>
-<p>Wenn du fortfährst, wird auf unserem BTCPayServer eine Rechnung über <strong>{{FmtHuman .Due}}</strong> erzeugt, du mit Bitcoin (BTC) oder Monero (XMR) bezahlen kannst. Die Rechnung ist <strong>60&nbsp;Minuten</strong> lang gültig. Bis zum Ablauf der Zeit muss deine Transaktion in der Blockchain sichtbar sein.</p>
+<p>Wenn du fortfährst, wird auf unserem BTCPayServer eine Rechnung über <strong>{{FmtEuro .Due}}</strong> erzeugt, du mit Bitcoin (BTC) oder Monero (XMR) bezahlen kannst. Die Rechnung ist <strong>60&nbsp;Minuten</strong> lang gültig. Bis zum Ablauf der Zeit muss deine Transaktion in der Blockchain sichtbar sein.</p>
 <p>Bitte achte darauf, dass du die Rechnung <strong>rechtzeitig, vollständig und mit einer einzelnen Transaktion</strong> bezahlst. Nur dann können wir den Umrechnungskurs akzeptieren. <strong>Falls deine Börse oder dein Client die Transaktionsgebühren von dem Betrag abzieht, musst du sie vorher hinzuaddieren.</strong> Falls deine Zahlung verspätet oder nur teilweise eintrifft, werden die Coins trotzdem automatisch an einer Börse verkauft. Danach werden wir den erzielten Verkaufswert manuell hier eintragen.</p>
 <form method="post">
 	{{template "captcha" .Captcha}}

@@ -96,8 +96,8 @@
 							<td>{{.NumTasks}}</td>
 							<td>{{with .NumTasksAt "not-ordered-yet"}}{{.}}{{end}}</td>
 							<td>{{.MaxDate}}</td>
-							<td>{{FmtHuman .Sum}}</td>
-							<td class="{{if lt .Balance 0}}text-danger{{else}}text-success{{end}}">{{FmtHuman .Balance}}</td>
+							<td>{{FmtEuro .Sum}}</td>
+							<td class="{{if lt .Balance 0}}text-danger{{else}}text-success{{end}}">{{FmtEuro .Balance}}</td>
 						</tr>
 					{{end}}
 				{{end}}
@@ -123,7 +123,7 @@
 						<tr>
 							<td><a href="/collection/{{.ID}}">{{.ID}}</a></td>
 							<td>{{.MaxDate}}</td>
-							<td class="{{if lt .Balance 0}}text-danger{{else}}text-success{{end}}">{{FmtHuman .Balance}}</td>
+							<td class="{{if lt .Balance 0}}text-danger{{else}}text-success{{end}}">{{FmtEuro .Balance}}</td>
 						</tr>
 					{{end}}
 				{{end}}
