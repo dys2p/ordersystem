@@ -283,9 +283,9 @@
 				<table class="table table-sm mb-0">
 					<thead>
 						<tr>
-							<th>Anzahl</th>
 							<th>Link</th>
 							<th>Eigenschaften</th>
+							<th>Anzahl</th>
 							<th>Einzelpreis</th>
 							<th>Gesamtpreis</th>
 						</tr>
@@ -293,7 +293,6 @@
 					<tbody>
 						{{range .Articles}}
 							<tr>
-								<td>{{.Quantity}}</td>
 								<td>
 									<code role="button" onclick="copyToClipboard(this, this.parentElement.querySelector('[data-success]'), this.parentElement.querySelector('[data-failed]'));">
 										{{.Link}}
@@ -303,37 +302,33 @@
 									<div class="badge bg-danger  d-none" data-failed ><i class="fa-solid fa-xmark"></i></div>
 								</td>
 								<td>{{.Properties}}</td>
+								<td>{{.Quantity}}</td>
 								<td>{{FmtEuro .Price}}</td>
 								<td>{{FmtEuro .Sum}}</td>
 							</tr>
 						{{end}}
 						<tr>
-							<td></td>
-							<td colspan="3">Versandkosten</td>
+							<td colspan="4">Versandkosten</td>
 							<td>{{FmtEuro .ShippingFee}}</td>
 						</tr>
 						{{range .AddCosts}}
 							<tr>
-								<td></td>
-								<td colspan="3">{{.Name}}</td>
+								<td colspan="4">{{.Name}}</td>
 								<td>{{FmtEuro .Price}}</td>
 							</tr>
 						{{end}}
 					</tbody>
 					<tbody class="table-group-divider">
 						<tr>
-							<td></td>
-							<td colspan="3">Zwischensumme</td>
+							<td colspan="4">Zwischensumme</td>
 							<td>{{FmtEuro .Sum}}</td>
 						</tr>
 						<tr>
-							<td></td>
-							<td colspan="3">+ unsere Gebühr (10 € + 5 %)</td>
+							<td colspan="4">+ unsere Gebühr (10 € + 5 %)</td>
 							<td>{{FmtEuro .Fee}}</td>
 						</tr>
 						<tr>
-							<td style="border-bottom: none;"></td>
-							<td style="border-bottom: none;" colspan="3">= Gesamtsumme</td>
+							<td style="border-bottom: none;" colspan="4">= Gesamtsumme</td>
 							<td style="border-bottom: none;"><strong>{{FmtEuro .TotalSum}}</strong></td>
 						</tr>
 					</tbody>
