@@ -48,6 +48,10 @@ func (task *Task) Sum() int {
 	return sum
 }
 
+func (task *Task) TotalSum() int {
+	return task.Sum() + task.Fee()
+}
+
 // TaskData is a separate struct so we can marshal it easily and store it in the SQL database.
 type TaskData struct {
 	AddCosts    []AddCost `json:"add-costs"`
@@ -61,6 +65,10 @@ type Article struct {
 	Price      int    `json:"price"` // item price
 	Properties string `json:"properties"`
 	Quantity   int    `json:"quantity"`
+}
+
+func (article Article) Sum() int {
+	return article.Quantity * article.Price
 }
 
 type AddCost struct {

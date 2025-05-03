@@ -169,33 +169,27 @@ func (coll *Collection) Paid() int {
 	return sum
 }
 
+func (coll *Collection) Reshipping() int {
+	if coll.DeliveryMethod != "shipping" {
+		return 0
+	}
+	if coll.ReshippingFee != 0 {
+		return coll.ReshippingFee
+	}
+	for _, s := range coll.ShippingServices() {
+		if s.ID == coll.ShippingServiceID {
+			return s.MinCost
+		}
+	}
+	return 0
+}
+
 func (coll *Collection) Sum() int {
-	var sum = 0
+	var taskSum = 0
 	for _, task := range coll.Tasks {
-		sum += task.Sum()
-		sum += task.Fee()
+		taskSum += task.TotalSum()
 	}
-
-	// same logic as in ordersystem.js updateView()
-	if coll.DeliveryMethod == "shipping" {
-
-		// 1. default value
-		var reshippingFee int
-		for _, s := range coll.ShippingServices() {
-			if s.ID == coll.ShippingServiceID {
-				reshippingFee = s.MinCost
-			}
-		}
-
-		// 2. data value
-		if coll.ReshippingFee != 0 {
-			reshippingFee = coll.ReshippingFee
-		}
-
-		sum += reshippingFee
-	}
-
-	return sum
+	return taskSum + coll.Reshipping()
 }
 
 func (coll *Collection) StoreCan(action string) bool {
