@@ -40,13 +40,11 @@ func (fsm *FSM) From(me Actor) []State {
 }
 
 var CollFSM = &FSM{
-	Transition{State(Accepted), Bot, "confirm-payment", State(Paid)},
-	Transition{State(Accepted), Bot, "confirm-payment", State(Underpaid)},
+	Transition{State(Accepted), Bot, "confirm-payment", State(Active)},
 	Transition{State(Accepted), Bot, "delete", State(Deleted)},
 	Transition{State(Accepted), Client, "cancel", State(Cancelled)},
-	Transition{State(Accepted), Client, "pay", State(Accepted)},             // becomes Paid if payment arrives
-	Transition{State(Accepted), Store, "confirm-payment", State(Paid)},      // client pays enough
-	Transition{State(Accepted), Store, "confirm-payment", State(Underpaid)}, // client pays, but not enough
+	Transition{State(Accepted), Client, "pay", State(Accepted)}, // becomes Paid if payment arrives
+	Transition{State(Accepted), Store, "confirm-payment", State(Active)},
 	Transition{State(Accepted), Store, "delete", State(Deleted)},
 	Transition{State(Accepted), Store, "edit", State(Accepted)},
 	Transition{State(Accepted), Store, "return", State(NeedsRevise)},
@@ -60,15 +58,14 @@ var CollFSM = &FSM{
 	Transition{State(NeedsRevise), Client, "cancel", State(Cancelled)},
 	Transition{State(NeedsRevise), Client, "edit", State(NeedsRevise)},
 	Transition{State(NeedsRevise), Client, "submit", State(Submitted)},
-	Transition{State(Paid), Bot, "confirm-payment", State(Paid)},
-	Transition{State(Paid), Bot, "finalize", State(Finalized)},
-	Transition{State(Paid), Store, "confirm-payment", State(Accepted)}, // all tasks failed
-	Transition{State(Paid), Store, "confirm-payment", State(Paid)},     // refund overpaid amount
-	Transition{State(Paid), Store, "confirm-pickup", State(Paid)},
-	Transition{State(Paid), Store, "confirm-reshipped", State(Paid)},
-	Transition{State(Paid), Store, "edit", State(Paid)}, // price or availability changed after payment
-	Transition{State(Paid), Store, "message", State(Paid)},
-	Transition{State(Paid), Store, "price-rised", State(Underpaid)},
+	Transition{State(Active), Bot, "confirm-payment", State(Active)},
+	Transition{State(Active), Bot, "finalize", State(Finalized)},
+	Transition{State(Active), Store, "confirm-payment", State(Accepted)}, // all tasks failed
+	Transition{State(Active), Store, "confirm-payment", State(Active)},   // refund overpaid amount
+	Transition{State(Active), Store, "confirm-pickup", State(Active)},
+	Transition{State(Active), Store, "confirm-reshipped", State(Active)},
+	Transition{State(Active), Store, "edit", State(Active)}, // price or availability changed after payment
+	Transition{State(Active), Store, "message", State(Active)},
 	Transition{State(Spam), Bot, "delete", State(Deleted)},
 	Transition{State(Submitted), Client, "cancel", State(Cancelled)},
 	Transition{State(Submitted), Store, "accept", State(Accepted)},
@@ -76,16 +73,13 @@ var CollFSM = &FSM{
 	Transition{State(Submitted), Store, "mark-spam", State(Spam)},
 	Transition{State(Submitted), Store, "reject", State(Rejected)},
 	Transition{State(Submitted), Store, "return", State(NeedsRevise)},
-	Transition{State(Underpaid), Bot, "confirm-payment", State(Paid)},
-	Transition{State(Underpaid), Bot, "confirm-payment", State(Underpaid)},
-	Transition{State(Underpaid), Client, "message", State(Underpaid)},
-	Transition{State(Underpaid), Client, "pay", State(Underpaid)},            // becomes Paid if payment arrives
-	Transition{State(Underpaid), Store, "confirm-payment", State(Accepted)},  // store refunds whole amount
-	Transition{State(Underpaid), Store, "confirm-payment", State(Paid)},      // client pays missing amount
-	Transition{State(Underpaid), Store, "confirm-payment", State(Underpaid)}, // client pays a part of the missing amount
-	Transition{State(Underpaid), Store, "edit", State(Paid)},                 // store modifies the collection, the sum drops, paid sum is now enough
-	Transition{State(Underpaid), Store, "edit", State(Underpaid)},            // store modifies the collection, but it is still underpaid
-	Transition{State(Underpaid), Store, "message", State(Underpaid)},
+	Transition{State(Active), Bot, "confirm-payment", State(Active)},
+	Transition{State(Active), Client, "message", State(Active)},
+	Transition{State(Active), Client, "pay", State(Active)},              // becomes Paid if payment arrives
+	Transition{State(Active), Store, "confirm-payment", State(Accepted)}, // store refunds whole amount
+	Transition{State(Active), Store, "confirm-payment", State(Active)},   // client pays missing amount or a part of it
+	Transition{State(Active), Store, "edit", State(Active)},              // store modifies the collection
+	Transition{State(Active), Store, "message", State(Active)},
 }
 
 var TaskFSM = &FSM{

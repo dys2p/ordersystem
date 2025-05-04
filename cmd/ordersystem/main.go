@@ -235,8 +235,6 @@ func main() {
 	storeRouter.HandlerFunc(http.MethodPost, "/collection/:collid/mark-spam", srv.auth(srv.storeWithCollection(srv.storeCollMarkSpamPost)))
 	storeRouter.HandlerFunc(http.MethodGet, "/collection/:collid/message", srv.auth(srv.storeWithCollection(srv.storeCollMessageGet)))
 	storeRouter.HandlerFunc(http.MethodPost, "/collection/:collid/message", srv.auth(srv.storeWithCollection(srv.storeCollMessagePost)))
-	storeRouter.HandlerFunc(http.MethodGet, "/collection/:collid/price-rised", srv.auth(srv.storeWithCollection(srv.storeCollPriceRisedGet)))
-	storeRouter.HandlerFunc(http.MethodPost, "/collection/:collid/price-rised", srv.auth(srv.storeWithCollection(srv.storeCollPriceRisedPost)))
 	storeRouter.HandlerFunc(http.MethodGet, "/collection/:collid/return", srv.auth(srv.storeWithCollection(srv.storeCollReturnGet)))
 	storeRouter.HandlerFunc(http.MethodPost, "/collection/:collid/return", srv.auth(srv.storeWithCollection(srv.storeCollReturnPost)))
 	storeRouter.HandlerFunc(http.MethodGet, "/collection/:collid/reject", srv.auth(srv.storeWithCollection(srv.storeCollRejectGet)))
@@ -888,14 +886,7 @@ func (srv *Server) invoiceSettled(coll *ordersystem.Collection, invoice *bitpay.
 		return fmt.Errorf("error updating collection: %v", err)
 	}
 
-	var newState ordersystem.CollState
-	if paidCentsInTime+MaxDiscountCents >= coll.Due() {
-		newState = ordersystem.Paid
-	} else {
-		newState = ordersystem.Underpaid
-	}
-
-	return srv.DB.UpdateCollState(ordersystem.Bot, coll, newState, paidCentsInTime, fmt.Sprintf("Rechnung [%s](%s): Zahlungseingang wurde bestätigt: %s.", invoice.ID, srv.BitpayClient.InvoiceURL(invoice), html.FmtEuro(paidCentsInTime)))
+	return srv.DB.UpdateCollState(ordersystem.Bot, coll, ordersystem.Active, paidCentsInTime, fmt.Sprintf("Rechnung [%s](%s): Zahlungseingang wurde bestätigt: %s.", invoice.ID, srv.BitpayClient.InvoiceURL(invoice), html.FmtEuro(paidCentsInTime)))
 }
 
 // no Collection instances involved
@@ -1115,16 +1106,11 @@ func (srv *Server) storeCollConfirmPaymentPost(w http.ResponseWriter, r *http.Re
 
 	var paidAmount = int(math.Round(paidAmountFloat * 100.0)) // negative values are okay
 
-	// set to underpaid or paid
-
 	var newState ordersystem.CollState
-	switch {
-	case paidAmount == -1*coll.Paid():
+	if paidAmount == -1*coll.Paid() {
 		newState = ordersystem.Accepted
-	case paidAmount >= coll.Due():
-		newState = ordersystem.Paid
-	default:
-		newState = ordersystem.Underpaid
+	} else {
+		newState = ordersystem.Active
 	}
 
 	if err := srv.DB.UpdateCollState(ordersystem.Store, coll, newState, paidAmount, r.PostFormValue("confirm-payment-message")); err != nil {
@@ -1277,11 +1263,6 @@ func (srv *Server) storeCollEditPost(w http.ResponseWriter, r *http.Request, col
 		return err
 	}
 
-	// if the sum dropped, underpaid collection becomes paid
-	if coll.State == ordersystem.Underpaid && coll.Due() <= 0 {
-		coll.State = ordersystem.Paid
-	}
-
 	if err := srv.DB.UpdateCollAndTasks(coll); err != nil {
 		return err
 	}
@@ -1303,23 +1284,6 @@ func (srv *Server) storeCollMessagePost(w http.ResponseWriter, r *http.Request, 
 		return ErrNotFound
 	}
 	if err := srv.DB.CreateEvent(ordersystem.Store, coll, 0, r.PostFormValue("message")); err != nil {
-		return err
-	}
-	http.Redirect(w, r, coll.Link(), http.StatusSeeOther)
-	return nil
-}
-func (srv *Server) storeCollPriceRisedGet(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection) error {
-	if !coll.StoreCan("price-rised") {
-		return ErrNotFound
-	}
-	return html.StoreCollPriceRised.Execute(w, coll)
-}
-
-func (srv *Server) storeCollPriceRisedPost(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection) error {
-	if !coll.StoreCan("price-rised") {
-		return ErrNotFound
-	}
-	if err := srv.DB.UpdateCollState(ordersystem.Store, coll, ordersystem.Underpaid, 0, r.PostFormValue("price-rised-message")); err != nil {
 		return err
 	}
 	http.Redirect(w, r, coll.Link(), http.StatusSeeOther)
@@ -1458,7 +1422,7 @@ func (srv *Server) storeExport(w http.ResponseWriter, r *http.Request) error {
 	out.Write([]string{"vat_date", "id", "country", "gross", "vat_rate", "name"})
 
 	var colls []collWithPayDate
-	for _, state := range []ordersystem.CollState{ordersystem.Accepted, ordersystem.Archived, ordersystem.Finalized, ordersystem.NeedsRevise, ordersystem.Paid, ordersystem.Submitted, ordersystem.Underpaid} {
+	for _, state := range []ordersystem.CollState{ordersystem.Accepted, ordersystem.Archived, ordersystem.Finalized, ordersystem.NeedsRevise, ordersystem.Submitted, ordersystem.Active} {
 		collIDs, err := srv.DB.ReadColls(state)
 		if err != nil {
 			return err
@@ -1471,7 +1435,7 @@ func (srv *Server) storeExport(w http.ResponseWriter, r *http.Request) error {
 
 			var paydate string
 			for _, event := range coll.Log {
-				if event.NewState == ordersystem.Paid {
+				if event.Paid != 0 {
 					paydate = string(event.Date)
 					break
 				}

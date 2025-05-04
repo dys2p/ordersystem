@@ -77,7 +77,6 @@ var (
 	StoreCollEdit             = parse("common.html", "store.html", "store/collection-edit.html")
 	StoreCollMarkSpam         = parse("common.html", "store.html", "store/collection-mark-spam.html")
 	StoreCollMessage          = parse("common.html", "store.html", "store/collection-message.html")
-	StoreCollPriceRised       = parse("common.html", "store.html", "store/collection-price-rised.html")
 	StoreCollReturn           = parse("common.html", "store.html", "store/collection-return.html")
 	StoreCollReject           = parse("common.html", "store.html", "store/collection-reject.html")
 	StoreCollSubmit           = parse("common.html", "store.html", "store/collection-submit.html")

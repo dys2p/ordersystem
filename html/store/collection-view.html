@@ -4,31 +4,28 @@
 		<div class="alert alert-success mt-3" role="alert">{{.}}</div>
 	{{end}}
 	<p><strong>Status:</strong> {{.State.Description}}</p>
-	<p><strong>Summe:</strong> {{FmtEuro .Sum}}</p>
+	<p {{if lt .Paid .Sum}}class="alert alert-danger d-inline-block"{{end}}><strong>Bezahlt:</strong> {{FmtEuro .Paid}} von {{FmtEuro .Sum}}</p>
 	<p>
 		{{if .StoreCan "accept"}}
-			<a class="btn btn-success" href="/collection/{{$.ID}}/accept">Bestellauftrag akzeptieren</a>
+			<a class="btn btn-success" href="/collection/{{$.ID}}/accept">Akzeptieren</a>
 		{{end}}
 		{{if .StoreCan "confirm-payment"}}
-			<a class="btn btn-success" href="/collection/{{$.ID}}/confirm-payment">Zahlung vermerken</a>
+			<a class="btn btn-success" href="/collection/{{$.ID}}/confirm-payment">Zahlung</a>
 		{{end}}
 		{{if .StoreCan "confirm-pickup"}}
-			<a class="btn btn-success" href="/collection/{{$.ID}}/confirm-pickup">Wurde abgeholt</a>
+			<a class="btn btn-success" href="/collection/{{$.ID}}/confirm-pickup">Abgeholt</a>
 		{{end}}
 		{{if .StoreCan "confirm-reshipped"}}
-			<a class="btn btn-success" href="/collection/{{$.ID}}/confirm-reshipped">Wurde weiterverschickt</a>
+			<a class="btn btn-success" href="/collection/{{$.ID}}/confirm-reshipped">Weiterverschickt</a>
 		{{end}}
 		{{if .StoreCan "message"}}
-			<a class="btn btn-warning" href="/collection/{{$.ID}}/message">Nachricht hinterlassen</a>
+			<a class="btn btn-warning" href="/collection/{{$.ID}}/message">Nachricht</a>
 		{{end}}
 		{{if .StoreCan "edit"}}
-			<a class="btn btn-warning" href="/collection/{{$.ID}}/edit">Bestellauftrag bearbeiten</a>
+			<a class="btn btn-warning" href="/collection/{{$.ID}}/edit">Bearbeiten</a>
 		{{end}}
 		{{if .StoreCan "return"}}
 			<a class="btn btn-warning" href="/collection/{{$.ID}}/return">Zur Überarbeitung zurückgeben</a>
-		{{end}}
-		{{if .StoreCan "price-rised"}}
-			<a class="btn btn-warning" href="/collection/{{$.ID}}/price-rised">Preis ist gestiegen, Nachzahlung erforderlich</a>
 		{{end}}
 		{{if .StoreCan "reject"}}
 			<a class="btn btn-danger" href="/collection/{{$.ID}}/reject">Ablehnen</a>

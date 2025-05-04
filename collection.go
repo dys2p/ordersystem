@@ -197,7 +197,7 @@ func (coll *Collection) StoreCan(action string) bool {
 }
 
 func (coll *Collection) StoreCanTask(action string, task *Task) bool {
-	if coll.State == Paid || coll.State == Underpaid {
+	if coll.State == Active {
 		// if underpaid, store must assess the risk
 		return TaskFSM.CanAction(Store, State(task.State), action)
 	}

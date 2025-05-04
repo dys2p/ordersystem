@@ -51,32 +51,8 @@
 		<p>Keine Bestellungen</p>
 	{{end}}
 
-	<h1>Unterbezahlt</h1>
-	{{with .ReadColls "underpaid"}}
-		<table class="table">
-			<thead>
-				<tr>
-					<th>Bestellnummer</th>
-					<th>Letztes Event</th>
-				</tr>
-			</thead>
-			<tbody>
-				{{range .}}
-					{{with $.DB.ReadColl .}}
-						<tr>
-							<td><a href="/collection/{{.ID}}">{{.ID}}</a></td>
-							<td>{{.MaxDate}}</td>
-						</tr>
-					{{end}}
-				{{end}}
-			</tbody>
-		</table>
-	{{else}}
-		<p>Keine Bestellungen</p>
-	{{end}}
-
-	<h1>Bezahlt</h1>
-	{{with .ReadColls "paid"}}
+	<h1>Aktiv</h1>
+	{{with .ReadColls "active"}}
 		<table class="table">
 			<thead>
 				<tr>
