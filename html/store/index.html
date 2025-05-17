@@ -58,7 +58,6 @@
 				<tr>
 					<th>Bestellnummer</th>
 					<th>Einzelaufträge</th>
-					<th>Davon noch nicht bestellt</th>
 					<th>Letztes Event</th>
 					<th>Summe</th>
 					<th>Saldo</th>
@@ -69,8 +68,22 @@
 					{{with $.DB.ReadColl .}}
 						<tr>
 							<td><a href="/collection/{{.ID}}">{{.ID}}</a></td>
-							<td class="small">{{range .Tasks}}{{with .Merchant}}{{Cut . 25}}{{else}}<i>unbenannt</i>{{end}}<br>{{end}}</td>
-							<td>{{with .NumTasksAt "not-ordered-yet"}}{{.}}{{end}}</td>
+							<td class="small">
+								{{range .Tasks}}
+									{{if eq .State "not-ordered-yet"}}
+										<span class="badge bg-danger">noch nicht bestellt</span>
+									{{else if eq .State "ordered"}}
+										<span class="badge bg-warning">bestellt</span>
+									{{else if eq .State "ready"}}
+										<span class="badge bg-success">eingetroffen</span>
+									{{else if eq .State "fetched"}}
+										<span class="badge bg-success">abgeholt</span>
+									{{else if eq .State "reshipped"}}
+										<span class="badge bg-success">weiterverschickt</span>
+									{{end}}
+									{{with .Merchant}}{{Cut . 25}}{{else}}<i>unbenannt</i>{{end}}<br>
+								{{end}}
+							</td>
 							<td>{{.MaxDate}}</td>
 							<td>{{FmtEuro .Sum}}</td>
 							<td class="{{if lt .Balance 0}}text-danger{{else}}text-success{{end}}">{{FmtEuro .Balance}}</td>
