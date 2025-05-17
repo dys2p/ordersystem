@@ -38,6 +38,12 @@ func FmtMachine(cents int) string {
 
 func parse(fn ...string) *template.Template {
 	t := template.New("html").Funcs(template.FuncMap{
+		"Cut":        func(s string, maxlen int) string {
+			if len(s) > maxlen+3 {
+				return s[:maxlen]+"..."
+			}
+			return s
+		},
 		"FmtEuro":    FmtEuro,
 		"FmtMachine": FmtMachine,
 		"Markdown": func(input string) template.HTML {

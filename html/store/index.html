@@ -69,7 +69,7 @@
 					{{with $.DB.ReadColl .}}
 						<tr>
 							<td><a href="/collection/{{.ID}}">{{.ID}}</a></td>
-							<td>{{.NumTasks}}</td>
+							<td class="small">{{range .Tasks}}{{with .Merchant}}{{Cut . 25}}{{else}}<i>unbenannt</i>{{end}}<br>{{end}}</td>
 							<td>{{with .NumTasksAt "not-ordered-yet"}}{{.}}{{end}}</td>
 							<td>{{.MaxDate}}</td>
 							<td>{{FmtEuro .Sum}}</td>
