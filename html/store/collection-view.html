@@ -9,6 +9,9 @@
 		{{if .StoreCan "accept"}}
 			<a class="btn btn-success" href="/collection/{{$.ID}}/accept">Akzeptieren</a>
 		{{end}}
+		{{if .StoreCan "activate"}}
+			<a class="btn btn-success" href="/collection/{{$.ID}}/activate">Aktivieren</a>
+		{{end}}
 		{{if .StoreCan "confirm-payment"}}
 			<a class="btn btn-success" href="/collection/{{$.ID}}/confirm-payment">Zahlung</a>
 		{{end}}

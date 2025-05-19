@@ -217,6 +217,8 @@ func main() {
 	storeRouter.HandlerFunc(http.MethodGet, "/collection/:collid", srv.auth(srv.storeWithCollection(srv.storeCollViewGet)))
 	storeRouter.HandlerFunc(http.MethodGet, "/collection/:collid/accept", srv.auth(srv.storeWithCollection(srv.storeCollAcceptGet)))
 	storeRouter.HandlerFunc(http.MethodPost, "/collection/:collid/accept", srv.auth(srv.storeWithCollection(srv.storeCollAcceptPost)))
+	storeRouter.HandlerFunc(http.MethodGet, "/collection/:collid/activate", srv.auth(srv.storeWithCollection(srv.storeCollActivateGet)))
+	storeRouter.HandlerFunc(http.MethodPost, "/collection/:collid/activate", srv.auth(srv.storeWithCollection(srv.storeCollActivatePost)))
 	storeRouter.HandlerFunc(http.MethodGet, "/collection/:collid/confirm-payment", srv.auth(srv.storeWithCollection(srv.storeCollConfirmPaymentGet)))
 	storeRouter.HandlerFunc(http.MethodPost, "/collection/:collid/confirm-payment", srv.auth(srv.storeWithCollection(srv.storeCollConfirmPaymentPost)))
 	storeRouter.HandlerFunc(http.MethodGet, "/collection/:collid/confirm-pickup", srv.auth(srv.storeWithCollection(srv.storeCollConfirmPickupGet)))
@@ -977,6 +979,25 @@ func (srv *Server) storeCollAcceptPost(w http.ResponseWriter, r *http.Request, c
 		return err
 	}
 	srv.notify(r.Context(), "Der Auftrag %s wurde akzeptiert.", coll.ID)
+	http.Redirect(w, r, coll.Link(), http.StatusSeeOther)
+	return nil
+}
+
+func (srv *Server) storeCollActivateGet(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection) error {
+	if !coll.StoreCan("activate") {
+		return ErrNotFound
+	}
+	return html.StoreCollActivate.Execute(w, coll)
+}
+
+func (srv *Server) storeCollActivatePost(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection) error {
+	if !coll.StoreCan("activate") {
+		return ErrNotFound
+	}
+	if err := srv.DB.UpdateCollState(ordersystem.Store, coll, ordersystem.Active, 0, ""); err != nil {
+		return err
+	}
+	srv.notify(r.Context(), "Der Auftrag %s wurde aktiviert.", coll.ID)
 	http.Redirect(w, r, coll.Link(), http.StatusSeeOther)
 	return nil
 }

@@ -38,9 +38,9 @@ func FmtMachine(cents int) string {
 
 func parse(fn ...string) *template.Template {
 	t := template.New("html").Funcs(template.FuncMap{
-		"Cut":        func(s string, maxlen int) string {
+		"Cut": func(s string, maxlen int) string {
 			if len(s) > maxlen+3 {
-				return s[:maxlen]+"..."
+				return s[:maxlen] + "..."
 			}
 			return s
 		},
@@ -76,6 +76,7 @@ var (
 	StoreIndex                = parse("common.html", "store.html", "store/index.html")
 	StoreLogin                = parse("common.html", "store.html", "store/login.html")
 	StoreCollAccept           = parse("common.html", "store.html", "store/collection-accept.html")
+	StoreCollActivate         = parse("common.html", "store.html", "store/collection-activate.html")
 	StoreCollConfirmPayment   = parse("common.html", "store.html", "store/collection-confirm-payment.html")
 	StoreCollConfirmPickup    = parse("common.html", "store.html", "store/collection-confirm-pickup.html")
 	StoreCollConfirmReshipped = parse("common.html", "store.html", "store/collection-confirm-reshipped.html")

@@ -47,6 +47,7 @@ var CollFSM = &FSM{
 	Transition{State(Accepted), Store, "confirm-payment", State(Active)},
 	Transition{State(Accepted), Store, "delete", State(Deleted)},
 	Transition{State(Accepted), Store, "edit", State(Accepted)},
+	Transition{State(Accepted), Store, "activate", State(Active)},
 	Transition{State(Accepted), Store, "return", State(NeedsRevise)},
 	Transition{State(Draft), Bot, "delete", State(Deleted)},
 	Transition{State(Draft), Client, "delete", State(Deleted)},
@@ -82,6 +83,7 @@ var CollFSM = &FSM{
 	Transition{State(Active), Store, "confirm-payment", State(Active)},   // client pays missing amount or a part of it
 	Transition{State(Active), Store, "edit", State(Active)},              // store modifies the collection
 	Transition{State(Active), Store, "message", State(Active)},
+	Transition{State(Finalized), Store, "activate", State(Active)},
 }
 
 var TaskFSM = &FSM{
