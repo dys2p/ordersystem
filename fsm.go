@@ -83,6 +83,9 @@ var CollFSM = &FSM{
 	Transition{State(Active), Store, "confirm-payment", State(Active)},   // client pays missing amount or a part of it
 	Transition{State(Active), Store, "edit", State(Active)},              // store modifies the collection
 	Transition{State(Active), Store, "message", State(Active)},
+	Transition{State(Active), Client, "message", State(Active)},
+	Transition{State(Accepted), Store, "message", State(Accepted)},
+	Transition{State(Accepted), Client, "message", State(Accepted)},
 	Transition{State(Finalized), Store, "activate", State(Active)},
 }
 
