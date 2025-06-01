@@ -2,8 +2,10 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
+	"github.com/dys2p/eco/ssg"
 	"github.com/dys2p/ordersystem"
 	"github.com/dys2p/ordersystem/html"
 	"github.com/julienschmidt/httprouter"
@@ -30,13 +32,18 @@ func (srv *Server) client(f HandlerErrFunc) http.HandlerFunc {
 			} else {
 				msg = fmt.Sprintf("Interner Fehler: %s", err.Error())
 			}
-			html.ClientError.Execute(w, struct {
-				AuthorizedCollID string
-				Msg              string
+			if err := html.ClientError.Execute(w, struct {
+				html.TemplateData
+				Msg string
 			}{
-				srv.sessionCollID(r),
-				msg,
-			})
+				TemplateData: html.TemplateData{
+					TemplateData:     ssg.MakeTemplateData(srv.Langs, r),
+					AuthorizedCollID: srv.sessionCollID(r),
+				},
+				Msg: msg,
+			}); err != nil {
+				log.Printf("error executing error template: %v", err)
+			}
 		}
 	}
 }
