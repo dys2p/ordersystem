@@ -23,7 +23,7 @@ func (task *Task) Writeable(actor Actor) bool {
 		return s == Failed || s == NotOrderedYet
 	case Store:
 		s := task.State
-		return s == Failed || s == NotOrderedYet || s == Ordered || s == Ready
+		return s == Failed || s == NotOrderedYet || s == Ordered || s == Ready || s == Fetched || s == Reshipped
 	default:
 		return false
 	}
