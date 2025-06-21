@@ -264,77 +264,8 @@
 	{{end}}
 
 	<h4>Bestellung</h4>
-	{{range .Tasks}}
-		<div class="card mb-3">
-			<div class="card-header">
-				<strong>{{.ID}}</strong>{{with .Merchant}}: {{.}}{{end}}
-			</div>
-			<div class="card-header">
-				Status: {{.State.Description}}
-				{{if $.Actor.IsStore}}
-					{{if $.StoreCanTask "confirm-arrived"   .}}<a class="btn btn-sm btn-success" href="/collection/{{$.ID}}/confirm-arrived/{{.ID}}">Ist angekommen</a>{{end}}
-					{{if $.StoreCanTask "confirm-ordered"   .}}<a class="btn btn-sm btn-success" href="/collection/{{$.ID}}/confirm-ordered/{{.ID}}">Als bestellt markieren</a>{{end}}
-					{{if $.StoreCanTask "confirm-pickup"    .}}<a class="btn btn-sm btn-success" href="/collection/{{$.ID}}/confirm-pickup/{{.ID}}">Als abgeholt markieren</a>{{end}}
-					{{if $.StoreCanTask "confirm-reshipped" .}}<a class="btn btn-sm btn-success" href="/collection/{{$.ID}}/confirm-reshipped/{{.ID}}">Als weiterverschickt markieren</a>{{end}}
-					{{if $.StoreCanTask "mark-failed"       .}}<a class="btn btn-sm btn-warning" href="/collection/{{$.ID}}/mark-failed/{{.ID}}">Ist gescheitert</a>{{end}}
-				{{end}}
-			</div>
-			<div class="card-body py-1">
-				<table class="table table-sm mb-0">
-					<thead>
-						<tr>
-							<th>Link</th>
-							<th>Eigenschaften</th>
-							<th>Anzahl</th>
-							<th>Einzelpreis</th>
-							<th>Gesamtpreis</th>
-						</tr>
-					</thead>
-					<tbody>
-						{{range .Articles}}
-							<tr>
-								<td>
-									<code role="button" onclick="copyToClipboard(this, this.parentElement.querySelector('[data-success]'), this.parentElement.querySelector('[data-failed]'));">
-										{{.Link}}
-										<i class="fa-solid fa-copy"></i>
-									</code>
-									<div class="badge bg-success d-none" data-success><i class="fa-solid fa-check"></i></div>
-									<div class="badge bg-danger  d-none" data-failed ><i class="fa-solid fa-xmark"></i></div>
-								</td>
-								<td>{{.Properties}}</td>
-								<td>{{.Quantity}}</td>
-								<td>{{FmtEuro .Price}}</td>
-								<td>{{FmtEuro .Sum}}</td>
-							</tr>
-						{{end}}
-						<tr>
-							<td colspan="4">Versandkosten</td>
-							<td>{{FmtEuro .ShippingFee}}</td>
-						</tr>
-						{{range .AddCosts}}
-							<tr>
-								<td colspan="4">{{.Name}}</td>
-								<td>{{FmtEuro .Price}}</td>
-							</tr>
-						{{end}}
-					</tbody>
-					<tbody class="table-group-divider">
-						<tr>
-							<td colspan="4">Zwischensumme</td>
-							<td>{{FmtEuro .Sum}}</td>
-						</tr>
-						<tr>
-							<td colspan="4">+ unsere Gebühr (10 € + 5 %)</td>
-							<td>{{FmtEuro .Fee}}</td>
-						</tr>
-						<tr>
-							<td style="border-bottom: none;" colspan="4">= Gesamtsumme</td>
-							<td style="border-bottom: none;"><strong>{{FmtEuro .TotalSum}}</strong></td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-		</div>
+	{{range .TaskViews}}
+		{{template "task-view" .}}
 	{{else}}
 		<p>Der Bestellauftrag ist noch leer.</p>
 	{{end}}
@@ -378,7 +309,7 @@
 			</tr>
 		</thead>
 		<tbody>
-			{{range .Tasks}}
+			{{range .TaskViews}}
 				<tr>
 					<td>{{.ID}}{{with .Merchant}}: {{.}}{{end}}</td>
 					<td>{{FmtEuro .TotalSum}}</td>
@@ -396,4 +327,75 @@
 			</tr>
 		</tbody>
 	</table>
+{{end}}
+
+{{define "task-view"}}
+	<div class="card mb-3">
+		<div class="card-header">
+			<strong>{{.ID}}</strong>{{with .Merchant}}: {{.}}{{end}}
+		</div>
+		<div class="card-header">
+			Status: {{.State.Description}}
+			{{if .StoreBtnArrived  }}<a class="btn btn-sm btn-success" href="/collection/{{.Collection.ID}}/confirm-arrived/{{  .ID}}">Ist angekommen</a>{{end}}
+			{{if .StoreBtnFailed   }}<a class="btn btn-sm btn-success" href="/collection/{{.Collection.ID}}/mark-failed/{{      .ID}}">Ist gescheitert</a>{{end}}
+			{{if .StoreBtnOrdered  }}<a class="btn btn-sm btn-success" href="/collection/{{.Collection.ID}}/confirm-ordered/{{  .ID}}">Als bestellt markieren</a>{{end}}
+			{{if .StoreBtnPickedUp }}<a class="btn btn-sm btn-success" href="/collection/{{.Collection.ID}}/confirm-pickup/{{   .ID}}">Als abgeholt markieren</a>{{end}}
+			{{if .StoreBtnReshipped}}<a class="btn btn-sm btn-success" href="/collection/{{.Collection.ID}}/confirm-reshipped/{{.ID}}">Als weiterverschickt markieren</a>{{end}}
+		</div>
+		<div class="card-body py-1">
+			<table class="table table-sm mb-0">
+				<thead>
+					<tr>
+						<th>Link</th>
+						<th>Eigenschaften</th>
+						<th>Anzahl</th>
+						<th>Einzelpreis</th>
+						<th>Gesamtpreis</th>
+					</tr>
+				</thead>
+				<tbody>
+					{{range .Articles}}
+						<tr>
+							<td>
+								<code role="button" onclick="copyToClipboard(this, this.parentElement.querySelector('[data-success]'), this.parentElement.querySelector('[data-failed]'));">
+									{{.Link}}
+									<i class="fa-solid fa-copy"></i>
+								</code>
+								<div class="badge bg-success d-none" data-success><i class="fa-solid fa-check"></i></div>
+								<div class="badge bg-danger  d-none" data-failed ><i class="fa-solid fa-xmark"></i></div>
+							</td>
+							<td>{{.Properties}}</td>
+							<td>{{.Quantity}}</td>
+							<td>{{FmtEuro .Price}}</td>
+							<td>{{FmtEuro .Sum}}</td>
+						</tr>
+					{{end}}
+					<tr>
+						<td colspan="4">Versandkosten</td>
+						<td>{{FmtEuro .ShippingFee}}</td>
+					</tr>
+					{{range .AddCosts}}
+						<tr>
+							<td colspan="4">{{.Name}}</td>
+							<td>{{FmtEuro .Price}}</td>
+						</tr>
+					{{end}}
+				</tbody>
+				<tbody class="table-group-divider">
+					<tr>
+						<td colspan="4">Zwischensumme</td>
+						<td>{{FmtEuro .Sum}}</td>
+					</tr>
+					<tr>
+						<td colspan="4">+ unsere Gebühr (10 € + 5 %)</td>
+						<td>{{FmtEuro .Fee}}</td>
+					</tr>
+					<tr>
+						<td style="border-bottom: none;" colspan="4">= Gesamtsumme</td>
+						<td style="border-bottom: none;"><strong>{{FmtEuro .TotalSum}}</strong></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
 {{end}}

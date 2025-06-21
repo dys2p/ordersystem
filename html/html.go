@@ -11,6 +11,7 @@ import (
 
 	"github.com/dys2p/eco/captcha"
 	"github.com/dys2p/eco/ssg"
+	"github.com/dys2p/ordersystem"
 	"gitlab.com/golang-commonmark/markdown"
 )
 
@@ -94,3 +95,14 @@ var (
 	StoreTaskConfirmReshipped = parse("common.html", "store.html", "store/task-confirm-reshipped.html")
 	StoreTaskMarkFailed       = parse("common.html", "store.html", "store/task-mark-failed.html")
 )
+
+// template "task-view"
+type TaskView struct {
+	*ordersystem.Task
+	Collection        *ordersystem.Collection
+	StoreBtnArrived   bool
+	StoreBtnFailed    bool
+	StoreBtnOrdered   bool
+	StoreBtnPickedUp  bool
+	StoreBtnReshipped bool
+}

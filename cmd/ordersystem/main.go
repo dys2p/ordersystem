@@ -271,6 +271,22 @@ type collView struct {
 	Notifications []string
 }
 
+func (cv collView) TaskViews() []html.TaskView {
+	var taskViews = make([]html.TaskView, len(cv.Tasks))
+	for i, task := range cv.Tasks {
+		taskViews[i] = html.TaskView{
+			Task:              task,
+			Collection:        cv.Collection,
+			StoreBtnArrived:   cv.Actor == ordersystem.Store && cv.StoreCanTask("confirm-arrived", task),
+			StoreBtnFailed:    cv.Actor == ordersystem.Store && cv.StoreCanTask("mark-failed", task),
+			StoreBtnOrdered:   cv.Actor == ordersystem.Store && cv.StoreCanTask("confirm-ordered", task),
+			StoreBtnPickedUp:  cv.Actor == ordersystem.Store && cv.StoreCanTask("confirm-pickup", task),
+			StoreBtnReshipped: cv.Actor == ordersystem.Store && cv.StoreCanTask("confirm-reshipped", task),
+		}
+	}
+	return taskViews
+}
+
 type clientHello struct {
 	html.TemplateData
 	Notifications []string
@@ -1026,19 +1042,13 @@ func (srv *Server) storeCollDeletePost(w http.ResponseWriter, r *http.Request, c
 	return nil
 }
 
-type taskView struct {
-	html.TemplateData
-	*ordersystem.Task
-	CollLink string
-}
-
 func (srv *Server) storeTaskConfirmArrivedGet(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection, task *ordersystem.Task) error {
 	if !coll.StoreCanTask("confirm-arrived", task) {
 		return ErrNotFound
 	}
-	return html.StoreTaskConfirmArrived.Execute(w, taskView{
-		Task:     task,
-		CollLink: coll.Link(),
+	return html.StoreTaskConfirmArrived.Execute(w, html.TaskView{
+		Task:       task,
+		Collection: coll,
 	})
 }
 
@@ -1057,9 +1067,9 @@ func (srv *Server) storeTaskConfirmOrderedGet(w http.ResponseWriter, r *http.Req
 	if !coll.StoreCanTask("confirm-ordered", task) {
 		return ErrNotFound
 	}
-	return html.StoreTaskConfirmOrdered.Execute(w, taskView{
-		Task:     task,
-		CollLink: coll.Link(),
+	return html.StoreTaskConfirmOrdered.Execute(w, html.TaskView{
+		Task:       task,
+		Collection: coll,
 	})
 }
 
@@ -1078,9 +1088,9 @@ func (srv *Server) storeTaskMarkFailedGet(w http.ResponseWriter, r *http.Request
 	if !coll.StoreCanTask("mark-failed", task) {
 		return ErrNotFound
 	}
-	return html.StoreTaskMarkFailed.Execute(w, taskView{
-		Task:     task,
-		CollLink: coll.Link(),
+	return html.StoreTaskMarkFailed.Execute(w, html.TaskView{
+		Task:       task,
+		Collection: coll,
 	})
 }
 
@@ -1220,9 +1230,9 @@ func (srv *Server) storeTaskConfirmPickupGet(w http.ResponseWriter, r *http.Requ
 	if !coll.StoreCanTask("confirm-pickup", task) {
 		return ErrNotFound
 	}
-	return html.StoreTaskConfirmPickup.Execute(w, taskView{
-		Task:     task,
-		CollLink: coll.Link(),
+	return html.StoreTaskConfirmPickup.Execute(w, html.TaskView{
+		Task:       task,
+		Collection: coll,
 	})
 }
 
@@ -1245,9 +1255,9 @@ func (srv *Server) storeTaskConfirmReshippedGet(w http.ResponseWriter, r *http.R
 	if !coll.StoreCanTask("confirm-reshipped", task) {
 		return ErrNotFound
 	}
-	return html.StoreTaskConfirmReshipped.Execute(w, taskView{
-		Task:     task,
-		CollLink: coll.Link(),
+	return html.StoreTaskConfirmReshipped.Execute(w, html.TaskView{
+		Task:       task,
+		Collection: coll,
 	})
 }
 

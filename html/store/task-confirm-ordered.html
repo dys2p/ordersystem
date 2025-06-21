@@ -1,9 +1,9 @@
 {{define "store"}}
-	<h1>Einzelauftrag als ausgeführt markieren</h1>
-	{{template "task" .}}
+	<h1>Teilauftrag als ausgeführt markieren</h1>
+	{{template "task-view" .}}
 	<form method="post">
 		<div class="text-end">
-			<a class="btn btn-secondary" href="{{.CollLink}}">Abbrechen und zurück</a>
+			<a class="btn btn-secondary" href="{{.Collection.Link}}">Abbrechen und zurück</a>
 			<button class="btn btn-success" type="submit">Einzelauftrag als ausgeführt markieren</button>
 		</div>
 	</form>
