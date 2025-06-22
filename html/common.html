@@ -256,21 +256,21 @@
 
 {{define "collection-view"}}
 	{{if .ClientContact}}
-		<h4>Kontaktmöglichkeit für Rückfragen</h4>
+		<h2>Kontaktmöglichkeit für Rückfragen</h2>
 		<p class="ms-3">
 			<strong>{{.ClientContactProtocol}}</strong>
 			{{.ClientContact}}
 		</p>
 	{{end}}
 
-	<h4>Bestellung</h4>
+	<h2>Bestellung</h2>
 	{{range .TaskViews}}
 		{{template "task-view" .}}
 	{{else}}
 		<p>Der Bestellauftrag ist noch leer.</p>
 	{{end}}
 
-	<h4>Abholung oder Weiterversand</h4>
+	<h2>Abholung oder Weiterversand</h2>
 	{{if eq .DeliveryMethod "store"}}
 		<p>Ich hole die Ware <strong>unter Nennung der Auftragsnummer</strong> im Ladenlokal ab.</p>
 	{{else if eq .DeliveryMethod "locker"}}
@@ -300,7 +300,7 @@
 		</div>
 	{{end}}
 
-	<h4>Zusammenfassung</h4>
+	<h2>Zusammenfassung</h2>
 	<table class="table mb-5">
 		<thead>
 			<tr>
