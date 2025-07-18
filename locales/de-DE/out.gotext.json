@@ -2,121 +2,6 @@
     "language": "de-DE",
     "messages": [
         {
-            "id": "Monero or Bitcoin",
-            "message": "Monero or Bitcoin",
-            "translation": "Monero oder Bitcoin"
-        },
-        {
-            "id": "Cash in Foreign Currency",
-            "message": "Cash in Foreign Currency",
-            "translation": "Bargeld in Fremdwährung"
-        },
-        {
-            "id": "Cash",
-            "message": "Cash",
-            "translation": "Bargeld"
-        },
-        {
-            "id": "SEPA Bank Transfer",
-            "message": "SEPA Bank Transfer",
-            "translation": "SEPA-Banküberweisung"
-        },
-        {
-            "id": "Australian dollars",
-            "message": "Australian dollars",
-            "translation": "Australische Dollar"
-        },
-        {
-            "id": "Bulgarian lev",
-            "message": "Bulgarian lev",
-            "translation": "Bulgarische Lew"
-        },
-        {
-            "id": "Canadian dollars",
-            "message": "Canadian dollars",
-            "translation": "Kanadische Dollar"
-        },
-        {
-            "id": "Swiss francs",
-            "message": "Swiss francs",
-            "translation": "Schweizer Franken"
-        },
-        {
-            "id": "Chinese renminbi",
-            "message": "Chinese renminbi",
-            "translation": "Chinesische Renminbi"
-        },
-        {
-            "id": "Czech koruna",
-            "message": "Czech koruna",
-            "translation": "Tschechische Kronen"
-        },
-        {
-            "id": "Danish krone",
-            "message": "Danish krone",
-            "translation": "Dänische Kronen"
-        },
-        {
-            "id": "Pound sterling",
-            "message": "Pound sterling",
-            "translation": "Britische Pfund"
-        },
-        {
-            "id": "Icelandic króna",
-            "message": "Icelandic króna",
-            "translation": "Isländische Kronen"
-        },
-        {
-            "id": "Japanese yen",
-            "message": "Japanese yen",
-            "translation": "Japanische Yen"
-        },
-        {
-            "id": "New Israeli shekel (NIS)",
-            "message": "New Israeli shekel (NIS)",
-            "translation": "Neue israelische Schekel (NIS)"
-        },
-        {
-            "id": "Norwegian krone",
-            "message": "Norwegian krone",
-            "translation": "Norwegische Kronen"
-        },
-        {
-            "id": "New Zealand dollars",
-            "message": "New Zealand dollars",
-            "translation": "Neuseeland-Dollar"
-        },
-        {
-            "id": "Polish złoty",
-            "message": "Polish złoty",
-            "translation": "Polnische Złoty"
-        },
-        {
-            "id": "Romanian leu",
-            "message": "Romanian leu",
-            "translation": "Rumänische Leu"
-        },
-        {
-            "id": "Serbian dinar",
-            "message": "Serbian dinar",
-            "translation": "Serbische Dinar"
-        },
-        {
-            "id": "Swedish krona",
-            "message": "Swedish krona",
-            "translation": "Schwedische Kronen"
-        },
-        {
-            "id": "New Taiwan dollars",
-            "message": "New Taiwan dollars",
-            "translation": "Taiwan-Dollar"
-        },
-        {
-            "id": "United States dollars",
-            "message": "United States dollars",
-            "translation": "US-Dollar"
-        },
-        {
             "id": "Delivery",
             "message": "Delivery",
             "translation": "Versand"
@@ -140,6 +25,11 @@
             "id": "DHL parcel, franked digitally",
             "message": "DHL parcel, franked digitally",
             "translation": "DHL-Paket digital frankiert"
+        },
+        {
+            "id": "myflexbox Locker via DPD (Germany only)",
+            "message": "myflexbox Locker via DPD (Germany only)",
+            "translation": "myflexbox-Abholstation via DPD (nur nach Deutschland)"
         },
         {
             "id": "Legal",
@@ -247,9 +137,9 @@
             "translation": "Deutschland"
         },
         {
-            "id": "New opening hours!",
-            "message": "New opening hours!",
-            "translation": "Neue Öffnungszeiten!"
+            "id": "Opening hours",
+            "message": "Opening hours",
+            "translation": "Öffnungszeiten"
         },
         {
             "id": "Mon+Thu 2pm-6pm",
@@ -260,6 +150,11 @@
             "id": "Tue+Wed+Fri+Sat 10am-2pm",
             "message": "Tue+Wed+Fri+Sat 10am-2pm",
             "translation": "Di+Mi+Fr+Sa 10-14 Uhr"
+        },
+        {
+            "id": "See here for short-term changes",
+            "message": "See here for short-term changes",
+            "translation": "Sieh hier für kurzfristige Änderungen"
         },
         {
             "id": "Got an idea or found an error? Drop us a note!",
