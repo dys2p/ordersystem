@@ -102,6 +102,7 @@
 			<thead>
 				<tr>
 					<th>Bestellnummer</th>
+					<th>Einzelaufträge</th>
 					<th>Letztes Event</th>
 					<th>Saldo</th>
 				</tr>
@@ -111,6 +112,11 @@
 					{{with $.DB.ReadColl .}}
 						<tr>
 							<td><a href="/collection/{{.ID}}">{{.ID}}</a></td>
+							<td class="small">
+								{{range .Tasks}}
+									{{with .Merchant}}{{Cut . 25}}{{else}}<i>unbenannt</i>{{end}}<br>
+								{{end}}
+							</td>
 							<td>{{.MaxDate}}</td>
 							<td class="{{if lt .Balance 0}}text-danger{{else}}text-success{{end}}">{{FmtEuro .Balance}}</td>
 						</tr>
