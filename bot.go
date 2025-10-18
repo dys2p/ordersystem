@@ -3,6 +3,8 @@ package ordersystem
 import (
 	"log"
 	"time"
+
+	"github.com/dys2p/eco/delivery"
 )
 
 // Bot runs some automatic transitions.
@@ -31,7 +33,11 @@ func (db *DB) BotArchive(coll *Collection) error {
 		return err
 	}
 	if since > 2*7*24*time.Hour && coll.Due() == 0 { // more than two weeks and we're even
-		coll.ClientInput = ClientInput{} // clear data
+		coll.ClientContact = ""
+		coll.ClientContactProtocol = ""
+		coll.DeliveryAddress = delivery.Address{}
+		coll.DeliveryTrackingIDs = nil
+		// keep DeliveryMethod and country
 		if err := db.UpdateCollAndTasks(coll); err != nil {
 			return err
 		}

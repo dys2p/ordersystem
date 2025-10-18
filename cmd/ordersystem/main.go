@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"encoding/csv"
+	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
@@ -416,7 +417,48 @@ func (srv *Server) clientCollEditPost(w http.ResponseWriter, r *http.Request, co
 	if !coll.ClientCan("edit") {
 		return ErrNotFound
 	}
-	if err := coll.MergeJSON(ordersystem.Client, r.PostFormValue("data")); err != nil {
+
+	var data struct {
+		ClientContact             string               `json:"client-contact"`
+		ClientContactProtocol     string               `json:"client-contact-protocol"`
+		ShippingAddressSupplement string               `json:"shipping-address-supplement"`
+		ShippingFirstName         string               `json:"shipping-first-name"`
+		ShippingLastName          string               `json:"shipping-last-name"`
+		ShippingPostcode          string               `json:"shipping-postcode"`
+		ShippingService           string               `json:"shipping-service"`
+		ShippingStreet            string               `json:"shipping-street"`
+		ShippingStreetNumber      string               `json:"shipping-street-number"`
+		ShippingTown              string               `json:"shipping-town"`
+		Tasks                     ordersystem.TaskList `json:"tasks"`
+		DeliveryMethod            string               `json:"delivery-method"`
+	}
+	if err := json.Unmarshal([]byte(r.PostFormValue("data")), &data); err != nil {
+		return fmt.Errorf("unmarshaling user input: %w", err)
+	}
+
+	var untrustedInput = *coll // copy
+
+	var deliveryGrossPrice = 0
+	for _, s := range coll.ShippingServices() {
+		if s.ID == data.ShippingService {
+			deliveryGrossPrice = s.MinCost
+		}
+	}
+
+	untrustedInput.ClientContact = data.ClientContact
+	untrustedInput.ClientContactProtocol = data.ClientContactProtocol
+	untrustedInput.DeliveryMethodID = data.DeliveryMethod
+	untrustedInput.DeliveryGrossPrice = deliveryGrossPrice
+	untrustedInput.ShippingServiceID = data.ShippingService
+	untrustedInput.DeliveryAddress.FirstName = data.ShippingFirstName
+	untrustedInput.DeliveryAddress.LastName = data.ShippingLastName
+	untrustedInput.DeliveryAddress.Supplement = data.ShippingAddressSupplement
+	untrustedInput.DeliveryAddress.Street = data.ShippingStreet
+	untrustedInput.DeliveryAddress.HouseNumber = data.ShippingStreetNumber
+	untrustedInput.DeliveryAddress.Postcode = data.ShippingPostcode
+	untrustedInput.DeliveryAddress.City = data.ShippingTown
+	untrustedInput.Tasks = data.Tasks
+	if err := coll.Merge(ordersystem.Client, &untrustedInput); err != nil {
 		return err
 	}
 	if err := srv.DB.UpdateCollAndTasks(coll); err != nil {
@@ -1290,10 +1332,44 @@ func (srv *Server) storeCollEditPost(w http.ResponseWriter, r *http.Request, col
 	if !coll.StoreCan("edit") {
 		return ErrNotFound
 	}
-	if err := coll.MergeJSON(ordersystem.Store, r.PostFormValue("data")); err != nil {
-		return err
+
+	var data struct {
+		ClientContact             string               `json:"client-contact"`
+		ClientContactProtocol     string               `json:"client-contact-protocol"`
+		ShippingAddressSupplement string               `json:"shipping-address-supplement"`
+		ShippingFirstName         string               `json:"shipping-first-name"`
+		ShippingLastName          string               `json:"shipping-last-name"`
+		ShippingPostcode          string               `json:"shipping-postcode"`
+		ShippingService           string               `json:"shipping-service"`
+		ShippingStreet            string               `json:"shipping-street"`
+		ShippingStreetNumber      string               `json:"shipping-street-number"`
+		ShippingTown              string               `json:"shipping-town"`
+		Tasks                     ordersystem.TaskList `json:"tasks"`
+		DeliveryMethod            string               `json:"delivery-method"`
+		ReshippingFee             int                  `json:"reshipping-fee"`
+	}
+	if err := json.Unmarshal([]byte(r.PostFormValue("data")), &data); err != nil {
+		return fmt.Errorf("unmarshaling user input: %w", err)
 	}
 
+	var deliveryGrossPrice = data.ReshippingFee
+
+	coll.ClientContact = data.ClientContact
+	coll.ClientContactProtocol = data.ClientContactProtocol
+	coll.DeliveryMethodID = data.DeliveryMethod
+	coll.DeliveryGrossPrice = deliveryGrossPrice
+	coll.ShippingServiceID = data.ShippingService
+	coll.DeliveryAddress.FirstName = data.ShippingFirstName
+	coll.DeliveryAddress.LastName = data.ShippingLastName
+	coll.DeliveryAddress.Supplement = data.ShippingAddressSupplement
+	coll.DeliveryAddress.Street = data.ShippingStreet
+	coll.DeliveryAddress.HouseNumber = data.ShippingStreetNumber
+	coll.DeliveryAddress.Postcode = data.ShippingPostcode
+	coll.DeliveryAddress.City = data.ShippingTown
+	coll.Tasks = data.Tasks
+	if err := coll.Merge(ordersystem.Store, coll); err != nil {
+		return err
+	}
 	if err := srv.DB.UpdateCollAndTasks(coll); err != nil {
 		return err
 	}

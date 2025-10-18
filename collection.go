@@ -7,18 +7,28 @@ import (
 	"strings"
 	"time"
 
+	"github.com/dys2p/eco/delivery"
 	"github.com/dys2p/eco/id"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type Collection struct {
-	// stored as SQL row, but partly unmarshaled from user input, hence the JSON tags
-	ID    string    `json:"-"`
-	Pass  string    `json:"-"`
-	State CollState `json:"-"`
+	ID    string
+	Pass  string
+	State CollState
 	CollectionData
-	Log   []Event  `json:"-"`
-	Tasks TaskList `json:"tasks"`
+	Log   []Event
+	Tasks TaskList
+
+	ClientContact         string
+	ClientContactProtocol string
+	DeliveryAddress       delivery.Address
+	DeliveryTrackingIDs   []string
+
+	CountryID          string // ISO code, not in address because we must keep it for VAT
+	DeliveryMethodID   string
+	DeliveryGrossPrice int // TODO does this cover min delivery cost and manually entered delivery cost?
+	ShippingServiceID  string
 }
 
 // AuthorizedCollID returns the collection ID.
@@ -106,11 +116,22 @@ func (coll *Collection) Merge(actor Actor, untrustedColl *Collection) error {
 
 	switch actor {
 	case Client:
-		coll.ClientInput = untrustedColl.ClientInput
+		coll.ClientContact = untrustedColl.ClientContact
+		coll.ClientContactProtocol = untrustedColl.ClientContactProtocol
+		coll.DeliveryAddress = untrustedColl.DeliveryAddress
+
+		coll.DeliveryMethodID = untrustedColl.DeliveryMethodID
+		coll.DeliveryGrossPrice = untrustedColl.DeliveryGrossPrice
+		coll.ShippingServiceID = untrustedColl.ShippingServiceID
 		// don't modify coll.StoreInput
 	case Store:
-		coll.ClientInput = untrustedColl.ClientInput
-		coll.StoreInput = untrustedColl.StoreInput
+		coll.ClientContact = untrustedColl.ClientContact
+		coll.ClientContactProtocol = untrustedColl.ClientContactProtocol
+		coll.DeliveryAddress = untrustedColl.DeliveryAddress
+
+		coll.DeliveryMethodID = untrustedColl.DeliveryMethodID
+		coll.DeliveryGrossPrice = untrustedColl.DeliveryGrossPrice
+		coll.ShippingServiceID = untrustedColl.ShippingServiceID
 	}
 
 	// If missing, assign IDs to (probably new) untrusted tasks.
@@ -169,27 +190,12 @@ func (coll *Collection) Paid() int {
 	return sum
 }
 
-func (coll *Collection) Reshipping() int {
-	if coll.DeliveryMethod != "shipping" {
-		return 0
-	}
-	if coll.ReshippingFee != 0 {
-		return coll.ReshippingFee
-	}
-	for _, s := range coll.ShippingServices() {
-		if s.ID == coll.ShippingServiceID {
-			return s.MinCost
-		}
-	}
-	return 0
-}
-
 func (coll *Collection) Sum() int {
 	var taskSum = 0
 	for _, task := range coll.Tasks {
 		taskSum += task.TotalSum()
 	}
-	return taskSum + coll.Reshipping()
+	return taskSum + coll.DeliveryGrossPrice
 }
 
 func (coll *Collection) StoreCan(action string) bool {
@@ -206,8 +212,6 @@ func (coll *Collection) StoreCanTask(action string, task *Task) bool {
 
 // CollectionData is a separate struct so we can marshal it easily and store it in the SQL database.
 type CollectionData struct {
-	ClientInput
-	StoreInput
 	BookedInvoices         []string `json:"booked-invoices"`           // bitpay.Invoice.ID, booking is triggered by the invoice settled webhook
 	ReceivedInTimePayments []string `json:"received-in-time-payments"` // bitpay.Invoice.InvoiceData.CryptoInfo.Payments.ID, event log like "Vorläufiger Zahlungseingang"
 	ReceivedLatePayments   []string `json:"received-late-payments"`    // bitpay.Invoice.InvoiceData.CryptoInfo.Payments.ID, event log like "Verspäterer vorläufiger Zahlungseingang"
@@ -244,27 +248,13 @@ func (data *CollectionData) PaymentHasBeenReceivedLate(paymentID string) bool {
 	return false
 }
 
-type ClientInput struct {
-	ClientContact             string `json:"client-contact"`
-	ClientContactProtocol     string `json:"client-contact-protocol"`
-	DeliveryMethod            string `json:"delivery-method"`
-	ShippingAddressSupplement string `json:"shipping-address-supplement"`
-	ShippingFirstName         string `json:"shipping-first-name"`
-	ShippingLastName          string `json:"shipping-last-name"`
-	ShippingPostcode          string `json:"shipping-postcode"`
-	ShippingServiceID         string `json:"shipping-service"`
-	ShippingStreet            string `json:"shipping-street"`
-	ShippingStreetNumber      string `json:"shipping-street-number"`
-	ShippingTown              string `json:"shipping-town"`
-}
-
 type ContactProtocol struct {
 	ID   string
 	Name string
 }
 
 // ClientContactProtocols returns available contact protocols. If an unknown (i.e. deprecated) protocol is stored in the database, it is returned as well.
-func (data *ClientInput) ContactProtocols() []ContactProtocol {
+func (coll *Collection) ContactProtocols() []ContactProtocol {
 	var protocols = []ContactProtocol{
 		ContactProtocol{"email", "E-Mail"},
 		ContactProtocol{"xmpp-otr", "Jabber mit OTR"},
@@ -272,18 +262,18 @@ func (data *ClientInput) ContactProtocols() []ContactProtocol {
 		ContactProtocol{"session", "Session"},
 		ContactProtocol{"signal", "Signal"},
 	}
-	if data.ClientContactProtocol == "" {
+	if coll.ClientContactProtocol == "" {
 		return protocols
 	}
 	// append data.ClientContactProtocol if it's not among them (i.e. if it's deprecated)
 	var ok = false
 	for _, p := range protocols {
-		if p.ID == data.ClientContactProtocol {
+		if p.ID == coll.ClientContactProtocol {
 			ok = true
 		}
 	}
 	if !ok {
-		protocols = append(protocols, ContactProtocol{data.ClientContactProtocol, data.ClientContactProtocol})
+		protocols = append(protocols, ContactProtocol{coll.ClientContactProtocol, coll.ClientContactProtocol})
 	}
 	return protocols
 }
@@ -295,31 +285,27 @@ type ShippingService struct {
 }
 
 // ShippingServices returns available shipping services. If an unknown (i.e. deprecated) service is stored in the database, it is returned as well.
-func (data *ClientInput) ShippingServices() []ShippingService {
+func (coll *Collection) ShippingServices() []ShippingService {
 	var services = []ShippingService{
 		ShippingService{"dhl-paket-analog", "DHL Paket, analog frankiert: ab 7,37 €", 737},                 // 619 * 1.19
 		ShippingService{"dhl-paket-digital", "DHL Paket, digital frankiert: ab 5,58 €", 558},               // 469 * 1.19
 		ShippingService{"post-einschreiben-einwurf", "Deutsche Post Einschreiben Einwurf: ab 3,81 €", 381}, // (85 + 235) * 1.19
 		ShippingService{"post-einschreiben-wert", "Deutsche Post Einschreiben Wert: ab 6,31 €", 631},       // (85 + 445) * 1.19
 	}
-	if data.ShippingServiceID == "" {
+	if coll.ShippingServiceID == "" {
 		return services
 	}
-	// append data.ShippingServiceID if it's not among them (i.e. if it's deprecated)
+	// append coll.ShippingServiceID if it's not among them (i.e. if it's deprecated)
 	var ok = false
 	for _, s := range services {
-		if s.ID == data.ShippingServiceID {
+		if s.ID == coll.ShippingServiceID {
 			ok = true
 		}
 	}
 	if !ok {
-		services = append(services, ShippingService{data.ShippingServiceID, data.ShippingServiceID, 0})
+		services = append(services, ShippingService{coll.ShippingServiceID, coll.ShippingServiceID, 0})
 	}
 	return services
-}
-
-type StoreInput struct {
-	ReshippingFee int `json:"reshipping-fee"`
 }
 
 type TaskList []*Task

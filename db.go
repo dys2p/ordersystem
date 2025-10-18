@@ -18,7 +18,7 @@ type DB struct {
 	readColl        *sql.Stmt
 	readColls       *sql.Stmt
 	readState       *sql.Stmt
-	updateCollData  *sql.Stmt
+	updateColl      *sql.Stmt
 	updateCollState *sql.Stmt
 	deleteColl      *sql.Stmt
 
@@ -45,7 +45,26 @@ func NewDB(sqlDB *sql.DB) (*DB, error) {
 			id    text primary key,
 			pass  text not null,
 			state text not null,
-			data  text not null
+			data  text not null,
+
+			client_contact           text not null,
+			client_contact_protocol  text not null,
+			delivery_first_name      text not null,
+			delivery_last_name       text not null,
+			delivery_addr_supplement text not null,
+			delivery_customer_id     text not null, -- e. g. DHL PostNumber
+			delivery_street          text not null,
+			delivery_housenumber     text not null,
+			delivery_postcode        text not null,
+			delivery_city            text not null,
+			delivery_email           text not null,
+			delivery_phone           text not null,
+			delivery_tracking_ids    text not null,
+
+			country                  text not null,
+			delivery_method          text not null,
+			delivery_gross_price     int  not null,
+			shipping_service         text not null
 		);
 		create table if not exists event (
 			id        integer primary key,
@@ -68,12 +87,12 @@ func NewDB(sqlDB *sql.DB) (*DB, error) {
 
 	// collection
 
-	db.createColl, err = db.sqlDB.Prepare("insert into coll (id, pass, state, data) values (?, ?, ?, ?)")
+	db.createColl, err = db.sqlDB.Prepare("insert into coll (id, pass, state, data, client_contact, client_contact_protocol, delivery_first_name, delivery_last_name, delivery_addr_supplement, delivery_customer_id, delivery_street, delivery_housenumber, delivery_postcode, delivery_city, delivery_email, delivery_phone, delivery_tracking_ids, country, delivery_method, delivery_gross_price, shipping_service) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
 	if err != nil {
 		return nil, err
 	}
 
-	db.readColl, err = db.sqlDB.Prepare("select pass, state, data from coll where id = ? limit 1")
+	db.readColl, err = db.sqlDB.Prepare("select pass, state, data, client_contact, client_contact_protocol, delivery_first_name, delivery_last_name, delivery_addr_supplement, delivery_customer_id, delivery_street, delivery_housenumber, delivery_postcode, delivery_city, delivery_email, delivery_phone, delivery_tracking_ids, country, delivery_method, delivery_gross_price, shipping_service from coll where id = ? limit 1")
 	if err != nil {
 		return nil, err
 	}
@@ -88,7 +107,7 @@ func NewDB(sqlDB *sql.DB) (*DB, error) {
 		return nil, err
 	}
 
-	db.updateCollData, err = db.sqlDB.Prepare("update coll set data = ? where id = ?")
+	db.updateColl, err = db.sqlDB.Prepare("update coll set data = ?, client_contact = ?, client_contact_protocol = ?, delivery_first_name = ?, delivery_last_name = ?, delivery_addr_supplement = ?, delivery_customer_id = ?, delivery_street = ?, delivery_housenumber = ?, delivery_postcode = ?, delivery_city = ?, delivery_email = ?, delivery_phone = ?, delivery_tracking_ids = ?, country = ?, delivery_method = ?, delivery_gross_price = ?, shipping_service = ? where id = ?")
 	if err != nil {
 		return nil, err
 	}
@@ -153,7 +172,7 @@ func (db *DB) CreateCollection(coll *Collection) error {
 	}
 	defer tx.Rollback() // no effect after commit
 
-	if _, err := tx.Stmt(db.createColl).Exec(coll.ID, coll.Pass, Draft, "{}"); err != nil {
+	if _, err := tx.Stmt(db.createColl).Exec(coll.ID, coll.Pass, Draft, "{}", "", "", "", "", "", "", "", "", "", "", "", "", "[]", "DE", "", 0, ""); err != nil {
 		return err
 	}
 
@@ -210,14 +229,18 @@ func (db *DB) Delete(actor Actor, coll *Collection) error {
 func (db *DB) ReadColl(id string) (*Collection, error) {
 
 	var collData string
-
+	var deliveryTrackingIDs string // json array
 	var coll = &Collection{ID: id}
-	if err := db.readColl.QueryRow(id).Scan(&coll.Pass, &coll.State, &collData); err != nil {
+	if err := db.readColl.QueryRow(id).Scan(&coll.Pass, &coll.State, &collData, &coll.ClientContact, &coll.ClientContactProtocol, &coll.DeliveryAddress.FirstName, &coll.DeliveryAddress.LastName, &coll.DeliveryAddress.Supplement, &coll.DeliveryAddress.CustomerID, &coll.DeliveryAddress.Street, &coll.DeliveryAddress.HouseNumber, &coll.DeliveryAddress.Postcode, &coll.DeliveryAddress.City, &coll.DeliveryAddress.Email, &coll.DeliveryAddress.Phone, &deliveryTrackingIDs, &coll.CountryID, &coll.DeliveryMethodID, &coll.DeliveryGrossPrice, &coll.ShippingServiceID); err != nil {
 		return nil, err
 	}
 
 	if err := json.Unmarshal([]byte(collData), &coll.CollectionData); err != nil {
 		return nil, err
+	}
+
+	if err := json.Unmarshal([]byte(deliveryTrackingIDs), &coll.DeliveryTrackingIDs); err != nil {
+		return nil, fmt.Errorf("unmarshaling %s: %w", deliveryTrackingIDs, err)
 	}
 
 	// events
@@ -334,6 +357,10 @@ func (db *DB) UpdateCollAndTasks(coll *Collection) error {
 	if err != nil {
 		return err
 	}
+	deliveryTrackingIDs, err := json.Marshal(coll.DeliveryTrackingIDs)
+	if err != nil {
+		return err
+	}
 
 	tx, err := db.sqlDB.Begin()
 	if err != nil {
@@ -341,7 +368,7 @@ func (db *DB) UpdateCollAndTasks(coll *Collection) error {
 	}
 	defer tx.Rollback() // no effect after commit
 
-	if _, err := tx.Stmt(db.updateCollData).Exec(string(data), coll.ID); err != nil {
+	if _, err := tx.Stmt(db.updateColl).Exec(string(data), coll.ClientContact, coll.ClientContactProtocol, coll.DeliveryAddress.FirstName, coll.DeliveryAddress.LastName, coll.DeliveryAddress.Supplement, coll.DeliveryAddress.CustomerID, coll.DeliveryAddress.Street, coll.DeliveryAddress.HouseNumber, coll.DeliveryAddress.Postcode, coll.DeliveryAddress.City, coll.DeliveryAddress.Email, coll.DeliveryAddress.Phone, deliveryTrackingIDs, coll.CountryID, coll.DeliveryMethodID, coll.DeliveryGrossPrice, coll.ShippingServiceID, coll.ID); err != nil {
 		return err
 	}
 

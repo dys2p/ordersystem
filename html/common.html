@@ -93,46 +93,46 @@
 		<p>Unser Ladenlokal befindet sich in der Wolfgang-Heinze-Straße 14, 04277 Leipzig. Bitte beachte die <a rel="noreferrer" href="https://proxysto.re">Öffnungszeiten</a>.</p>
 	{{end}}
 
-	{{if and (.ReadOnly) (ne .DeliveryMethod "store")}}
+	{{if and (.ReadOnly) (ne .DeliveryMethodID "store")}}
 		<!-- hide -->
 	{{else}}
 		<div class="radio-label border border-secondary bg-light my-3 p-3 rounded">
-			<input type="radio" name="delivery-method" onchange="updateView()" id="delivery-method-store" value="store" {{if or (eq .DeliveryMethod "store") (eq .DeliveryMethod "")}}checked{{end}} {{if .ReadOnly}}disabled{{end}}>
+			<input type="radio" name="delivery-method" onchange="updateView()" id="delivery-method-store" value="store" {{if or (eq .DeliveryMethodID "store") (eq .DeliveryMethodID "")}}checked{{end}} {{if .ReadOnly}}disabled{{end}}>
 			<label for="delivery-method-store">
 				Ich hole die Ware <strong>unter Nennung der Auftragsnummer</strong> im Ladenlokal ab.
 			</label>
 		</div>
 	{{end}}
 
-	{{if and (.ReadOnly) (ne .DeliveryMethod "locker")}}
+	{{if and (.ReadOnly) (ne .DeliveryMethodID "locker")}}
 		<!-- hide -->
 	{{else}}
 		<div class="radio-label border border-secondary bg-light my-3 p-3 rounded">
-			<input type="radio" name="delivery-method" onchange="updateView()" id="delivery-method-locker" value="locker" {{if eq .DeliveryMethod "locker"}}checked{{end}} {{if .ReadOnly}}disabled{{end}}>
+			<input type="radio" name="delivery-method" onchange="updateView()" id="delivery-method-locker" value="locker" {{if eq .DeliveryMethodID "locker"}}checked{{end}} {{if .ReadOnly}}disabled{{end}}>
 			<label for="delivery-method-locker">
 				Ich hole die Ware <strong>aus einem Schließfach</strong> im Ladenlokal ab. Ein geöffnetes Vorhängeschloss bringe ich vorbei.
 			</label>
 		</div>
 	{{end}}
 
-	{{if and (.ReadOnly) (ne .DeliveryMethod "custom")}}
+	{{if and (.ReadOnly) (ne .DeliveryMethodID "custom")}}
 		<!-- hide -->
 	{{else}}
 		<div class="radio-label border border-secondary bg-light my-3 p-3 rounded">
-			<input type="radio" name="delivery-method" onchange="updateView()" id="delivery-method-custom" value="custom" {{if eq .DeliveryMethod "custom"}}checked{{end}} {{if .ReadOnly}}disabled{{end}}>
+			<input type="radio" name="delivery-method" onchange="updateView()" id="delivery-method-custom" value="custom" {{if eq .DeliveryMethodID "custom"}}checked{{end}} {{if .ReadOnly}}disabled{{end}}>
 			<label for="delivery-method-custom">
 				Bitte schickt mir die Ware. Eine bezahlte und beschriftete Paketmarke bringe ich vorbei.
 			</label>
 		</div>
 	{{end}}
 
-	{{if and (.ReadOnly) (ne .DeliveryMethod "shipping")}}
+	{{if and (.ReadOnly) (ne .DeliveryMethodID "shipping")}}
 		<!-- hide -->
 	{{else}}
 		<div class="border border-secondary bg-light my-3 p-3 rounded">
 
 			<p class="radio-label">
-				<input type="radio" name="delivery-method" onchange="updateView()" id="delivery-method-shipping" value="shipping" {{if eq .DeliveryMethod "shipping"}}checked{{end}} {{if .ReadOnly}}disabled{{end}}>
+				<input type="radio" name="delivery-method" onchange="updateView()" id="delivery-method-shipping" value="shipping" {{if eq .DeliveryMethodID "shipping"}}checked{{end}} {{if .ReadOnly}}disabled{{end}}>
 				<label for="delivery-method-shipping">
 					Bitte schickt mir die Ware. Ich gebe die Lieferadresse hier an oder sende sie euch per Post auf einem Zettel oder einem <a rel="noreferrer" href="https://www.dhl.de/content/dam/images/pdf/dhl-versandschein-eu-online-ausfuellbar-310320.pdf">DHL-Versandschein</a>. (Bei Übermittlung auf Papier und analoger Frankierung wird die Lieferadresse bei uns nicht digital erfasst.)
 				</label>
@@ -148,32 +148,32 @@
 
 			<div class="mb-3 row">
 				<div class="col-md-6">
-					<input type="text" class="form-control" name="shipping-first-name" placeholder="Vorname" value="{{.ShippingFirstName}}" {{if .ReadOnly}}disabled{{end}}>
+					<input type="text" class="form-control" name="shipping-first-name" placeholder="Vorname" value="{{.DeliveryAddress.FirstName}}" {{if .ReadOnly}}disabled{{end}}>
 				</div>
 				<div class="col-md-6">
-					<input type="text" class="form-control" name="shipping-last-name" placeholder="Nachname" value="{{.ShippingLastName}}" {{if .ReadOnly}}disabled{{end}}>
+					<input type="text" class="form-control" name="shipping-last-name" placeholder="Nachname" value="{{.DeliveryAddress.LastName}}" {{if .ReadOnly}}disabled{{end}}>
 				</div>
 			</div>
 
 			<div class="mb-3">
-				<input type="text" class="form-control" name="shipping-address-supplement" placeholder="Adresszusatz" value="{{.ShippingAddressSupplement}}" {{if .ReadOnly}}disabled{{end}}>
+				<input type="text" class="form-control" name="shipping-address-supplement" placeholder="Adresszusatz" value="{{.DeliveryAddress.Supplement}}" {{if .ReadOnly}}disabled{{end}}>
 			</div>
 
 			<div class="mb-3 row">
 				<div class="col-md-9">
-					<input type="text" class="form-control" name="shipping-street" placeholder="Straße" value="{{.ShippingStreet}}" {{if .ReadOnly}}disabled{{end}}>
+					<input type="text" class="form-control" name="shipping-street" placeholder="Straße" value="{{.DeliveryAddress.Street}}" {{if .ReadOnly}}disabled{{end}}>
 				</div>
 				<div class="col-md-3">
-					<input type="text" class="form-control" name="shipping-street-number" placeholder="Hausnummer" value="{{.ShippingStreetNumber}}" {{if .ReadOnly}}disabled{{end}}>
+					<input type="text" class="form-control" name="shipping-street-number" placeholder="Hausnummer" value="{{.DeliveryAddress.HouseNumber}}" {{if .ReadOnly}}disabled{{end}}>
 				</div>
 			</div>
 
 			<div class="mb-3 row">
 				<div class="col-md-3">
-					<input type="number" class="form-control" name="shipping-postcode" placeholder="Postleitzahl" value="{{.ShippingPostcode}}" {{if .ReadOnly}}disabled{{end}}>
+					<input type="number" class="form-control" name="shipping-postcode" placeholder="Postleitzahl" value="{{.DeliveryAddress.Postcode}}" {{if .ReadOnly}}disabled{{end}}>
 				</div>
 				<div class="col-md-9">
-					<input type="text" class="form-control" name="shipping-town" placeholder="Stadt" value="{{.ShippingTown}}" {{if .ReadOnly}}disabled{{end}}>
+					<input type="text" class="form-control" name="shipping-town" placeholder="Stadt" value="{{.DeliveryAddress.City}}" {{if .ReadOnly}}disabled{{end}}>
 				</div>
 			</div>
 
@@ -185,9 +185,9 @@
 
 			{{if .Actor.IsStore}}
 				<div class="mb-3 row">
-					<label class="col-sm-6 col-form-label">Kosten für Weiterversand (bei null wird der Mindestwert genommen)</label>
+					<label class="col-sm-6 col-form-label">Kosten für Weiterversand</label>
 					<div class="col-sm-6">
-						<input class="form-control" name="reshipping-fee" onchange="updateView()" type="number" min="0.00" max="10000.00" step="0.01" value="{{FmtMachine .ReshippingFee}}" {{if .ReadOnly}}disabled{{end}}>
+						<input class="form-control" name="reshipping-fee" onchange="updateView()" type="number" min="0.00" max="10000.00" step="0.01" value="{{FmtMachine .DeliveryGrossPrice}}" {{if .ReadOnly}}disabled{{end}}>
 					</div>
 				</div>
 			{{end}}
@@ -271,11 +271,11 @@
 	{{end}}
 
 	<h2>Abholung oder Weiterversand</h2>
-	{{if eq .DeliveryMethod "store"}}
+	{{if eq .DeliveryMethodID "store"}}
 		<p>Ich hole die Ware <strong>unter Nennung der Auftragsnummer</strong> im Ladenlokal ab.</p>
-	{{else if eq .DeliveryMethod "locker"}}
+	{{else if eq .DeliveryMethodID "locker"}}
 		<p>Ich hole die Ware <strong>aus einem Schließfach</strong> im Ladenlokal ab. Ein geöffnetes Vorhängeschloss bringe ich vorbei.</p>
-	{{else if eq .DeliveryMethod "custom"}}
+	{{else if eq .DeliveryMethodID "custom"}}
 		<p>Bitte schickt mir die Ware. Eine bezahlte und beschriftete Paketmarke bringe ich vorbei.</p>
 	{{else}}
 		<div class="card mb-3">
@@ -288,14 +288,17 @@
 			</div>
 			<div class="card-body">
 				<address class="mb-0">
-					{{.ShippingFirstName}} {{.ShippingLastName}}<br>
-					{{with .ShippingAddressSupplement}}{{.}}<br>{{end}}
-					{{.ShippingStreet}} {{.ShippingStreetNumber}}<br>
-					{{.ShippingPostcode}} {{.ShippingTown}}<br>
+					{{.DeliveryAddress.FirstName}} {{.DeliveryAddress.LastName}}<br>
+					{{with .DeliveryAddress.Supplement}}{{.}}<br>{{end}}
+					{{with .DeliveryAddress.CustomerID}}{{.}}<br>{{end}}
+					{{.DeliveryAddress.Street}} {{.DeliveryAddress.HouseNumber}}<br>
+					{{.DeliveryAddress.Postcode}} {{.DeliveryAddress.City}}<br>
+					{{with .DeliveryAddress.Email}}<br>{{.}}{{end}}
+					{{with .DeliveryAddress.Phone}}<br>{{.}}{{end}}
 				</address>
 			</div>
 			<div class="card-footer">
-				Kosten: {{FmtEuro .Reshipping}}
+				Kosten: {{FmtEuro .DeliveryGrossPrice}}
 			</div>
 		</div>
 	{{end}}
@@ -315,10 +318,10 @@
 					<td>{{FmtEuro .TotalSum}}</td>
 				</tr>
 			{{end}}
-			{{if .Reshipping}}
+			{{with .DeliveryGrossPrice}}
 				<tr>
-					<td>Weiterversand</td>
-					<td>{{FmtEuro .Reshipping}}</td>
+					<td>Kosten für Weiterversand</td>
+					<td>{{FmtEuro .}}</td>
 				</tr>
 			{{end}}
 			<tr>
