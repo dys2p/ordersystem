@@ -1576,6 +1576,9 @@ func (srv *Server) storeExport(w http.ResponseWriter, r *http.Request) error {
 				}
 				out.Write([]string{coll.payDate, coll.ID, "DE", strconv.Itoa(article.Quantity * article.Price), "standard", fmt.Sprintf("%d x %s", article.Quantity, name)})
 			}
+			for _, addCost := range task.AddCosts {
+				out.Write([]string{coll.payDate, coll.ID, "DE", strconv.Itoa(addCost.Price), "standard", addCost.Name})
+			}
 		}
 	}
 
