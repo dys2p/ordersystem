@@ -1352,22 +1352,24 @@ func (srv *Server) storeCollEditPost(w http.ResponseWriter, r *http.Request, col
 		return fmt.Errorf("unmarshaling user input: %w", err)
 	}
 
+	var input = *coll // copy
+
 	var deliveryGrossPrice = data.ReshippingFee
 
-	coll.ClientContact = data.ClientContact
-	coll.ClientContactProtocol = data.ClientContactProtocol
-	coll.DeliveryMethodID = data.DeliveryMethod
-	coll.DeliveryGrossPrice = deliveryGrossPrice
-	coll.ShippingServiceID = data.ShippingService
-	coll.DeliveryAddress.FirstName = data.ShippingFirstName
-	coll.DeliveryAddress.LastName = data.ShippingLastName
-	coll.DeliveryAddress.Supplement = data.ShippingAddressSupplement
-	coll.DeliveryAddress.Street = data.ShippingStreet
-	coll.DeliveryAddress.HouseNumber = data.ShippingStreetNumber
-	coll.DeliveryAddress.Postcode = data.ShippingPostcode
-	coll.DeliveryAddress.City = data.ShippingTown
-	coll.Tasks = data.Tasks
-	if err := coll.Merge(ordersystem.Store, coll); err != nil {
+	input.ClientContact = data.ClientContact
+	input.ClientContactProtocol = data.ClientContactProtocol
+	input.DeliveryMethodID = data.DeliveryMethod
+	input.DeliveryGrossPrice = deliveryGrossPrice
+	input.ShippingServiceID = data.ShippingService
+	input.DeliveryAddress.FirstName = data.ShippingFirstName
+	input.DeliveryAddress.LastName = data.ShippingLastName
+	input.DeliveryAddress.Supplement = data.ShippingAddressSupplement
+	input.DeliveryAddress.Street = data.ShippingStreet
+	input.DeliveryAddress.HouseNumber = data.ShippingStreetNumber
+	input.DeliveryAddress.Postcode = data.ShippingPostcode
+	input.DeliveryAddress.City = data.ShippingTown
+	input.Tasks = data.Tasks
+	if err := coll.Merge(ordersystem.Store, &input); err != nil {
 		return err
 	}
 	if err := srv.DB.UpdateCollAndTasks(coll); err != nil {
