@@ -436,15 +436,18 @@ func (srv *Server) clientCollEditPost(w http.ResponseWriter, r *http.Request, co
 		return fmt.Errorf("unmarshaling user input: %w", err)
 	}
 
-	var untrustedInput = *coll // copy
-
 	var deliveryGrossPrice = 0
-	for _, s := range coll.ShippingServices() {
-		if s.ID == data.ShippingService {
-			deliveryGrossPrice = s.MinCost
+	if data.DeliveryMethod == "shipping" {
+		var minCost = 0
+		for _, s := range coll.ShippingServices() {
+			if s.ID == data.ShippingService {
+				minCost = s.MinCost
+			}
 		}
+		deliveryGrossPrice = minCost
 	}
 
+	var untrustedInput = *coll // copy
 	untrustedInput.ClientContact = data.ClientContact
 	untrustedInput.ClientContactProtocol = data.ClientContactProtocol
 	untrustedInput.DeliveryMethodID = data.DeliveryMethod
@@ -1352,10 +1355,18 @@ func (srv *Server) storeCollEditPost(w http.ResponseWriter, r *http.Request, col
 		return fmt.Errorf("unmarshaling user input: %w", err)
 	}
 
+	var deliveryGrossPrice = 0
+	if data.DeliveryMethod == "shipping" {
+		var minCost = 0
+		for _, s := range coll.ShippingServices() {
+			if s.ID == data.ShippingService {
+				minCost = s.MinCost
+			}
+		}
+		deliveryGrossPrice = max(data.ReshippingFee, minCost)
+	}
+
 	var input = *coll // copy
-
-	var deliveryGrossPrice = data.ReshippingFee
-
 	input.ClientContact = data.ClientContact
 	input.ClientContactProtocol = data.ClientContactProtocol
 	input.DeliveryMethodID = data.DeliveryMethod
