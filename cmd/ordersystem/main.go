@@ -1539,7 +1539,7 @@ func (srv *Server) storeExport(w http.ResponseWriter, r *http.Request) error {
 
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	out := csv.NewWriter(w)
-	out.Write([]string{"vat_date", "id", "country", "gross", "vat_rate", "name"})
+	out.Write([]string{"pay_date", "id", "country", "gross", "vat_rate", "name"})
 
 	var colls []collWithPayDate
 	for _, state := range []ordersystem.CollState{ordersystem.Accepted, ordersystem.Archived, ordersystem.Finalized, ordersystem.NeedsRevise, ordersystem.Submitted, ordersystem.Active} {
