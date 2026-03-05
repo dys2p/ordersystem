@@ -51,22 +51,6 @@ func main() {
 	var test = flag.Bool("test", false, "use btcpay dummy store")
 	flag.Parse()
 
-	// websites
-
-	siteFiles, err := fs.Sub(html.Files, "order.proxysto.re")
-	if err != nil {
-		log.Fatalf("error opening site dir: %v", err)
-	}
-	staticFiles, err := fs.Sub(html.Files, "order.proxysto.re/static") // for staff router
-	if err != nil {
-		log.Fatalf("error opening static dir: %v", err)
-	}
-
-	staticSites, err := ssg.MakeWebsite(siteFiles, html.ClientSite, langs)
-	if err != nil {
-		log.Fatalf("error making static sites: %v", err)
-	}
-
 	// SQL db
 
 	sqlDB, err := sql.Open("sqlite3", filepath.Join(os.Getenv("STATE_DIRECTORY"), "ordersystem.sqlite3?_busy_timeout=10000&_journal=WAL&_sync=NORMAL&cache=shared"))
@@ -144,6 +128,24 @@ func main() {
 		Users:        users,
 	}
 
+	// static sites
+
+	siteFiles, err := fs.Sub(html.Files, "order.proxysto.re")
+	if err != nil {
+		log.Fatalf("error opening site dir: %v", err)
+	}
+	staticFiles, err := fs.Sub(html.Files, "order.proxysto.re/static") // for staff router
+	if err != nil {
+		log.Fatalf("error opening static dir: %v", err)
+	}
+
+	staticSites, err := ssg.MakeWebsite(siteFiles, html.ClientSite, langs, func(r *http.Request, _ ssg.TemplateData) any {
+		return srv.MakeTemplateData(r)
+	})
+	if err != nil {
+		log.Fatalf("error making static sites: %v", err)
+	}
+
 	// bot
 
 	var ticker = time.NewTicker(12 * time.Hour)
@@ -199,12 +201,7 @@ func main() {
 	clientRouter.HandlerFunc(http.MethodPost, "/logout", srv.client(srv.clientLogoutPost))
 	clientRouter.Handler("GET", "/captcha/:fn", captcha.Handler())
 	clientRouter.ServeFiles("/scripts/*filepath", http.FS(scripts.Files))
-	clientRouter.NotFound = staticSites.Handler(func(r *http.Request, td ssg.TemplateData) any {
-		return html.TemplateData{
-			TemplateData:     ssg.MakeTemplateData(srv.Langs, r),
-			AuthorizedCollID: srv.sessionCollID(r),
-		}
-	}, langs.RedirectHandler())
+	clientRouter.NotFound = staticSites.Handler(langs.RedirectHandler())
 
 	shutdownClientSrv := httputil.ListenAndServe("127.0.0.1:9000", srv.Sessions.LoadAndSave(clientRouter), stop)
 	defer shutdownClientSrv()
@@ -295,10 +292,7 @@ type clientHello struct {
 
 func (srv *Server) clientHelloGet(w http.ResponseWriter, r *http.Request) error {
 	return html.ClientHello.Execute(w, clientHello{
-		TemplateData: html.TemplateData{
-			TemplateData:     ssg.MakeTemplateData(srv.Langs, r),
-			AuthorizedCollID: srv.sessionCollID(r),
-		},
+		TemplateData:  srv.MakeTemplateData(r),
 		Notifications: srv.notifications(r.Context()),
 	})
 }
@@ -345,12 +339,9 @@ func (srv *Server) clientCreateGet(w http.ResponseWriter, r *http.Request) error
 		return err
 	}
 	return html.ClientCreate.Execute(w, &clientCreate{
-		TemplateData: html.TemplateData{
-			TemplateData:     ssg.MakeTemplateData(srv.Langs, r),
-			AuthorizedCollID: srv.sessionCollID(r),
-		},
-		CollID:   id.New(6, id.AlphanumCaseInsensitiveDigits),
-		CollPass: collPass,
+		TemplateData: srv.MakeTemplateData(r),
+		CollID:       id.New(6, id.AlphanumCaseInsensitiveDigits),
+		CollPass:     collPass,
 		Captcha: captcha.TemplateData{
 			ID: captcha.New(),
 		},
@@ -360,10 +351,7 @@ func (srv *Server) clientCreateGet(w http.ResponseWriter, r *http.Request) error
 func (srv *Server) clientCreatePost(w http.ResponseWriter, r *http.Request) error {
 
 	var data = &clientCreate{
-		TemplateData: html.TemplateData{
-			TemplateData:     ssg.MakeTemplateData(srv.Langs, r),
-			AuthorizedCollID: srv.sessionCollID(r),
-		},
+		TemplateData:     srv.MakeTemplateData(r),
 		CollID:           strings.TrimSpace(r.PostFormValue("collection-id")),
 		CollPass:         strings.TrimSpace(r.PostFormValue("collection-passphrase")),
 		CheckWrittenDown: r.PostFormValue("check-written-down") != "",
@@ -403,13 +391,10 @@ func (srv *Server) clientCollEditGet(w http.ResponseWriter, r *http.Request, col
 		return ErrNotFound
 	}
 	return html.ClientCollEdit.Execute(w, collView{
-		TemplateData: html.TemplateData{
-			TemplateData:     ssg.MakeTemplateData(srv.Langs, r),
-			AuthorizedCollID: srv.sessionCollID(r),
-		},
-		Actor:      ordersystem.Client,
-		Collection: coll,
-		ShowHints:  true,
+		TemplateData: srv.MakeTemplateData(r),
+		Actor:        ordersystem.Client,
+		Collection:   coll,
+		ShowHints:    true,
 	})
 }
 
@@ -490,21 +475,15 @@ func (srv *Server) clientCollCurrentGet(w http.ResponseWriter, r *http.Request) 
 
 func (srv *Server) clientCollLoginGet(w http.ResponseWriter, r *http.Request) error {
 	return html.ClientCollLogin.Execute(w, &clientLogin{
-		TemplateData: html.TemplateData{
-			TemplateData:     ssg.MakeTemplateData(srv.Langs, r),
-			AuthorizedCollID: srv.sessionCollID(r),
-		},
+		TemplateData: srv.MakeTemplateData(r),
 	})
 }
 
 func (srv *Server) clientCollLoginPost(w http.ResponseWriter, r *http.Request) error {
 	var id = strings.TrimSpace(r.FormValue("collection-id"))
 	var data = &clientLogin{
-		TemplateData: html.TemplateData{
-			TemplateData:     ssg.MakeTemplateData(srv.Langs, r),
-			AuthorizedCollID: srv.sessionCollID(r),
-		},
-		CollID: id,
+		TemplateData: srv.MakeTemplateData(r),
+		CollID:       id,
 	}
 	if !isID(id) {
 		data.CollIDErr = true
@@ -524,10 +503,7 @@ func (srv *Server) clientCollLoginPost(w http.ResponseWriter, r *http.Request) e
 
 func (srv *Server) clientCollViewGet(w http.ResponseWriter, r *http.Request, coll *ordersystem.Collection) error {
 	return html.ClientCollView.Execute(w, collView{
-		TemplateData: html.TemplateData{
-			TemplateData:     ssg.MakeTemplateData(srv.Langs, r),
-			AuthorizedCollID: srv.sessionCollID(r),
-		},
+		TemplateData:  srv.MakeTemplateData(r),
 		Actor:         ordersystem.Client,
 		Collection:    coll,
 		ReadOnly:      true,
@@ -546,11 +522,8 @@ func (srv *Server) clientCollCancelGet(w http.ResponseWriter, r *http.Request, c
 		return ErrNotFound
 	}
 	return html.ClientCollCancel.Execute(w, &clientCollCancel{
-		TemplateData: html.TemplateData{
-			TemplateData:     ssg.MakeTemplateData(srv.Langs, r),
-			AuthorizedCollID: srv.sessionCollID(r),
-		},
-		Collection: coll,
+		TemplateData: srv.MakeTemplateData(r),
+		Collection:   coll,
 	})
 }
 
@@ -560,12 +533,9 @@ func (srv *Server) clientCollCancelPost(w http.ResponseWriter, r *http.Request, 
 	}
 	if r.PostFormValue("confirm-cancel") == "" {
 		return html.ClientCollCancel.Execute(w, &clientCollCancel{
-			TemplateData: html.TemplateData{
-				TemplateData:     ssg.MakeTemplateData(srv.Langs, r),
-				AuthorizedCollID: srv.sessionCollID(r),
-			},
-			Collection: coll,
-			Err:        true,
+			TemplateData: srv.MakeTemplateData(r),
+			Collection:   coll,
+			Err:          true,
 		})
 	}
 	if err := srv.DB.UpdateCollState(ordersystem.Client, coll, ordersystem.Cancelled, 0, ""); err != nil {
@@ -588,11 +558,8 @@ func (srv *Server) clientCollDeleteGet(w http.ResponseWriter, r *http.Request, c
 		return ErrNotFound
 	}
 	return html.ClientCollDelete.Execute(w, &collDelete{
-		TemplateData: html.TemplateData{
-			TemplateData:     ssg.MakeTemplateData(srv.Langs, r),
-			AuthorizedCollID: srv.sessionCollID(r),
-		},
-		Collection: coll,
+		TemplateData: srv.MakeTemplateData(r),
+		Collection:   coll,
 	})
 }
 
@@ -602,12 +569,9 @@ func (srv *Server) clientCollDeletePost(w http.ResponseWriter, r *http.Request, 
 	}
 	if r.PostFormValue("confirm-delete") == "" {
 		return html.ClientCollDelete.Execute(w, &collDelete{
-			TemplateData: html.TemplateData{
-				TemplateData:     ssg.MakeTemplateData(srv.Langs, r),
-				AuthorizedCollID: srv.sessionCollID(r),
-			},
-			Collection: coll,
-			Err:        true,
+			TemplateData: srv.MakeTemplateData(r),
+			Collection:   coll,
+			Err:          true,
 		})
 	}
 	if err := srv.DB.Delete(ordersystem.Client, coll); err != nil {
@@ -630,11 +594,8 @@ func (srv *Server) clientCollPayBTCPayGet(w http.ResponseWriter, r *http.Request
 		return ErrNotFound
 	}
 	return html.ClientCollPayBTCPay.Execute(w, &clientCollPayBTCPay{
-		TemplateData: html.TemplateData{
-			TemplateData:     ssg.MakeTemplateData(srv.Langs, r),
-			AuthorizedCollID: srv.sessionCollID(r),
-		},
-		Collection: coll,
+		TemplateData: srv.MakeTemplateData(r),
+		Collection:   coll,
 		Captcha: captcha.TemplateData{
 			ID: captcha.New(),
 		},
@@ -648,11 +609,8 @@ func (srv *Server) clientCollPayBTCPayPost(w http.ResponseWriter, r *http.Reques
 	}
 	if !captcha.Verify(r.PostFormValue("captcha-id"), r.PostFormValue("captcha-answer")) {
 		return html.ClientCollPayBTCPay.Execute(w, &clientCollPayBTCPay{
-			TemplateData: html.TemplateData{
-				TemplateData:     ssg.MakeTemplateData(srv.Langs, r),
-				AuthorizedCollID: srv.sessionCollID(r),
-			},
-			Collection: coll,
+			TemplateData: srv.MakeTemplateData(r),
+			Collection:   coll,
 			Captcha: captcha.TemplateData{
 				ID:  captcha.New(),
 				Err: true,
@@ -715,11 +673,8 @@ func (srv *Server) clientCollMessageGet(w http.ResponseWriter, r *http.Request, 
 		html.TemplateData
 		*ordersystem.Collection
 	}{
-		TemplateData: html.TemplateData{
-			TemplateData:     ssg.MakeTemplateData(srv.Langs, r),
-			AuthorizedCollID: srv.sessionCollID(r),
-		},
-		Collection: coll,
+		TemplateData: srv.MakeTemplateData(r),
+		Collection:   coll,
 	})
 }
 
@@ -740,13 +695,10 @@ func (srv *Server) clientCollSubmitGet(w http.ResponseWriter, r *http.Request, c
 		return ErrNotFound
 	}
 	return html.ClientCollSubmit.Execute(w, collView{
-		TemplateData: html.TemplateData{
-			TemplateData:     ssg.MakeTemplateData(srv.Langs, r),
-			AuthorizedCollID: srv.sessionCollID(r),
-		},
-		Actor:      ordersystem.Client,
-		Collection: coll,
-		ReadOnly:   true,
+		TemplateData: srv.MakeTemplateData(r),
+		Actor:        ordersystem.Client,
+		Collection:   coll,
+		ReadOnly:     true,
 	})
 }
 
@@ -955,10 +907,7 @@ func (srv *Server) invoiceSettled(coll *ordersystem.Collection, invoice *bitpay.
 // no Collection instances involved
 func (srv *Server) clientStateGet(w http.ResponseWriter, r *http.Request) error {
 	return html.ClientStateGet.Execute(w, clientState{
-		TemplateData: html.TemplateData{
-			TemplateData:     ssg.MakeTemplateData(srv.Langs, r),
-			AuthorizedCollID: srv.sessionCollID(r),
-		},
+		TemplateData: srv.MakeTemplateData(r),
 		Captcha: captcha.TemplateData{
 			ID: captcha.New(),
 		},
@@ -969,11 +918,8 @@ func (srv *Server) clientStateGet(w http.ResponseWriter, r *http.Request) error 
 func (srv *Server) clientStatePost(w http.ResponseWriter, r *http.Request) error {
 
 	var data = &clientState{
-		TemplateData: html.TemplateData{
-			TemplateData:     ssg.MakeTemplateData(srv.Langs, r),
-			AuthorizedCollID: srv.sessionCollID(r),
-		},
-		CollID: strings.TrimSpace(r.PostFormValue("collection-id")),
+		TemplateData: srv.MakeTemplateData(r),
+		CollID:       strings.TrimSpace(r.PostFormValue("collection-id")),
 	}
 
 	if data.CollID == data.AuthorizedCollID {
@@ -1603,4 +1549,18 @@ func (srv *Server) storeLogoutPost(w http.ResponseWriter, r *http.Request) error
 	srv.logout(r.Context())
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 	return nil
+}
+
+func (srv *Server) MakeTemplateData(r *http.Request) html.TemplateData {
+	l, path, _ := srv.Langs.FromPath(r.URL.Path)
+	return html.TemplateData{
+		TemplateData: ssg.TemplateData{
+			Lang:      l,
+			Languages: ssg.LangOptions(srv.Langs, l),
+			Path:      path,
+		},
+		Active:           "order",
+		AuthorizedCollID: srv.sessionCollID(r),
+		Onion:            strings.HasSuffix(r.Host, ".onion") || strings.Contains(r.Host, ".onion:"),
+	}
 }

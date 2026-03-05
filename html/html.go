@@ -22,7 +22,9 @@ var md = markdown.New(markdown.HTML(true), markdown.Linkify(false))
 
 type TemplateData struct {
 	ssg.TemplateData
+	Active           string
 	AuthorizedCollID string
+	Onion            bool
 }
 
 func centsToFloat(cents int) float64 {

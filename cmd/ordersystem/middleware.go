@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/dys2p/eco/ssg"
 	"github.com/dys2p/ordersystem"
 	"github.com/dys2p/ordersystem/html"
 	"github.com/julienschmidt/httprouter"
@@ -36,11 +35,8 @@ func (srv *Server) client(f HandlerErrFunc) http.HandlerFunc {
 				html.TemplateData
 				Msg string
 			}{
-				TemplateData: html.TemplateData{
-					TemplateData:     ssg.MakeTemplateData(srv.Langs, r),
-					AuthorizedCollID: srv.sessionCollID(r),
-				},
-				Msg: msg,
+				TemplateData: srv.MakeTemplateData(r),
+				Msg:          msg,
 			}); err != nil {
 				log.Printf("error executing error template: %v", err)
 			}
