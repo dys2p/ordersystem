@@ -2,6 +2,161 @@
     "language": "de-DE",
     "messages": [
         {
+            "id": "Austria",
+            "message": "Austria",
+            "translation": ""
+        },
+        {
+            "id": "Belgium",
+            "message": "Belgium",
+            "translation": ""
+        },
+        {
+            "id": "Bulgaria",
+            "message": "Bulgaria",
+            "translation": ""
+        },
+        {
+            "id": "Switzerland",
+            "message": "Switzerland",
+            "translation": ""
+        },
+        {
+            "id": "Cyprus",
+            "message": "Cyprus",
+            "translation": ""
+        },
+        {
+            "id": "Czechia",
+            "message": "Czechia",
+            "translation": ""
+        },
+        {
+            "id": "Germany",
+            "message": "Germany",
+            "translation": "Deutschland"
+        },
+        {
+            "id": "Denmark",
+            "message": "Denmark",
+            "translation": ""
+        },
+        {
+            "id": "Estonia",
+            "message": "Estonia",
+            "translation": ""
+        },
+        {
+            "id": "Spain",
+            "message": "Spain",
+            "translation": ""
+        },
+        {
+            "id": "Finland",
+            "message": "Finland",
+            "translation": ""
+        },
+        {
+            "id": "France",
+            "message": "France",
+            "translation": ""
+        },
+        {
+            "id": "United Kingdom",
+            "message": "United Kingdom",
+            "translation": ""
+        },
+        {
+            "id": "Greece",
+            "message": "Greece",
+            "translation": ""
+        },
+        {
+            "id": "Croatia",
+            "message": "Croatia",
+            "translation": ""
+        },
+        {
+            "id": "Hungary",
+            "message": "Hungary",
+            "translation": ""
+        },
+        {
+            "id": "Ireland",
+            "message": "Ireland",
+            "translation": ""
+        },
+        {
+            "id": "Italy",
+            "message": "Italy",
+            "translation": ""
+        },
+        {
+            "id": "Lithuania",
+            "message": "Lithuania",
+            "translation": ""
+        },
+        {
+            "id": "Luxembourg",
+            "message": "Luxembourg",
+            "translation": ""
+        },
+        {
+            "id": "Latvia",
+            "message": "Latvia",
+            "translation": ""
+        },
+        {
+            "id": "Montenegro",
+            "message": "Montenegro",
+            "translation": ""
+        },
+        {
+            "id": "North Macedonia",
+            "message": "North Macedonia",
+            "translation": ""
+        },
+        {
+            "id": "Malta",
+            "message": "Malta",
+            "translation": ""
+        },
+        {
+            "id": "Netherlands",
+            "message": "Netherlands",
+            "translation": ""
+        },
+        {
+            "id": "Poland",
+            "message": "Poland",
+            "translation": ""
+        },
+        {
+            "id": "Portugal",
+            "message": "Portugal",
+            "translation": ""
+        },
+        {
+            "id": "Romania",
+            "message": "Romania",
+            "translation": ""
+        },
+        {
+            "id": "Sweden",
+            "message": "Sweden",
+            "translation": ""
+        },
+        {
+            "id": "Slovenia",
+            "message": "Slovenia",
+            "translation": ""
+        },
+        {
+            "id": "Slovakia",
+            "message": "Slovakia",
+            "translation": ""
+        },
+        {
             "id": "Delivery",
             "message": "Delivery",
             "translation": "Versand"
@@ -130,11 +285,6 @@
             "id": "Contact us",
             "message": "Contact us",
             "translation": "Kontakt"
-        },
-        {
-            "id": "Germany",
-            "message": "Germany",
-            "translation": "Deutschland"
         },
         {
             "id": "Opening hours",

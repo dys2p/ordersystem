@@ -38,65 +38,65 @@ func init() {
 }
 
 var messageKeyToIndex = map[string]int{
-	"All Services and Projects":       17,
-	"Battery Disposal":                11,
-	"Cancellation Policy":             10,
-	"Cash by mail":                    14,
-	"Cash payment in local store":     13,
-	"Contact & News":                  24,
-	"Contact us":                      25,
-	"DHL parcel, franked digitally":   4,
-	"DHL parcel, franked handwritten": 3,
-	"Delivery":                        0,
-	"Digital Goods":                   20,
-	"Germany":                         26,
+	"All Services and Projects":       18,
+	"Battery Disposal":                12,
+	"Cancellation Policy":             11,
+	"Cash by mail":                    15,
+	"Cash payment in local store":     14,
+	"Contact & News":                  25,
+	"Contact us":                      26,
+	"DHL parcel, franked digitally":   5,
+	"DHL parcel, franked handwritten": 4,
+	"Delivery":                        1,
+	"Digital Goods":                   21,
+	"Germany":                         0,
 	"Got an idea or found an error? Drop us a note!": 31,
-	"Imprint":                               9,
-	"Legal":                                 6,
-	"Local Store":                           19,
+	"Imprint":                               10,
+	"Legal":                                 7,
+	"Local Store":                           20,
 	"Mon+Thu 2pm-6pm":                       28,
-	"Monero and Bitcoin":                    15,
-	"Online printing":                       23,
-	"Online shop":                           21,
+	"Monero and Bitcoin":                    16,
+	"Online printing":                       24,
+	"Online shop":                           22,
 	"Opening hours":                         27,
-	"Order Service":                         22,
-	"Payment":                               12,
-	"Pickup from locker in our local store": 2,
-	"Pickup in our local store":             1,
-	"Privacy policy":                        8,
-	"SEPA bank transfer":                    16,
+	"Order Service":                         23,
+	"Payment":                               13,
+	"Pickup from locker in our local store": 3,
+	"Pickup in our local store":             2,
+	"Privacy policy":                        9,
+	"SEPA bank transfer":                    17,
 	"See here for short-term changes":       30,
-	"Terms and Conditions":                  7,
+	"Terms and Conditions":                  8,
 	"Tue+Wed+Fri+Sat 10am-2pm":              29,
-	"Why?":                                  18,
-	"myflexbox Locker via DPD (Germany only)": 5,
+	"Why?":                                  19,
+	"myflexbox Locker via DPD (Germany only)": 6,
 }
 
 var de_DEIndex = []uint32{ // 33 elements
 	// Entry 0 - 1F
-	0x00000000, 0x00000008, 0x00000023, 0x0000004f,
-	0x00000073, 0x0000008f, 0x000000c5, 0x000000d1,
-	0x000000d5, 0x000000e1, 0x000000eb, 0x000000fe,
-	0x0000011e, 0x00000128, 0x00000145, 0x00000156,
-	0x00000169, 0x0000017b, 0x00000196, 0x0000019d,
-	0x000001ac, 0x000001bc, 0x000001c7, 0x000001d6,
-	0x000001e6, 0x000001f5, 0x000001fd, 0x00000209,
+	0x00000000, 0x0000000c, 0x00000014, 0x0000002f,
+	0x0000005b, 0x0000007f, 0x0000009b, 0x000000d1,
+	0x000000dd, 0x000000e1, 0x000000ed, 0x000000f7,
+	0x0000010a, 0x0000012a, 0x00000134, 0x00000151,
+	0x00000162, 0x00000175, 0x00000187, 0x000001a2,
+	0x000001a9, 0x000001b8, 0x000001c8, 0x000001d3,
+	0x000001e2, 0x000001f2, 0x00000201, 0x00000209,
 	0x00000219, 0x00000229, 0x0000023f, 0x00000267,
 	// Entry 20 - 3F
 	0x0000028a,
 } // Size: 156 bytes
 
 const de_DEData string = "" + // Size: 650 bytes
-	"\x02Versand\x02Abholung im Ladengeschäft\x02Abholung aus Schließfach im " +
-	"Ladengeschäft\x02DHL-Paket handschriftlich frankiert\x02DHL-Paket digita" +
-	"l frankiert\x02myflexbox-Abholstation via DPD (nur nach Deutschland)\x02" +
-	"Rechtliches\x02AGB\x02Datenschutz\x02Impressum\x02Widerrufsbelehrung\x02" +
-	"Hinweise zur Batterieentsorgung\x02Bezahlung\x02Barzahlung im Ladengesch" +
-	"äft\x02Bargeld per Post\x02Monero und Bitcoin\x02SEPA-Überweisung\x02Al" +
-	"le Angebote und Projekte\x02Warum?\x02Ladengeschäft\x02Digitale Güter" +
-	"\x02Onlineshop\x02Bestellservice\x02Onlinedruckerei\x02Kontakt & News" +
-	"\x02Kontakt\x02Deutschland\x02Öffnungszeiten\x02Mo+Do 14-18 Uhr\x02Di+Mi" +
-	"+Fr+Sa 10-14 Uhr\x02Sieh hier für kurzfristige Änderungen\x02Fehler oder" +
-	" Hinweise? Schreib uns!"
+	"\x02Deutschland\x02Versand\x02Abholung im Ladengeschäft\x02Abholung aus " +
+	"Schließfach im Ladengeschäft\x02DHL-Paket handschriftlich frankiert\x02D" +
+	"HL-Paket digital frankiert\x02myflexbox-Abholstation via DPD (nur nach D" +
+	"eutschland)\x02Rechtliches\x02AGB\x02Datenschutz\x02Impressum\x02Widerru" +
+	"fsbelehrung\x02Hinweise zur Batterieentsorgung\x02Bezahlung\x02Barzahlun" +
+	"g im Ladengeschäft\x02Bargeld per Post\x02Monero und Bitcoin\x02SEPA-Übe" +
+	"rweisung\x02Alle Angebote und Projekte\x02Warum?\x02Ladengeschäft\x02Dig" +
+	"itale Güter\x02Onlineshop\x02Bestellservice\x02Onlinedruckerei\x02Kontak" +
+	"t & News\x02Kontakt\x02Öffnungszeiten\x02Mo+Do 14-18 Uhr\x02Di+Mi+Fr+Sa " +
+	"10-14 Uhr\x02Sieh hier für kurzfristige Änderungen\x02Fehler oder Hinwei" +
+	"se? Schreib uns!"
 
-	// Total table size 806 bytes (0KiB); checksum: EE74846E
+	// Total table size 806 bytes (0KiB); checksum: 4117D008
