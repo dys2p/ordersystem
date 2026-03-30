@@ -1160,7 +1160,7 @@ func (srv *Server) storeCollConfirmPickupPost(w http.ResponseWriter, r *http.Req
 
 	r.ParseForm()
 
-	for _, taskID := range r.PostForm["task[]"] {
+	for _, taskID := range r.PostForm["task"] {
 		task, ok := coll.GetTask(taskID)
 		if !ok {
 			continue
@@ -1196,7 +1196,7 @@ func (srv *Server) storeCollConfirmReshippedPost(w http.ResponseWriter, r *http.
 
 	r.ParseForm()
 
-	for _, taskID := range r.PostForm["task[]"] {
+	for _, taskID := range r.PostForm["task"] {
 		task, ok := coll.GetTask(taskID)
 		if !ok {
 			continue

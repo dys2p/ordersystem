@@ -6,7 +6,7 @@
 		{{range .Tasks}}
 			{{if eq .State "ready"}}
 				<li>{{.ID}}</li>
-				<input type="hidden" name="task[]" value="{{.ID}}">
+				<input type="hidden" name="task" value="{{.ID}}">
 			{{end}}
 		{{end}}
 		</ul>
