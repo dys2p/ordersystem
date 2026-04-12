@@ -368,7 +368,7 @@
 								<div class="badge bg-danger  d-none" data-failed ><i class="fa-solid fa-xmark"></i></div>
 							</td>
 							<td>{{.Properties}}</td>
-							<td>{{.Quantity}}</td>
+							<td>{{if gt .Quantity 1}}<span class="text-bg-warning p-1">{{.Quantity}}</span>{{else}}{{.Quantity}}{{end}}</td>
 							<td>{{FmtEuro .Price}}</td>
 							<td>{{FmtEuro .Sum}}</td>
 						</tr>
