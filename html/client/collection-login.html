@@ -4,8 +4,8 @@
 		<div class="mb-3">
 			<label class="form-label" for="collection-id">Auftragsnummer</label>
 			<div>
-				<input type="text" class="form-control {{if .CollIDErr}}is-invalid{{end}}" id="collection-id" name="collection-id" value="{{.CollID}}">
-				<div class="invalid-feedback">Bitte gib deine zehnstellige Auftragsnummer ein.</div>
+				<input type="text" class="form-control {{if .CollIDErr}}is-invalid{{end}}" id="collection-id" name="collection-id" value="{{.CollID}}" autofocus>
+				<div class="invalid-feedback">Bitte gib deine sechsstellige Auftragsnummer ein.</div>
 			</div>
 		</div>
 		<div class="mb-3">
