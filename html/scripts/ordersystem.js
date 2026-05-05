@@ -159,7 +159,7 @@ function newTask(readOnly = false, showHints = true, header = "") {
 	var taskNumber = numTasks;
 
 	document.getElementById("add-task-paragraph").insertAdjacentHTML("beforebegin",
-		`<div class="mt-3 bg-light" data-task="${taskNumber}" style="padding: 1em 1em 0 1em; border-top: solid #c0c0c0 1px; margin-bottom: 1em;">
+		`<div class="mt-3 bg-body" data-task="${taskNumber}" style="padding: 1em 1em 0 1em; border-top: solid #c0c0c0 1px; margin-bottom: 1em;">
 
 	<h2>
 		Einzelauftrag ${taskNumber}

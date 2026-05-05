@@ -96,7 +96,7 @@
 	{{if and (.ReadOnly) (ne .DeliveryMethodID "store")}}
 		<!-- hide -->
 	{{else}}
-		<div class="radio-label border border-secondary bg-light my-3 p-3 rounded">
+		<div class="radio-label border border-secondary bg-body my-3 p-3 rounded">
 			<input type="radio" name="delivery-method" onchange="updateView()" id="delivery-method-store" value="store" {{if or (eq .DeliveryMethodID "store") (eq .DeliveryMethodID "")}}checked{{end}} {{if .ReadOnly}}disabled{{end}}>
 			<label for="delivery-method-store">
 				Ich hole die Ware <strong>unter Nennung der Auftragsnummer</strong> im Ladenlokal ab.
@@ -107,7 +107,7 @@
 	{{if and (.ReadOnly) (ne .DeliveryMethodID "locker")}}
 		<!-- hide -->
 	{{else}}
-		<div class="radio-label border border-secondary bg-light my-3 p-3 rounded">
+		<div class="radio-label border border-secondary bg-body my-3 p-3 rounded">
 			<input type="radio" name="delivery-method" onchange="updateView()" id="delivery-method-locker" value="locker" {{if eq .DeliveryMethodID "locker"}}checked{{end}} {{if .ReadOnly}}disabled{{end}}>
 			<label for="delivery-method-locker">
 				Ich hole die Ware <strong>aus einem Schließfach</strong> im Ladenlokal ab. Ein geöffnetes Vorhängeschloss bringe ich vorbei.
@@ -118,7 +118,7 @@
 	{{if and (.ReadOnly) (ne .DeliveryMethodID "custom")}}
 		<!-- hide -->
 	{{else}}
-		<div class="radio-label border border-secondary bg-light my-3 p-3 rounded">
+		<div class="radio-label border border-secondary bg-body my-3 p-3 rounded">
 			<input type="radio" name="delivery-method" onchange="updateView()" id="delivery-method-custom" value="custom" {{if eq .DeliveryMethodID "custom"}}checked{{end}} {{if .ReadOnly}}disabled{{end}}>
 			<label for="delivery-method-custom">
 				Bitte schickt mir die Ware. Eine bezahlte und beschriftete Paketmarke bringe ich vorbei.
@@ -129,7 +129,7 @@
 	{{if and (.ReadOnly) (ne .DeliveryMethodID "shipping")}}
 		<!-- hide -->
 	{{else}}
-		<div class="border border-secondary bg-light my-3 p-3 rounded">
+		<div class="border border-secondary bg-body my-3 p-3 rounded">
 
 			<p class="radio-label">
 				<input type="radio" name="delivery-method" onchange="updateView()" id="delivery-method-shipping" value="shipping" {{if eq .DeliveryMethodID "shipping"}}checked{{end}} {{if .ReadOnly}}disabled{{end}}>
