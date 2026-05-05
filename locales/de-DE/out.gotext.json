@@ -4,32 +4,32 @@
         {
             "id": "Austria",
             "message": "Austria",
-            "translation": ""
+            "translation": "Österreich"
         },
         {
             "id": "Belgium",
             "message": "Belgium",
-            "translation": ""
+            "translation": "Belgien"
         },
         {
             "id": "Bulgaria",
             "message": "Bulgaria",
-            "translation": ""
+            "translation": "Bulgarien"
         },
         {
             "id": "Switzerland",
             "message": "Switzerland",
-            "translation": ""
+            "translation": "Schweiz"
         },
         {
             "id": "Cyprus",
             "message": "Cyprus",
-            "translation": ""
+            "translation": "Zypern"
         },
         {
             "id": "Czechia",
             "message": "Czechia",
-            "translation": ""
+            "translation": "Tschechien"
         },
         {
             "id": "Germany",
@@ -39,122 +39,127 @@
         {
             "id": "Denmark",
             "message": "Denmark",
-            "translation": ""
+            "translation": "Dänemark"
         },
         {
             "id": "Estonia",
             "message": "Estonia",
-            "translation": ""
+            "translation": "Estland"
         },
         {
             "id": "Spain",
             "message": "Spain",
-            "translation": ""
+            "translation": "Spanien"
         },
         {
             "id": "Finland",
             "message": "Finland",
-            "translation": ""
+            "translation": "Finnland"
         },
         {
             "id": "France",
             "message": "France",
-            "translation": ""
+            "translation": "Frankreich"
         },
         {
             "id": "United Kingdom",
             "message": "United Kingdom",
+            "translation": "Vereinigtes Königreich"
+        },
+        {
+            "id": "Georgia (Europe)",
+            "message": "Georgia (Europe)",
             "translation": ""
         },
         {
             "id": "Greece",
             "message": "Greece",
-            "translation": ""
+            "translation": "Griechenland"
         },
         {
             "id": "Croatia",
             "message": "Croatia",
-            "translation": ""
+            "translation": "Kroatien"
         },
         {
             "id": "Hungary",
             "message": "Hungary",
-            "translation": ""
+            "translation": "Ungarn"
         },
         {
             "id": "Ireland",
             "message": "Ireland",
-            "translation": ""
+            "translation": "Irland"
         },
         {
             "id": "Italy",
             "message": "Italy",
-            "translation": ""
+            "translation": "Italien"
         },
         {
             "id": "Lithuania",
             "message": "Lithuania",
-            "translation": ""
+            "translation": "Litauen"
         },
         {
             "id": "Luxembourg",
             "message": "Luxembourg",
-            "translation": ""
+            "translation": "Luxemburg"
         },
         {
             "id": "Latvia",
             "message": "Latvia",
-            "translation": ""
+            "translation": "Lettland"
         },
         {
             "id": "Montenegro",
             "message": "Montenegro",
-            "translation": ""
+            "translation": "Montenegro"
         },
         {
             "id": "North Macedonia",
             "message": "North Macedonia",
-            "translation": ""
+            "translation": "Nordmazedonien"
         },
         {
             "id": "Malta",
             "message": "Malta",
-            "translation": ""
+            "translation": "Malta"
         },
         {
             "id": "Netherlands",
             "message": "Netherlands",
-            "translation": ""
+            "translation": "Niederlande"
         },
         {
             "id": "Poland",
             "message": "Poland",
-            "translation": ""
+            "translation": "Polen"
         },
         {
             "id": "Portugal",
             "message": "Portugal",
-            "translation": ""
+            "translation": "Portugal"
         },
         {
             "id": "Romania",
             "message": "Romania",
-            "translation": ""
+            "translation": "Rumänien"
         },
         {
             "id": "Sweden",
             "message": "Sweden",
-            "translation": ""
+            "translation": "Schweden"
         },
         {
             "id": "Slovenia",
             "message": "Slovenia",
-            "translation": ""
+            "translation": "Slowenien"
         },
         {
             "id": "Slovakia",
             "message": "Slovakia",
-            "translation": ""
+            "translation": "Slowakei"
         },
         {
             "id": "Delivery",
@@ -202,8 +207,8 @@
             "translation": "Datenschutz"
         },
         {
-            "id": "Imprint",
-            "message": "Imprint",
+            "id": "Legal Notice",
+            "message": "Legal Notice",
             "translation": "Impressum"
         },
         {

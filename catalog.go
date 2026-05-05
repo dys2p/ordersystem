@@ -38,65 +38,107 @@ func init() {
 }
 
 var messageKeyToIndex = map[string]int{
-	"All Services and Projects":       18,
-	"Battery Disposal":                12,
-	"Cancellation Policy":             11,
-	"Cash by mail":                    15,
-	"Cash payment in local store":     14,
-	"Contact & News":                  25,
-	"Contact us":                      26,
-	"DHL parcel, franked digitally":   5,
-	"DHL parcel, franked handwritten": 4,
-	"Delivery":                        1,
-	"Digital Goods":                   21,
-	"Germany":                         0,
-	"Got an idea or found an error? Drop us a note!": 31,
-	"Imprint":                               10,
-	"Legal":                                 7,
-	"Local Store":                           20,
-	"Mon+Thu 2pm-6pm":                       28,
-	"Monero and Bitcoin":                    16,
-	"Online printing":                       24,
-	"Online shop":                           22,
-	"Opening hours":                         27,
-	"Order Service":                         23,
-	"Payment":                               13,
-	"Pickup from locker in our local store": 3,
-	"Pickup in our local store":             2,
-	"Privacy policy":                        9,
-	"SEPA bank transfer":                    17,
-	"See here for short-term changes":       30,
-	"Terms and Conditions":                  8,
-	"Tue+Wed+Fri+Sat 10am-2pm":              29,
-	"Why?":                                  19,
-	"myflexbox Locker via DPD (Germany only)": 6,
+	"All Services and Projects":       48,
+	"Austria":                         0,
+	"Battery Disposal":                42,
+	"Belgium":                         1,
+	"Bulgaria":                        2,
+	"Cancellation Policy":             41,
+	"Cash by mail":                    45,
+	"Cash payment in local store":     44,
+	"Contact & News":                  55,
+	"Contact us":                      56,
+	"Croatia":                         14,
+	"Cyprus":                          4,
+	"Czechia":                         5,
+	"DHL parcel, franked digitally":   35,
+	"DHL parcel, franked handwritten": 34,
+	"Delivery":                        31,
+	"Denmark":                         7,
+	"Digital Goods":                   51,
+	"Estonia":                         8,
+	"Finland":                         10,
+	"France":                          11,
+	"Germany":                         6,
+	"Got an idea or found an error? Drop us a note!": 61,
+	"Greece":                                13,
+	"Hungary":                               15,
+	"Ireland":                               16,
+	"Italy":                                 17,
+	"Latvia":                                20,
+	"Legal":                                 37,
+	"Legal Notice":                          40,
+	"Lithuania":                             18,
+	"Local Store":                           50,
+	"Luxembourg":                            19,
+	"Malta":                                 23,
+	"Mon+Thu 2pm-6pm":                       58,
+	"Monero and Bitcoin":                    46,
+	"Montenegro":                            21,
+	"Netherlands":                           24,
+	"North Macedonia":                       22,
+	"Online printing":                       54,
+	"Online shop":                           52,
+	"Opening hours":                         57,
+	"Order Service":                         53,
+	"Payment":                               43,
+	"Pickup from locker in our local store": 33,
+	"Pickup in our local store":             32,
+	"Poland":                                25,
+	"Portugal":                              26,
+	"Privacy policy":                        39,
+	"Romania":                               27,
+	"SEPA bank transfer":                    47,
+	"See here for short-term changes":       60,
+	"Slovakia":                              30,
+	"Slovenia":                              29,
+	"Spain":                                 9,
+	"Sweden":                                28,
+	"Switzerland":                           3,
+	"Terms and Conditions":                  38,
+	"Tue+Wed+Fri+Sat 10am-2pm":              59,
+	"United Kingdom":                        12,
+	"Why?":                                  49,
+	"myflexbox Locker via DPD (Germany only)": 36,
 }
 
-var de_DEIndex = []uint32{ // 33 elements
+var de_DEIndex = []uint32{ // 63 elements
 	// Entry 0 - 1F
-	0x00000000, 0x0000000c, 0x00000014, 0x0000002f,
-	0x0000005b, 0x0000007f, 0x0000009b, 0x000000d1,
-	0x000000dd, 0x000000e1, 0x000000ed, 0x000000f7,
-	0x0000010a, 0x0000012a, 0x00000134, 0x00000151,
-	0x00000162, 0x00000175, 0x00000187, 0x000001a2,
-	0x000001a9, 0x000001b8, 0x000001c8, 0x000001d3,
-	0x000001e2, 0x000001f2, 0x00000201, 0x00000209,
-	0x00000219, 0x00000229, 0x0000023f, 0x00000267,
+	0x00000000, 0x0000000c, 0x00000014, 0x0000001e,
+	0x00000026, 0x0000002d, 0x00000038, 0x00000044,
+	0x0000004e, 0x00000056, 0x0000005e, 0x00000067,
+	0x00000072, 0x0000008a, 0x00000097, 0x000000a0,
+	0x000000a7, 0x000000ae, 0x000000b6, 0x000000be,
+	0x000000c8, 0x000000d1, 0x000000dc, 0x000000eb,
+	0x000000f1, 0x000000fd, 0x00000103, 0x0000010c,
+	0x00000116, 0x0000011f, 0x00000129, 0x00000132,
 	// Entry 20 - 3F
-	0x0000028a,
-} // Size: 156 bytes
+	0x0000013a, 0x00000155, 0x00000181, 0x000001a5,
+	0x000001c1, 0x000001f7, 0x00000203, 0x00000207,
+	0x00000213, 0x0000021d, 0x00000230, 0x00000250,
+	0x0000025a, 0x00000277, 0x00000288, 0x0000029b,
+	0x000002ad, 0x000002c8, 0x000002cf, 0x000002de,
+	0x000002ee, 0x000002f9, 0x00000308, 0x00000318,
+	0x00000327, 0x0000032f, 0x0000033f, 0x0000034f,
+	0x00000365, 0x0000038d, 0x000003b0,
+} // Size: 276 bytes
 
-const de_DEData string = "" + // Size: 650 bytes
-	"\x02Deutschland\x02Versand\x02Abholung im Ladengeschäft\x02Abholung aus " +
-	"Schließfach im Ladengeschäft\x02DHL-Paket handschriftlich frankiert\x02D" +
-	"HL-Paket digital frankiert\x02myflexbox-Abholstation via DPD (nur nach D" +
-	"eutschland)\x02Rechtliches\x02AGB\x02Datenschutz\x02Impressum\x02Widerru" +
-	"fsbelehrung\x02Hinweise zur Batterieentsorgung\x02Bezahlung\x02Barzahlun" +
-	"g im Ladengeschäft\x02Bargeld per Post\x02Monero und Bitcoin\x02SEPA-Übe" +
-	"rweisung\x02Alle Angebote und Projekte\x02Warum?\x02Ladengeschäft\x02Dig" +
-	"itale Güter\x02Onlineshop\x02Bestellservice\x02Onlinedruckerei\x02Kontak" +
-	"t & News\x02Kontakt\x02Öffnungszeiten\x02Mo+Do 14-18 Uhr\x02Di+Mi+Fr+Sa " +
-	"10-14 Uhr\x02Sieh hier für kurzfristige Änderungen\x02Fehler oder Hinwei" +
-	"se? Schreib uns!"
+const de_DEData string = "" + // Size: 944 bytes
+	"\x02Österreich\x02Belgien\x02Bulgarien\x02Schweiz\x02Zypern\x02Tschechie" +
+	"n\x02Deutschland\x02Dänemark\x02Estland\x02Spanien\x02Finnland\x02Frankr" +
+	"eich\x02Vereinigtes Königreich\x02Griechenland\x02Kroatien\x02Ungarn\x02" +
+	"Irland\x02Italien\x02Litauen\x02Luxemburg\x02Lettland\x02Montenegro\x02N" +
+	"ordmazedonien\x02Malta\x02Niederlande\x02Polen\x02Portugal\x02Rumänien" +
+	"\x02Schweden\x02Slowenien\x02Slowakei\x02Versand\x02Abholung im Ladenges" +
+	"chäft\x02Abholung aus Schließfach im Ladengeschäft\x02DHL-Paket handschr" +
+	"iftlich frankiert\x02DHL-Paket digital frankiert\x02myflexbox-Abholstati" +
+	"on via DPD (nur nach Deutschland)\x02Rechtliches\x02AGB\x02Datenschutz" +
+	"\x02Impressum\x02Widerrufsbelehrung\x02Hinweise zur Batterieentsorgung" +
+	"\x02Bezahlung\x02Barzahlung im Ladengeschäft\x02Bargeld per Post\x02Mone" +
+	"ro und Bitcoin\x02SEPA-Überweisung\x02Alle Angebote und Projekte\x02Waru" +
+	"m?\x02Ladengeschäft\x02Digitale Güter\x02Onlineshop\x02Bestellservice" +
+	"\x02Onlinedruckerei\x02Kontakt & News\x02Kontakt\x02Öffnungszeiten\x02Mo" +
+	"+Do 14-18 Uhr\x02Di+Mi+Fr+Sa 10-14 Uhr\x02Sieh hier für kurzfristige Änd" +
+	"erungen\x02Fehler oder Hinweise? Schreib uns!"
 
-	// Total table size 806 bytes (0KiB); checksum: 4117D008
+	// Total table size 1220 bytes (1KiB); checksum: 1F24E78A
